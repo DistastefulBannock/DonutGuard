@@ -31,9 +31,7 @@ public class DonutGuard {
 
     private void start(){
         // We start the gui on the swing thread
-        SwingUtilities.invokeLater(() -> {
-            injector.getInstance(MainFrame.class).start();
-        });
+        SwingUtilities.invokeLater(() -> injector.getInstance(MainFrame.class).start());
     }
 
     /**

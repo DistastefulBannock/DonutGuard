@@ -16,7 +16,6 @@ public class DonutGuardModule extends AbstractModule {
 
     @Inject
     @Provides
-    @SuppressWarnings("unused")
     public ConfigDTO provideConfig(DonutGuard donutGuard){
         return donutGuard.getConfig();
     }

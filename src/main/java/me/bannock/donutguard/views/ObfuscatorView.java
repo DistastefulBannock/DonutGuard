@@ -17,11 +17,11 @@ import java.util.Map;
 
 public class ObfuscatorView extends JPanel {
 
-    private JPanel sidePane;
+    private final JPanel sidePane;
     private JComponent currentView;
 
     @Inject
-    public ObfuscatorView(Injector injector, ConfigDTO config) {
+    public ObfuscatorView(ConfigDTO config) {
         super(true);
         setLayout(new BorderLayout());
 

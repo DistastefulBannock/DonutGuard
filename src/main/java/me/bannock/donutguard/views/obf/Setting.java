@@ -16,8 +16,8 @@ public abstract class Setting<T> {
 
     private final String name;
     private final List<SettingFilter<T>> filters;
-    private ConfigDTO config;
-    private Field field;
+    private final ConfigDTO config;
+    private final Field field;
     private T value;
 
     /**
