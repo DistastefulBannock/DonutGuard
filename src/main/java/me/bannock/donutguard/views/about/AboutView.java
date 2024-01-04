@@ -47,7 +47,7 @@ public class AboutView extends JPanel {
                 "<br/><br/>" +
                 "Developer(s): @DistastefulBnok" +
                 "<br/>" +
-                "Support: github.com/DistastefulBannock/DonutGuard/" +
+                "Support: github.com/DistastefulBannock/DonutGuard" +
                 "</html>");
         info.setFont(info.getFont().deriveFont(Font.PLAIN, (float)(info.getFont().getSize() * 1.02383822)));
 
