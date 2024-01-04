@@ -1,31 +1,39 @@
 package me.bannock.donutguard;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.views.MainFrame;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class DonutGuard {
 
+    static{
+        // First, we set the look and feel because it looks better this way
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }catch(Exception ignored) {}
+    }
+
     // TODO: Create a worker thread for an obfuscator object
 
+    private final Injector injector;
     private ConfigDTO config;
+
+    @Inject
+    public DonutGuard(Injector injector){
+        this.injector = injector;
+        this.config = new ConfigDTO();
+    }
 
     private void start(){
         // We start the gui on the swing thread
         SwingUtilities.invokeLater(() -> {
-            Guice.createInjector(new DonutGuardModule()).getInstance(MainFrame.class).start();
+            injector.getInstance(MainFrame.class).start();
         });
-    }
-
-    @Inject
-    public DonutGuard(ConfigDTO config){
-        this.config = config;
     }
 
     /**

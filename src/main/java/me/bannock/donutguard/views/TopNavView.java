@@ -4,20 +4,21 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.controllers.TopNavController;
 
-import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
 
 public class TopNavView extends JMenuBar {
 
-    private JMenuItem saveConfig, loadConfig;
-    private JMenuItem processingSettings, start;
-    private JMenuItem settings, about;
+    private final JMenuItem saveConfig, loadConfig;
+    private final JMenuItem processingSettings, start;
+    private final JMenuItem settings, about;
 
     @Inject
     public TopNavView(Injector injector){
+        setBorder(new EmptyBorder(5, 5, 5, 5));
+
         JMenu fileDropdown = new JMenu("File");
         fileDropdown.add(loadConfig = new JMenuItem("Configuration Load"));
         fileDropdown.add(saveConfig = new JMenuItem("Configuration Write"));

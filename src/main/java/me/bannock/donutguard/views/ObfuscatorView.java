@@ -2,6 +2,9 @@ package me.bannock.donutguard.views;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.views.obf.ObfuscatorSettingsView;
+import me.bannock.donutguard.views.obf.impl.FileSetting;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -9,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ObfuscatorView extends JPanel {
@@ -17,14 +21,18 @@ public class ObfuscatorView extends JPanel {
     private JComponent currentView;
 
     @Inject
-    public ObfuscatorView(Injector injector){
+    public ObfuscatorView(Injector injector, ConfigDTO config) {
         super(true);
         setLayout(new BorderLayout());
 
         // Populate this map with any more views for the obfuscator
-        Map<String, JComponent> obfuscatorViews = Map.of(
-                "IO Settings", injector.getInstance(DummyView.class)
-        );
+        Map<String, JComponent> obfuscatorViews = new LinkedHashMap<>();
+        obfuscatorViews.put("IO Settings", new ObfuscatorSettingsView(
+                new FileSetting("input", config, config.input, "input",
+                        ".jar, .zip","jar", "zip"),
+                new FileSetting("output", config, config.output, "output",
+                        ".jar, .zip","jar", "zip")));
+        obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());
 
         // Populating the side pane with buttons through a map so we can easily add more buttons in the future
         sidePane = new JPanel();
