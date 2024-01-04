@@ -1,7 +1,6 @@
 package me.bannock.donutguard.views;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.views.obf.ObfuscatorSettingsView;
 import me.bannock.donutguard.views.obf.impl.FileSetting;
