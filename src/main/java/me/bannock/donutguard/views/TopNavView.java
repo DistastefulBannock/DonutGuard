@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 public class TopNavView extends JMenuBar {
 
     private final JMenuItem saveConfig, loadConfig;
-    private final JMenuItem processingSettings, start;
+    private final JMenuItem processingSettings, viewObfuscationJobs, start;
     private final JMenuItem settings, about;
 
     @Inject
@@ -25,6 +25,7 @@ public class TopNavView extends JMenuBar {
 
         JMenu processDropdown = new JMenu("Processing");
         processDropdown.add(processingSettings = new JMenuItem("Options"));
+        processDropdown.add(viewObfuscationJobs = new JMenuItem("Observe Jobs"));
         processDropdown.add(start = new JMenuItem("Begin"));
 
         JMenu help = new JMenu("Help");
@@ -50,6 +51,10 @@ public class TopNavView extends JMenuBar {
 
     public JMenuItem getProcessingSettings() {
         return processingSettings;
+    }
+
+    public JMenuItem getViewObfuscationJobs() {
+        return viewObfuscationJobs;
     }
 
     public JMenuItem getStart() {

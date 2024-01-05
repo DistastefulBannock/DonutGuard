@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.views.MainFrame;
 
 public class DonutGuardModule extends AbstractModule {
@@ -12,6 +13,7 @@ public class DonutGuardModule extends AbstractModule {
     protected void configure() {
         bind(DonutGuard.class).asEagerSingleton();
         bind(MainFrame.class).asEagerSingleton();
+        bind(Obfuscator.class).asEagerSingleton();
     }
 
     @Inject

@@ -1,8 +1,9 @@
 package me.bannock.donutguard.obf;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class ConfigDTO {
+public class ConfigDTO implements Serializable {
 
     // The java file class is really weird because "input.jar" will be a relative path,
     // but it will also not work properly in oddly specific edge cases. Creating a new

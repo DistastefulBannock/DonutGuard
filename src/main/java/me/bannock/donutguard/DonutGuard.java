@@ -4,10 +4,15 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.views.MainFrame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import java.text.DecimalFormat;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 
 public class DonutGuard {
 
@@ -18,13 +23,11 @@ public class DonutGuard {
         }catch(Exception ignored) {}
     }
 
-    // TODO: Create a worker thread for an obfuscator object
-
     private final Injector injector;
     private ConfigDTO config;
 
     @Inject
-    public DonutGuard(Injector injector){
+    public DonutGuard(Injector injector) {
         this.injector = injector;
         this.config = new ConfigDTO();
     }

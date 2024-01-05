@@ -14,7 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guice-version>7.0.0</guice-version>
         <asm.version>9.6</asm.version>
-        <flatlaf.version>3.2.5</flatlaf.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <guava.version>33.0.0-jre</guava.version>
     </properties>
 
     <dependencies>
@@ -34,9 +35,14 @@
             <version>${asm.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf</artifactId>
-            <version>${flatlaf.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
     </dependencies>
 
