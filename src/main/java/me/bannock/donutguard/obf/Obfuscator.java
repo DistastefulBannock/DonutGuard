@@ -19,7 +19,7 @@ public class Obfuscator {
     private final ThreadPoolExecutor executorService = new ThreadPoolExecutor(
             THREAD_POOL_SIZE, THREAD_POOL_SIZE, 0L,
             TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
-    private final Map<ObfuscatorJob, Future> tasks = new LinkedHashMap<>();
+    private final Map<ObfuscatorJob, Future<?>> tasks = new LinkedHashMap<>();
     private final Map<ObfuscatorJob, String> friendlyNameTasks = new LinkedHashMap<>();
 
     /**
