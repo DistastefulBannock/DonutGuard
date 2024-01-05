@@ -5,12 +5,13 @@ import org.apache.commons.lang3.SerializationUtils;
 
 public class ObfuscatorJob implements Runnable {
 
-    private ConfigDTO configDTO;
-    private Obfuscator obfuscator;
+    private final ConfigDTO configDTO;
+    private final Obfuscator obfuscator;
 
     @Inject
     public ObfuscatorJob(ConfigDTO configDTO, Obfuscator obfuscator){
         this.configDTO = SerializationUtils.clone(configDTO);
+        this.obfuscator = obfuscator;
     }
 
     @Override

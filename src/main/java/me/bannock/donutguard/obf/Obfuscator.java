@@ -3,17 +3,9 @@ package me.bannock.donutguard.obf;
 import com.google.common.collect.ImmutableMap;
 
 import java.text.DecimalFormat;
-import java.time.Instant;
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,11 +16,11 @@ public class Obfuscator {
     private static final int THREAD_POOL_SIZE = 5;
     private static final DecimalFormat TIME_FORMAT = new DecimalFormat("00");
 
-    private ThreadPoolExecutor executorService = new ThreadPoolExecutor(
+    private final ThreadPoolExecutor executorService = new ThreadPoolExecutor(
             THREAD_POOL_SIZE, THREAD_POOL_SIZE, 0L,
             TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
-    private Map<ObfuscatorJob, Future> tasks = new LinkedHashMap<>();
-    private Map<ObfuscatorJob, String> friendlyNameTasks = new LinkedHashMap<>();
+    private final Map<ObfuscatorJob, Future> tasks = new LinkedHashMap<>();
+    private final Map<ObfuscatorJob, String> friendlyNameTasks = new LinkedHashMap<>();
 
     /**
      * Request a job to be executed by the obfuscator

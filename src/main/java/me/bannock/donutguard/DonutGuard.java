@@ -4,15 +4,10 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.views.MainFrame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import java.text.DecimalFormat;
-import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
 
 public class DonutGuard {
 

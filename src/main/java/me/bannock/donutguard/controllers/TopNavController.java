@@ -25,9 +25,8 @@ public class TopNavController {
         // TODO: Implement settings
         topNavView.getSettings().addActionListener(evt -> System.err.println("TODO"));
 
-        topNavView.getAbout().addActionListener(evt -> {
-            SwingUtilities.invokeLater(() -> injector.getInstance(AboutFrame.class).setVisible(true));
-        });
+        topNavView.getAbout().addActionListener(evt -> SwingUtilities
+                .invokeLater(() -> injector.getInstance(AboutFrame.class).setVisible(true)));
     }
 
     private void createJobAndRun(Injector injector){

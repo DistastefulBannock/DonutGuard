@@ -3,7 +3,6 @@ package me.bannock.donutguard.views.about;
 import com.google.inject.Inject;
 import me.bannock.donutguard.utils.HwidUtil;
 
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
