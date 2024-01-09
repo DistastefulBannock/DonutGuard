@@ -2,13 +2,14 @@ package me.bannock.donutguard.ui.obf.views;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.ui.obf.models.ObfuscatorModel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -16,12 +17,14 @@ import java.util.Map;
 
 public class ObfuscatorView extends JPanel {
 
+    private final Logger logger = LogManager.getLogger();
     private final JPanel sidePane;
     private JComponent currentView;
 
     @Inject
     public ObfuscatorView(ObfuscatorModel model, ObfuscatorStartupView startupView) {
         super(true);
+        logger.info("Constructing obfuscator view...");
         setLayout(new BorderLayout());
 
         // Populate this map with any more views for the obfuscator
@@ -55,6 +58,8 @@ public class ObfuscatorView extends JPanel {
         // Nothing will show unless we add the sidePane and contentPane to this view
         add(sidePaneContainer, BorderLayout.WEST);
         setView(startupView);
+
+        logger.info("Obfuscator view successfully constructed");
     }
 
     /**
@@ -62,15 +67,14 @@ public class ObfuscatorView extends JPanel {
      * @param view The view to set
      */
     private void setView(JComponent view){
-        SwingUtilities.invokeLater(() -> {
-            if(currentView != null){
-                remove(currentView);
-            }
-            currentView = view;
-            add(currentView, BorderLayout.CENTER);
-            revalidate();
-            repaint();
-        });
+        logger.info("Swapping obfuscator view to " + view.getClass().getSimpleName() + "...");
+        if(currentView != null){
+            remove(currentView);
+        }
+        currentView = view;
+        add(currentView, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
 }

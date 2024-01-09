@@ -2,8 +2,8 @@ package me.bannock.donutguard.ui.obf.models;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.ui.obf.views.ObfuscatorSettingsView;
 import me.bannock.donutguard.ui.obf.settings.impl.FileSetting;
+import me.bannock.donutguard.ui.obf.views.ObfuscatorSettingsView;
 
 import javax.swing.JComponent;
 import java.util.LinkedHashMap;

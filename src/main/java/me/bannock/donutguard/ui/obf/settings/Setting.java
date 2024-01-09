@@ -1,6 +1,8 @@
 package me.bannock.donutguard.ui.obf.settings;
 
 import me.bannock.donutguard.obf.ConfigDTO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 public abstract class Setting<T> {
 
+    private final Logger logger = LogManager.getLogger();
     private final String name;
     private final List<SettingFilter<T>> filters;
     private final ConfigDTO config;
@@ -34,6 +37,8 @@ public abstract class Setting<T> {
         try {
             field = ConfigDTO.class.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
+            logger.error("The field name \"" + fieldName +
+                    "\" does not exist in the config DTO class", e);
             throw new IllegalArgumentException("The field name \"" + fieldName +
                     "\" does not exist in the config DTO class", e);
         }
@@ -53,11 +58,13 @@ public abstract class Setting<T> {
     public boolean setValue(T value) {
         for (SettingFilter<T> filter : filters) {
             if(!filter.filter(this.value, value)){
-                JOptionPane.showInputDialog(null, "Invalid value",
-                        "You've inputted an invalid value");
+                JOptionPane.showMessageDialog(null, "You've inputted an invalid value",
+                        "Invalid value", JOptionPane.ERROR_MESSAGE);
+                logger.warn("User tried to set an invalid value");
                 return false;
             }
         }
+        logger.info("Setting " + name + " to " + value);
         try {
             field.setAccessible(true);
             field.set(config, value);

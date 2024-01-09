@@ -3,6 +3,8 @@ package me.bannock.donutguard.ui;
 import com.google.inject.Inject;
 import me.bannock.donutguard.ui.obf.views.ObfuscatorView;
 import me.bannock.donutguard.ui.topnav.TopNavView;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -10,6 +12,8 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
 public class MainFrame extends JFrame {
+
+    private final Logger logger = LogManager.getLogger();
 
     public boolean alreadyStarted = false;
     private JPanel contentPane;
@@ -27,6 +31,7 @@ public class MainFrame extends JFrame {
         if (alreadyStarted)
             throw new IllegalStateException("Already started");
         alreadyStarted = true;
+        logger.info("Constructing main frame...");
 
         // We have to set these so the window doesn't look like garbage
         setSize(650, 550);
@@ -45,6 +50,7 @@ public class MainFrame extends JFrame {
         contentPane.add(currentView = obfuscatorView, BorderLayout.CENTER);
 
         setVisible(true);
+        logger.info("Main frame successfully constructed");
     }
 
     /**
@@ -52,6 +58,7 @@ public class MainFrame extends JFrame {
      * @param view The view to set
      */
     public void setView(JComponent view){
+        logger.info("Swapping view to " + view.getClass().getSimpleName() + "...");
         if(currentView != null){
             contentPane.remove(currentView);
         }
@@ -59,6 +66,7 @@ public class MainFrame extends JFrame {
         contentPane.add(currentView, BorderLayout.CENTER);
         contentPane.revalidate();
         contentPane.repaint();
+        logger.info("Successfully swapped view");
     }
 
 }

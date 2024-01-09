@@ -3,10 +3,11 @@ package me.bannock.donutguard;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.bannock.donutguard.logging.Log4jModule;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.MainFrame;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -23,19 +24,27 @@ public class DonutGuard {
         UIManager.put("ScrollBar.width", 5);
     }
 
+    private final Logger logger = LogManager.getLogger();
+    private final String mainApplicationId = "Main Application";
+
     private final Injector injector;
     private ConfigDTO config;
 
     @Inject
-    public DonutGuard(Injector injector, Logger logger) {
+    public DonutGuard(Injector injector) {
+        ThreadContext.put("threadId", mainApplicationId);
         this.injector = injector;
         this.config = new ConfigDTO();
-        logger.info("test");
     }
 
     private void start(){
+        logger.info("Starting DonutGuard ui...");
         // We start the gui on the swing thread
-        SwingUtilities.invokeLater(() -> injector.getInstance(MainFrame.class).start());
+        SwingUtilities.invokeLater(() -> {
+            ThreadContext.put("threadId", mainApplicationId);
+            injector.getInstance(MainFrame.class).start();
+        });
+        logger.info("DonutGuard ui successfully started");
     }
 
     /**
@@ -54,8 +63,7 @@ public class DonutGuard {
     }
 
     public static void main(String[] args) {
-        Guice.createInjector(new DonutGuardModule(),
-                new Log4jModule()).getInstance(DonutGuard.class).start();
+        Guice.createInjector(new DonutGuardModule()).getInstance(DonutGuard.class).start();
     }
 
 }

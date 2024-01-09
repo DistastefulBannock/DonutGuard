@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN">
+    <properties>
+        <property name="logMsgPattern">[%d{HH:mm:ss}] [%-5p] %c{2.} --- %msg%xEx%n</property>
+        <property name="logDir">logs</property><!-- ${sys:testLogDir} -->
+    </properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${logMsgPattern}"/>
+        </Console>
+
+        <Routing name="Routing">
+            <Routes pattern="$${ctx:threadId}">
+                <Route>
+                    <file name="RollingFile-${ctx:threadId}"
+                          fileName="${logDir}/DonutGuard ${ctx:threadId}.log"
+                          Append="false">
+                        <PatternLayout pattern="${logMsgPattern}"/>
+                    </file>
+                </Route>
+            </Routes>
+        </Routing>
+
+    </appenders>
+
+    <loggers>
+        <root level="debug">
+            <appender-ref ref="Console" level="debug" />
+            <appender-ref ref="Routing" level="debug"/>
+        </root>
+    </loggers>
+
+</configuration>

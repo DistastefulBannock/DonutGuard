@@ -3,9 +3,10 @@ package me.bannock.donutguard.obf;
 import com.google.common.collect.ImmutableMap;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -16,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class Obfuscator {
 
     private static final int THREAD_POOL_SIZE = 5;
-    private static final DecimalFormat TIME_FORMAT = new DecimalFormat("00");
-
+    private final Logger logger = LogManager.getLogger();
     private final ThreadPoolExecutor executorService = new ThreadPoolExecutor(
             THREAD_POOL_SIZE, THREAD_POOL_SIZE, 0L,
             TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
@@ -29,12 +29,18 @@ public class Obfuscator {
      * @param obfuscatorJob The job to be executed
      */
     public void submitJob(ObfuscatorJob obfuscatorJob){
+        logger.info("New job submitted: " + obfuscatorJob);
+        String jobLabel = getNewJobLabel();
+        logger.info("Assigning job label \"" + jobLabel + "\" to job " + obfuscatorJob);
+        obfuscatorJob.setThreadId(jobLabel); // The thread id is used for logging purposes
+        logger.info("Submitting job " + jobLabel + " to the executor service...");
         Future<?> task = executorService.submit(obfuscatorJob);
+        logger.info("Successfully submitted job " + jobLabel + " to the executor service");
         // We create a timestamped label so the user knows which job is which in the ui
         // The Future<?> object is also kept so the user can cancel the job if they need to
-        String jobLabel = getNewJobLabel();
         jobs.put(obfuscatorJob, task);
-        friendlyNameJobs.put(obfuscatorJob, getNewJobLabel());
+        friendlyNameJobs.put(obfuscatorJob, jobLabel);
+        logger.info("Finished job submission routine for " + jobLabel);
     }
 
     /**
@@ -49,12 +55,17 @@ public class Obfuscator {
      * @param job The job to remove
      */
     public void removeJob(ObfuscatorJob job){
+        logger.info("Removing job " + friendlyNameJobs.get(job) + "...");
         Future<?> jobFuture = jobs.get(job);
         if (!jobFuture.isCancelled() && !jobFuture.isDone()){
+            logger.info("Cancelling job " + friendlyNameJobs.get(job) + "...");
             jobFuture.cancel(true);
+            logger.info("Successfully cancelled job " + friendlyNameJobs.get(job));
         }
         jobs.remove(job);
+        String cacheFriendlyName = friendlyNameJobs.get(job);
         friendlyNameJobs.remove(job);
+        logger.info("Successfully removed job " + cacheFriendlyName);
     }
 
     /**
@@ -62,10 +73,12 @@ public class Obfuscator {
      * @param job The job to cancel
      */
     public void cancelJob(ObfuscatorJob job){
+        logger.info("Cancelling job " + friendlyNameJobs.get(job) + "...");
         Future<?> jobFuture = jobs.get(job);
         if (!jobFuture.isCancelled() && !jobFuture.isDone()){
             jobFuture.cancel(true);
         }
+        logger.info("Successfully cancelled job " + friendlyNameJobs.get(job));
     }
 
     /**
@@ -90,11 +103,21 @@ public class Obfuscator {
         }
     }
 
+    /**
+     * Creates and returns a new job label. Also takes at least 2 milliseconds to execute
+     * @return The new job label
+     */
     private String getNewJobLabel(){
-        return "Job@" +
-                TIME_FORMAT.format(Calendar.getInstance().get(Calendar.HOUR)) + ":" +
-                TIME_FORMAT.format(Calendar.getInstance().get(Calendar.MINUTE)) + ":" +
-                TIME_FORMAT.format(Calendar.getInstance().get(Calendar.SECOND));
+        logger.info("Generating a new job label...");
+        long time = System.currentTimeMillis();
+        // I really don't want to risk giving two threads the same id so we sleep for 2 millis
+        // here to make sure the next call will produce a different outcome
+        try{
+            Thread.sleep(2);
+        }catch (Exception ignored){}
+        String label = "Obf-job 0x" + Long.toHexString(time).toUpperCase();
+        logger.info("Successfully generated a new job label: " + label);
+        return label;
     }
 
 }

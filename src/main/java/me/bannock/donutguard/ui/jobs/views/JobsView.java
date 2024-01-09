@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.ui.jobs.models.JobsViewModel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 public class JobsView extends JPanel {
 
+    private final Logger logger = LogManager.getLogger();
     private final JobsViewModel model;
     private final JPanel jobsPanel;
 
@@ -53,6 +56,7 @@ public class JobsView extends JPanel {
      * Refreshes and loads the jobs as well as their metadata
      */
     public void loadJobs(){
+        logger.info("Loading jobs...");
         jobsPanel.removeAll();
 
         Map<ObfuscatorJob, Map.Entry<String, JobStatus>> jobs = model.getJobs();
@@ -70,6 +74,7 @@ public class JobsView extends JPanel {
 
         jobsPanel.revalidate();
         jobsPanel.repaint();
+        logger.info("Successfully loaded jobs");
     }
 
 }

@@ -62,9 +62,7 @@ public class FileSetting extends Setting<File> implements ActionListener {
      * @param openFileMenuButton The button that opens the file menu
      */
     private void setupComponentController(JButton openFileMenuButton){
-
         openFileMenuButton.addActionListener(this);
-
     }
 
     @Override
