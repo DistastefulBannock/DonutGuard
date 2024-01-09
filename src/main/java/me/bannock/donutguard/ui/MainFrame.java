@@ -1,7 +1,7 @@
 package me.bannock.donutguard.ui;
 
 import com.google.inject.Inject;
-import me.bannock.donutguard.ui.obfuscator.ObfuscatorView;
+import me.bannock.donutguard.ui.obf.views.ObfuscatorView;
 import me.bannock.donutguard.ui.topnav.TopNavView;
 
 import javax.swing.JComponent;

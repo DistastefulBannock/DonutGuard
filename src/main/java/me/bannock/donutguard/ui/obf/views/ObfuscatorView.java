@@ -1,8 +1,8 @@
-package me.bannock.donutguard.ui.obfuscator;
+package me.bannock.donutguard.ui.obf.views;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.ui.DummyView;
-import me.bannock.donutguard.ui.obfuscator.models.ObfuscatorModel;
+import me.bannock.donutguard.ui.obf.models.ObfuscatorModel;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;

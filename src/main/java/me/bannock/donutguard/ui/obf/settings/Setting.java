@@ -1,4 +1,4 @@
-package me.bannock.donutguard.ui.obf;
+package me.bannock.donutguard.ui.obf.settings;
 
 import me.bannock.donutguard.obf.ConfigDTO;
 

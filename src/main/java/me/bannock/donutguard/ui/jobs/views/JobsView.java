@@ -7,9 +7,11 @@ import javax.swing.JScrollPane;
 
 public class JobsView extends JScrollPane {
 
+    private final JobsViewModel model;
+
     @Inject
     public JobsView(JobsViewModel model){
-
+        this.model = model;
     }
 
     /**

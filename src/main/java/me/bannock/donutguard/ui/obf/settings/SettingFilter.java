@@ -1,4 +1,4 @@
-package me.bannock.donutguard.ui.obf;
+package me.bannock.donutguard.ui.obf.settings;
 
 /**
  * A filter for Setting objects

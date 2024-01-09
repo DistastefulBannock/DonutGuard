@@ -1,6 +1,6 @@
-package me.bannock.donutguard.ui.obf;
+package me.bannock.donutguard.ui.obf.views;
 
-import com.google.inject.Inject;
+import me.bannock.donutguard.ui.obf.settings.Setting;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -9,7 +9,6 @@ import javax.swing.ScrollPaneLayout;
 
 public class ObfuscatorSettingsView extends JScrollPane {
 
-    @Inject
     public ObfuscatorSettingsView(Setting<?>... settings){
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);

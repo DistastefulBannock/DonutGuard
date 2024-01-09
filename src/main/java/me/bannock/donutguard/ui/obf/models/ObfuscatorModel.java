@@ -1,4 +1,4 @@
-package me.bannock.donutguard.ui.obfuscator.models;
+package me.bannock.donutguard.ui.obf.models;
 
 
 import javax.swing.JComponent;
