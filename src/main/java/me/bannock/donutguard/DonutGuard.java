@@ -1,31 +1,41 @@
 package me.bannock.donutguard;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import me.bannock.donutguard.logging.Log4jModule;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.views.MainFrame;
+import me.bannock.donutguard.ui.MainFrame;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class DonutGuard {
 
-    // TODO: Create a worker thread for an obfuscator object
+    static{
+        // First, we set the look and feel because it looks better this way
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }catch(Exception ignored) {}
 
+        // I hate large scrollbars, so this is the soulution
+        UIManager.put("ScrollBar.width", 5);
+    }
+
+    private final Injector injector;
     private ConfigDTO config;
+
+    @Inject
+    public DonutGuard(Injector injector, Logger logger) {
+        this.injector = injector;
+        this.config = new ConfigDTO();
+        logger.info("test");
+    }
 
     private void start(){
         // We start the gui on the swing thread
-        SwingUtilities.invokeLater(() -> {
-            Guice.createInjector(new DonutGuardModule()).getInstance(MainFrame.class).start();
-        });
-    }
-
-    @Inject
-    public DonutGuard(ConfigDTO config){
-        this.config = config;
+        SwingUtilities.invokeLater(() -> injector.getInstance(MainFrame.class).start());
     }
 
     /**
@@ -44,9 +54,8 @@ public class DonutGuard {
     }
 
     public static void main(String[] args) {
-        // Uncomment this if the look of the jbuttons make you want to puke
-//        FlatLightLaf.setup();
-        Guice.createInjector(new DonutGuardModule()).getInstance(DonutGuard.class).start();
+        Guice.createInjector(new DonutGuardModule(),
+                new Log4jModule()).getInstance(DonutGuard.class).start();
     }
 
 }

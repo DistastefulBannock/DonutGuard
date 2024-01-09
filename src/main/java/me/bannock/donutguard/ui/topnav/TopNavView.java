@@ -1,29 +1,31 @@
-package me.bannock.donutguard.views;
+package me.bannock.donutguard.ui.topnav;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.bannock.donutguard.controllers.TopNavController;
+import me.bannock.donutguard.ui.topnav.controllers.TopNavController;
 
-import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
 
 public class TopNavView extends JMenuBar {
 
-    private JMenuItem saveConfig, loadConfig;
-    private JMenuItem processingSettings, start;
-    private JMenuItem settings, about;
+    private final JMenuItem saveConfig, loadConfig;
+    private final JMenuItem processingSettings, viewObfuscationJobs, start;
+    private final JMenuItem settings, about;
 
     @Inject
     public TopNavView(Injector injector){
+        setBorder(new EmptyBorder(5, 5, 5, 5));
+
         JMenu fileDropdown = new JMenu("File");
         fileDropdown.add(loadConfig = new JMenuItem("Configuration Load"));
         fileDropdown.add(saveConfig = new JMenuItem("Configuration Write"));
 
         JMenu processDropdown = new JMenu("Processing");
         processDropdown.add(processingSettings = new JMenuItem("Options"));
+        processDropdown.add(viewObfuscationJobs = new JMenuItem("Observe Jobs"));
         processDropdown.add(start = new JMenuItem("Begin"));
 
         JMenu help = new JMenu("Help");
@@ -49,6 +51,10 @@ public class TopNavView extends JMenuBar {
 
     public JMenuItem getProcessingSettings() {
         return processingSettings;
+    }
+
+    public JMenuItem getViewObfuscationJobs() {
+        return viewObfuscationJobs;
     }
 
     public JMenuItem getStart() {
