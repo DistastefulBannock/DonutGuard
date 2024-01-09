@@ -34,4 +34,14 @@ public class JobsViewModelImpl implements JobsViewModel {
         }
         return jobsWithMetadata;
     }
+
+    @Override
+    public void cancelJob(ObfuscatorJob job) {
+        obfuscator.cancelJob(job);
+    }
+
+    @Override
+    public void removeJob(ObfuscatorJob job) {
+        obfuscator.removeJob(job);
+    }
 }

@@ -12,6 +12,8 @@ public class ObfuscatorJob implements Runnable {
     private final ConfigDTO configDTO;
     private final Obfuscator obfuscator;
 
+    private boolean hasStarted = false;
+
     @Inject
     public ObfuscatorJob(ConfigDTO configDTO, Obfuscator obfuscator){
         this.configDTO = SerializationUtils.clone(configDTO);
@@ -20,12 +22,21 @@ public class ObfuscatorJob implements Runnable {
 
     @Override
     public void run() {
+        hasStarted = true;
+
+        // TODO: Write obfuscator and implement log4j so we
+        //  can create a different console window for each job
 
         try{
             Thread.sleep(ThreadLocalRandom.current().nextLong(100, 30000));
+//            Thread.sleep(2500);
         }catch (Exception e){
             e.printStackTrace();
         }
 
+    }
+
+    public boolean hasStarted() {
+        return hasStarted;
     }
 }

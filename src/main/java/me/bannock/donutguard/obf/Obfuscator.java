@@ -58,25 +58,41 @@ public class Obfuscator {
     }
 
     /**
+     * Cancels a job
+     * @param job The job to cancel
+     */
+    public void cancelJob(ObfuscatorJob job){
+        Future<?> jobFuture = jobs.get(job);
+        if (!jobFuture.isCancelled() && !jobFuture.isDone()){
+            jobFuture.cancel(true);
+        }
+    }
+
+    /**
      * Gets the status of a job
      * @param job The job to get the status of
      * @return The status of the job
      */
     public JobStatus getJobStatus(ObfuscatorJob job){
+
         Future<?> jobFuture = jobs.get(job);
+
         if (jobFuture == null){
             return JobStatus.NOT_FOUND;
         }else if(jobFuture.isCancelled()){
             return JobStatus.CANCELLED;
         }else if(jobFuture.isDone()){
             return JobStatus.COMPLETED;
+        }else if (!job.hasStarted()) {
+            return JobStatus.QUEUED;
         }else{
             return JobStatus.RUNNING;
         }
     }
 
     private String getNewJobLabel(){
-        return TIME_FORMAT.format(Calendar.getInstance().get(Calendar.HOUR)) + ":" +
+        return "Job@" +
+                TIME_FORMAT.format(Calendar.getInstance().get(Calendar.HOUR)) + ":" +
                 TIME_FORMAT.format(Calendar.getInstance().get(Calendar.MINUTE)) + ":" +
                 TIME_FORMAT.format(Calendar.getInstance().get(Calendar.SECOND));
     }
