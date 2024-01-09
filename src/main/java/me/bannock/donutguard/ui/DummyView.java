@@ -1,4 +1,4 @@
-package me.bannock.donutguard.views;
+package me.bannock.donutguard.ui;
 
 import com.google.inject.Inject;
 

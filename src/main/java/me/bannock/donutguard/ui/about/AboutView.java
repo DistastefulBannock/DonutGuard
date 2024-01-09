@@ -1,4 +1,4 @@
-package me.bannock.donutguard.views.about;
+package me.bannock.donutguard.ui.about;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.utils.HwidUtil;

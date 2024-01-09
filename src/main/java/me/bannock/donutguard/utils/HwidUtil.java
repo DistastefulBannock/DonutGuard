@@ -12,16 +12,16 @@ public class HwidUtil {
         String user = System.getProperty("user.name");
         String arch = System.getProperty("os.arch");
         String cpuCount = Runtime.getRuntime().availableProcessors() + "";
-        String drivePaths = "";
+        StringBuilder drivePaths = new StringBuilder();
         for (File drive : File.listRoots())
-            drivePaths += drive.getAbsolutePath();
-        String gpu = "";
+            drivePaths.append(drive.getAbsolutePath());
+        StringBuilder gpu = new StringBuilder();
         try{
             String line;
             Process p = Runtime.getRuntime().exec("wmic PATH Win32_videocontroller GET description");
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while ((line = input.readLine()) != null) {
-                gpu += line;
+                gpu.append(line);
             }
             input.close();
         }catch (Exception ignored){}

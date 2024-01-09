@@ -1,4 +1,4 @@
-package me.bannock.donutguard.views.obf;
+package me.bannock.donutguard.ui.obf;
 
 import com.google.inject.Inject;
 

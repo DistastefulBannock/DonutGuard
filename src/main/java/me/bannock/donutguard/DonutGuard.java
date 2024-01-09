@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.views.MainFrame;
+import me.bannock.donutguard.ui.MainFrame;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -16,6 +16,9 @@ public class DonutGuard {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         }catch(Exception ignored) {}
+
+        // I hate large scrollbars, so this is the soulution
+        UIManager.put("ScrollBar.width", 5);
     }
 
     private final Injector injector;

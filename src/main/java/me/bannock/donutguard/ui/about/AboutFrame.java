@@ -1,8 +1,8 @@
-package me.bannock.donutguard.views.about;
+package me.bannock.donutguard.ui.about;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.bannock.donutguard.views.MainFrame;
+import me.bannock.donutguard.ui.MainFrame;
 
 import javax.swing.JFrame;
 

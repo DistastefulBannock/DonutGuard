@@ -1,7 +1,7 @@
-package me.bannock.donutguard.views.obf.impl;
+package me.bannock.donutguard.ui.obf.impl;
 
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.views.obf.Setting;
+import me.bannock.donutguard.ui.obf.Setting;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;

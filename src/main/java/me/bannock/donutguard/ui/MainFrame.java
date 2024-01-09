@@ -1,6 +1,8 @@
-package me.bannock.donutguard.views;
+package me.bannock.donutguard.ui;
 
 import com.google.inject.Inject;
+import me.bannock.donutguard.ui.obfuscator.ObfuscatorView;
+import me.bannock.donutguard.ui.topnav.TopNavView;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -39,7 +41,7 @@ public class MainFrame extends JFrame {
 
         // We start to fill the layout; we set currentView to obfuscatorView so
         // the panel gets removed when setView() is called
-        contentPane.add(topNavView, BorderLayout.NORTH);
+        setJMenuBar(topNavView);
         contentPane.add(currentView = obfuscatorView, BorderLayout.CENTER);
 
         setVisible(true);

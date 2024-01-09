@@ -1,8 +1,8 @@
-package me.bannock.donutguard.views;
+package me.bannock.donutguard.ui.topnav;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import me.bannock.donutguard.controllers.TopNavController;
+import me.bannock.donutguard.ui.topnav.controllers.TopNavController;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;

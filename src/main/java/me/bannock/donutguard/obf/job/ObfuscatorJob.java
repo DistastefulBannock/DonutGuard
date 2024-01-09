@@ -1,7 +1,11 @@
-package me.bannock.donutguard.obf;
+package me.bannock.donutguard.obf.job;
 
 import com.google.inject.Inject;
+import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.obf.Obfuscator;
 import org.apache.commons.lang3.SerializationUtils;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ObfuscatorJob implements Runnable {
 
@@ -17,7 +21,11 @@ public class ObfuscatorJob implements Runnable {
     @Override
     public void run() {
 
-        // We now remove this job from our list of jobs to prevent a memory leak
-        obfuscator.removeJob(this);
+        try{
+            Thread.sleep(ThreadLocalRandom.current().nextLong(100, 30000));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }
