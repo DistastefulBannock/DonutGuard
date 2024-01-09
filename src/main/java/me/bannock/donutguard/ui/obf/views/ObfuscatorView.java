@@ -1,7 +1,6 @@
 package me.bannock.donutguard.ui.obf.views;
 
 import com.google.inject.Inject;
-import me.bannock.donutguard.ui.DummyView;
 import me.bannock.donutguard.ui.obf.models.ObfuscatorModel;
 
 import javax.swing.BoxLayout;
@@ -21,7 +20,7 @@ public class ObfuscatorView extends JPanel {
     private JComponent currentView;
 
     @Inject
-    public ObfuscatorView(ObfuscatorModel model) {
+    public ObfuscatorView(ObfuscatorModel model, ObfuscatorStartupView startupView) {
         super(true);
         setLayout(new BorderLayout());
 
@@ -55,7 +54,7 @@ public class ObfuscatorView extends JPanel {
 
         // Nothing will show unless we add the sidePane and contentPane to this view
         add(sidePaneContainer, BorderLayout.WEST);
-        setView(new DummyView());
+        setView(startupView);
     }
 
     /**

@@ -51,8 +51,6 @@ public class DonutGuard {
     }
 
     public static void main(String[] args) {
-        // Uncomment this if the look of the jbuttons make you want to puke
-//        FlatLightLaf.setup();
         Guice.createInjector(new DonutGuardModule()).getInstance(DonutGuard.class).start();
     }
 
