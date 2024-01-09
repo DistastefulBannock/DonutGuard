@@ -14,8 +14,8 @@ public class MainFrame extends JFrame {
     public boolean alreadyStarted = false;
     private JPanel contentPane;
     private JComponent currentView = null;
-    private TopNavView topNavView;
-    private ObfuscatorView obfuscatorView;
+    private final TopNavView topNavView;
+    private final ObfuscatorView obfuscatorView;
 
     @Inject
     public MainFrame(TopNavView topNavView, ObfuscatorView obfuscatorView){

@@ -38,7 +38,8 @@ public class ObfuscatorView extends JPanel {
         // Putting the scrollbar on the left looks better
         sidePaneContainer.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-        // Populating the side pane with buttons through a map so we can easily add more buttons in the future
+        // Populating the side pane with buttons through a map,
+        // so we can easily add more buttons in the future
         sidePane = new JPanel();
         sidePane.setLayout(new BoxLayout(sidePane, BoxLayout.Y_AXIS));
         obfuscatorViews.keySet().forEach(key -> {
