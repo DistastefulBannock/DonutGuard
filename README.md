@@ -6,7 +6,7 @@ If you encounter any issues, don't hesitate to [open an issue](https://github.co
 # Pull Requests
 If you're looking to help contribute to the project then feel free to open a pull request.
 
-### PR Guidelines
+### Guidelines
  - Please make sure to document your code. This includes javadocs and comments.
     - Comments should explain why rather than what
     - All abstract methods should have javadocs. They are not required but preferred on regular methods
