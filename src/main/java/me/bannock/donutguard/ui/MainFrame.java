@@ -4,9 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.ui.obf.views.ObfuscatorView;
 import me.bannock.donutguard.ui.topnav.TopNavView;
+import me.bannock.donutguard.utils.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -41,6 +43,8 @@ public class MainFrame extends JFrame {
         setResizable(false);
         setTitle("DonutGuard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ImageIcon frameIcon = new ImageIcon(ResourceUtils.readBytes("ui/donut.png"));
+        setIconImage(frameIcon.getImage());
 
         // The content pane is used with the borderlayout to achieve the desired layout
         contentPane = new JPanel(true);
