@@ -58,7 +58,7 @@ public abstract class Setting<T> {
     public boolean setValue(T value) {
         for (SettingFilter<T> filter : filters) {
             if(!filter.filter(this.value, value)){
-                UiUtils.showErrorMessage("Invalid value", "You've inputted an invalid value");
+                UiUtils.showErrorMessage("Invalid value", "You've inputted an invalid value.");
                 logger.warn("User tried to set an invalid value");
                 return false;
             }
@@ -84,17 +84,21 @@ public abstract class Setting<T> {
     /**
      * Adds a filter to this setting. It is called when the value is set by the user
      * @param filter The filter to add
+     * @return This
      */
-    public void addFilter(SettingFilter<T> filter){
+    public Setting<T> addFilter(SettingFilter<T> filter){
         filters.add(filter);
+        return this;
     }
 
     /**
      * Removes a filter from this setting
      * @param filter the filter to remove
+     * @return This
      */
-    public void removeFilters(SettingFilter<T> filter){
+    public Setting<T> removeFilter(SettingFilter<T> filter){
         filters.remove(filter);
+        return this;
     }
 
     /**

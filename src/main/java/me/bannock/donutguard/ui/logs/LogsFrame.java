@@ -8,7 +8,7 @@ public class LogsFrame extends JFrame {
 
     @Inject
     public LogsFrame() {
-
+        // TODO: Implement a log viewer
     }
 
 }

@@ -6,10 +6,14 @@ import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.ui.about.AboutFrame;
 import me.bannock.donutguard.ui.jobs.JobsFrame;
 import me.bannock.donutguard.ui.topnav.TopNavView;
+import me.bannock.donutguard.utils.UiUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.SwingUtilities;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
 
 public class TopNavController {
 
@@ -29,6 +33,18 @@ public class TopNavController {
 
         topNavView.getStart().addActionListener(evt -> createJobAndRun(injector));
 
+        topNavView.getGithub().addActionListener(evt -> {
+            logger.info("Opening github page...");
+            try {
+                Desktop.getDesktop().browse(URI.create("https://github.com/DistastefulBannock/DonutGuard"));
+                logger.info("Successfully opened github page");
+            } catch (IOException e) {
+                logger.error("Failed to open github page", e);
+                UiUtils.showErrorMessage("Failed to open link", "Failed to open github page." +
+                        "\nCheck logs for more information.");
+                throw new RuntimeException(e);
+            }
+        });
         topNavView.getAbout().addActionListener(evt -> SwingUtilities
                 .invokeLater(() -> {
                     logger.info("Opening a new about frame...");

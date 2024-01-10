@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.ui.jobs.models.JobsViewModel;
+import me.bannock.donutguard.utils.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -68,8 +69,7 @@ public class JobsView extends JPanel {
 
         // Show a message if there are no jobs
         if(jobs.isEmpty()){
-            jobsPanel.add(new JLabel("<html>There are no jobs currently running" +
-                    "<br/>Select \"Start processing job\" under the \"Processing\" tab to start one</html>"));
+            jobsPanel.add(new JLabel(ResourceUtils.readString("ui/jobs/notice.html")));
         }
 
         jobsPanel.revalidate();

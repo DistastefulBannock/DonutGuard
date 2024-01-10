@@ -2,6 +2,8 @@ package me.bannock.donutguard.ui.obf.settings.impl;
 
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.obf.settings.Setting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -20,6 +22,7 @@ public class FileSetting extends Setting<File> implements ActionListener {
 
     private final String acceptedFileDescription;
     private final String[] acceptedFileExtensions;
+    private final Logger logger = LogManager.getLogger();
 
     /**
      * Creates a new file setting object
@@ -40,37 +43,34 @@ public class FileSetting extends Setting<File> implements ActionListener {
 
     @Override
     public JComponent createAndGetComponent() {
-        container = new JPanel(true);
+        logger.info("Creating new file setting component...");
+
+        this.container = new JPanel(true);
         container.setLayout(new BorderLayout());
         container.setBorder(new EmptyBorder(10, 10, 0, 10));
 
         JButton openFileMenuButton = new JButton("Set " + getName() + " file");
-        fileLabel = new JLabel(getValue().getAbsolutePath());
+        this.fileLabel = new JLabel(getValue().getAbsolutePath());
         fileLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
         container.add(openFileMenuButton, BorderLayout.WEST);
         container.add(fileLabel , BorderLayout.CENTER);
 
         container.setMaximumSize(new Dimension(container.getMaximumSize().width,
                 container.getPreferredSize().height));
-        setupComponentController(openFileMenuButton);
-
-        return container;
-    }
-
-    /**
-     * Sets up the controller for this setting's component
-     * @param openFileMenuButton The button that opens the file menu
-     */
-    private void setupComponentController(JButton openFileMenuButton){
         openFileMenuButton.addActionListener(this);
+
+        logger.info("Successfully created new file setting component");
+        return container;
     }
 
     @Override
     public void actionPerformed(ActionEvent evt) {
+        logger.info("Opening file chooser prompt...");
         JFileChooser fileChooser = getFileChooser();
 
         // We love blocking method calls
         int result = fileChooser.showDialog(null, "Select");
+        logger.info("User closed prompt");
         if(result == JFileChooser.APPROVE_OPTION){
             File selectedFile = fileChooser.getSelectedFile();
 
@@ -81,6 +81,7 @@ public class FileSetting extends Setting<File> implements ActionListener {
             fileLabel.setText(selectedFile.getAbsolutePath());
             container.revalidate();
             container.repaint();
+            logger.info("Successfully set file to " + selectedFile.getAbsolutePath());
         }
     }
 

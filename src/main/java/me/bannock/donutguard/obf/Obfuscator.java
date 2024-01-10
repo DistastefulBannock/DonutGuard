@@ -6,7 +6,6 @@ import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -94,6 +93,8 @@ public class Obfuscator {
             return JobStatus.NOT_FOUND;
         }else if(jobFuture.isCancelled()){
             return JobStatus.CANCELLED;
+        }else if (job.hasFailed()){
+            return JobStatus.FAILED;
         }else if(jobFuture.isDone()){
             return JobStatus.COMPLETED;
         }else if (!job.hasStarted()) {

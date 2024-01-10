@@ -18,7 +18,7 @@ public class ObfuscatorJob implements Runnable {
     private final ConfigDTO configDTO;
     private final Obfuscator obfuscator;
 
-    private boolean hasStarted = false;
+    private boolean hasStarted = false, failed = false;
 
     @Inject
     public ObfuscatorJob(ConfigDTO configDTO, Obfuscator obfuscator){
@@ -49,6 +49,10 @@ public class ObfuscatorJob implements Runnable {
 
     public boolean hasStarted() {
         return hasStarted;
+    }
+
+    public boolean hasFailed() {
+        return failed;
     }
 
     public void setThreadId(String threadId) {

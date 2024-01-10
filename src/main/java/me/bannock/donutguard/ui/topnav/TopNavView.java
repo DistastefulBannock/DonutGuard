@@ -18,7 +18,7 @@ public class TopNavView extends JMenuBar {
 
     private final JMenuItem saveConfig, loadConfig;
     private final JMenuItem viewObfuscationJobs, start;
-    private final JMenuItem about;
+    private final JMenuItem github, about;
 
     @Inject
     public TopNavView(Injector injector){
@@ -33,7 +33,9 @@ public class TopNavView extends JMenuBar {
         processDropdown.add(start = new JMenuItem("Start processing job"));
 
         JMenu help = new JMenu("Help");
+        github = new JMenuItem("Github");
         about = new JMenuItem("About");
+        help.add(github);
         help.add(about);
 
         add(fileDropdown);
@@ -57,6 +59,10 @@ public class TopNavView extends JMenuBar {
 
     public JMenuItem getStart() {
         return start;
+    }
+
+    public JMenuItem getGithub() {
+        return github;
     }
 
     public JMenuItem getAbout() {

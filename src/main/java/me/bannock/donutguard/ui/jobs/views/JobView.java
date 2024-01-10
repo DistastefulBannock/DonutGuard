@@ -3,12 +3,15 @@ package me.bannock.donutguard.ui.jobs.views;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.ui.jobs.models.JobsViewModel;
+import me.bannock.donutguard.utils.UiUtils;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
+import java.io.File;
 
 public class JobView extends JPanel {
 
@@ -23,6 +26,19 @@ public class JobView extends JPanel {
                 ">" + jobStatus + "</font></html>"), BorderLayout.WEST);
 
         // Buttons appear on the right side under certain conditions
+        // This panel allows us to stack multiple buttons side by side
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+
+        { // Log file button should appear if a log file is available. This is temporary until a log viewer is implemented
+            File logFile = getLogFileLocation(jobName);
+            if (logFile.exists()) {
+                JButton logFileButton = new JButton("Open Log");
+                logFileButton.addActionListener(e -> UiUtils.openFile(logFile));
+                buttons.add(logFileButton);
+            }
+        }
+
         switch (jobStatus){
             case QUEUED:
             case RUNNING:{
@@ -31,7 +47,7 @@ public class JobView extends JPanel {
                     model.cancelJob(job);
                     parentview.loadJobs();
                 });
-                add(cancel, BorderLayout.EAST);
+                buttons.add(cancel);
             }break;
             case CANCELLED:
             case COMPLETED:
@@ -41,9 +57,10 @@ public class JobView extends JPanel {
                     model.removeJob(job);
                     parentview.loadJobs();
                 });
-                add(remove, BorderLayout.EAST);
+                buttons.add(remove);
             }break;
         }
+        add(buttons, BorderLayout.EAST);
 
     }
 
@@ -57,6 +74,14 @@ public class JobView extends JPanel {
             case NOT_FOUND: return "red";
             default: return "black";
         }
+    }
+
+    /**
+     * @param jobName The job name to get the log file for
+     * @return The log file for the given job name
+     */
+    private File getLogFileLocation(String jobName){
+        return new File("logs/DonutGuard " + jobName + ".log");
     }
 
 }

@@ -46,8 +46,8 @@ public class SaveConfigActionListenerImpl implements ActionListener {
                 logger.info("Successfully wrote config to file");
             } catch (IOException | SerializationException e) {
                 logger.error("Failed to write config file", e);
-                UiUtils.showErrorMessage("Writing failure", "Failed to write config file" +
-                        "\nCheck logs for more details");
+                UiUtils.showErrorMessage("Writing failure", "Failed to write config file." +
+                        "\nCheck logs for more details.");
                 throw new RuntimeException(e);
             }
         }

@@ -45,8 +45,8 @@ public class LoadConfigActionListenerImpl implements ActionListener {
                 logger.info("Successfully read config from file");
             } catch (IOException | SerializationException e) {
                 logger.error("Failed to read config file", e);
-                UiUtils.showErrorMessage("Loading failure", "Failed to read config file" +
-                        "\nCheck logs for more details");
+                UiUtils.showErrorMessage("Loading failure", "Failed to read config file." +
+                        "\nCheck logs for more details.");
                 throw new RuntimeException(e);
             }
         }
