@@ -2,6 +2,7 @@ package me.bannock.donutguard.obf;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 
 public class ConfigDTO implements Serializable {
@@ -15,6 +16,7 @@ public class ConfigDTO implements Serializable {
     public File input = new File(new File("input.jar").getAbsolutePath()),
             output = new File(new File("output.jar").getAbsolutePath());
     public boolean computeFrames = true, computeMaxes = true;
+    public ArrayList<String> whitelist = new ArrayList<>(), blacklist = new ArrayList<>();
 
 
 }

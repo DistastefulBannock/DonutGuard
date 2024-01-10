@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.obf.settings.impl.BooleanSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.FileSetting;
+import me.bannock.donutguard.ui.obf.settings.list.impl.StringListSetting;
 import me.bannock.donutguard.ui.obf.views.ObfuscatorSettingsView;
 
 import javax.swing.JComponent;
@@ -25,6 +26,12 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
         obfuscatorViews.put("ClassWriter Settings", new ObfuscatorSettingsView(
                 new BooleanSetting("Compute Frames", config, config.computeFrames, "computeFrames"),
                 new BooleanSetting("Compute Maxes", config, config.computeMaxes, "computeMaxes")
+        ));
+        obfuscatorViews.put("Whitelist", new ObfuscatorSettingsView(
+                new StringListSetting("Whitelist", config, config.whitelist, "whitelist")
+        ));
+        obfuscatorViews.put("Blacklist", new ObfuscatorSettingsView(
+                new StringListSetting("Blacklist", config, config.blacklist, "blacklist")
         ));
         obfuscatorViews.put("IO Settings", new ObfuscatorSettingsView(
                 new FileSetting("input jar", config, config.input, "input",
