@@ -1,7 +1,7 @@
 # DonutGuard
 Welcome to DonutGuard, a FOSS java bytecode obfuscator. 
 
-If you encounter any issues, don't hesitate to [open an issue](https://github.com/DistastefulBannock/DonutGuard/issues)
+If you encounter any bugs or errors, don't hesitate to [open an issue](https://github.com/DistastefulBannock/DonutGuard/issues)
 
 # Pull Requests
 If you're looking to help contribute to the project then feel free to open a pull request.
