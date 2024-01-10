@@ -6,6 +6,12 @@ import java.io.InputStreamReader;
 
 public class HwidUtil {
 
+    /**
+     * Get a unique identifier for the current computer.
+     * Not really used in this program but it is cool to see
+     * your hwid in the about menu
+     * @return The unique identifier for the current computer
+     */
     public static int getHwid() {
         // Get information about computer and generate a hash to use as a unique identifier
         String os = System.getProperty("os.name");

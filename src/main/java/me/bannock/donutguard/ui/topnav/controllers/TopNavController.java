@@ -19,9 +19,6 @@ public class TopNavController {
         topNavView.getSaveConfig().addActionListener(injector.getInstance(SaveConfigActionListenerImpl.class));
         topNavView.getLoadConfig().addActionListener(injector.getInstance(LoadConfigActionListenerImpl.class));
 
-        // TODO: Implement processing as well as processing settings
-        topNavView.getProcessingSettings().addActionListener(evt -> System.err.println("TODO"));
-
         topNavView.getViewObfuscationJobs()
                 .addActionListener(evt -> {
                     logger.info("Opening a new jobs frame...");
@@ -30,11 +27,7 @@ public class TopNavController {
                     logger.info("Successfully opened a new jobs frame");
                 });
 
-        topNavView.getStart()
-                .addActionListener(evt -> createJobAndRun(injector));
-
-        // TODO: Implement settings
-        topNavView.getSettings().addActionListener(evt -> System.err.println("TODO"));
+        topNavView.getStart().addActionListener(evt -> createJobAndRun(injector));
 
         topNavView.getAbout().addActionListener(evt -> SwingUtilities
                 .invokeLater(() -> {

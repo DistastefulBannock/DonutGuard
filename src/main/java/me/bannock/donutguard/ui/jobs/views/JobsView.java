@@ -69,7 +69,7 @@ public class JobsView extends JPanel {
         // Show a message if there are no jobs
         if(jobs.isEmpty()){
             jobsPanel.add(new JLabel("<html>There are no jobs currently running" +
-                    "<br/>Select \"Begin\" under the \"Processing\" tab to start one</html>"));
+                    "<br/>Select \"Start processing job\" under the \"Processing\" tab to start one</html>"));
         }
 
         jobsPanel.revalidate();
