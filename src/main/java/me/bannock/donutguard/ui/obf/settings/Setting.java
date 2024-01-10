@@ -1,11 +1,11 @@
 package me.bannock.donutguard.ui.obf.settings;
 
 import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.utils.UiUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +58,7 @@ public abstract class Setting<T> {
     public boolean setValue(T value) {
         for (SettingFilter<T> filter : filters) {
             if(!filter.filter(this.value, value)){
-                JOptionPane.showMessageDialog(null, "You've inputted an invalid value",
-                        "Invalid value", JOptionPane.ERROR_MESSAGE);
+                UiUtils.showErrorMessage("Invalid value", "You've inputted an invalid value");
                 logger.warn("User tried to set an invalid value");
                 return false;
             }

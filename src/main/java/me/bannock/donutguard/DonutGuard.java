@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.MainFrame;
+import me.bannock.donutguard.ui.UiModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -25,14 +26,14 @@ public class DonutGuard {
     }
 
     private final Logger logger = LogManager.getLogger();
-    private final String mainApplicationId = "Main Application";
+    private final String mainApplicationThreadId = "Main Application"; // This is used for logging purposes
 
     private final Injector injector;
     private ConfigDTO config;
 
     @Inject
     public DonutGuard(Injector injector) {
-        ThreadContext.put("threadId", mainApplicationId);
+        ThreadContext.put("threadId", mainApplicationThreadId);
         this.injector = injector;
         this.config = new ConfigDTO();
     }
@@ -41,7 +42,7 @@ public class DonutGuard {
         logger.info("Starting DonutGuard ui...");
         // We start the gui on the swing thread
         SwingUtilities.invokeLater(() -> {
-            ThreadContext.put("threadId", mainApplicationId);
+            ThreadContext.put("threadId", mainApplicationThreadId);
             injector.getInstance(MainFrame.class).start();
         });
         logger.info("DonutGuard ui successfully started");
@@ -63,7 +64,10 @@ public class DonutGuard {
     }
 
     public static void main(String[] args) {
-        Guice.createInjector(new DonutGuardModule()).getInstance(DonutGuard.class).start();
+        Guice.createInjector(
+                new DonutGuardModule(),
+                new UiModule()
+        ).getInstance(DonutGuard.class).start();
     }
 
 }

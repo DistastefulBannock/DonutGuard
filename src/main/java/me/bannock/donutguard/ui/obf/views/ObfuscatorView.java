@@ -47,8 +47,7 @@ public class ObfuscatorView extends JPanel {
         obfuscatorViews.keySet().forEach(key -> {
             JButton viewSelectionButton = new JButton(key);
             viewSelectionButton.setMaximumSize(
-                    new Dimension(Integer.MAX_VALUE,
-                            viewSelectionButton.getPreferredSize().height)
+                    new Dimension(Integer.MAX_VALUE, viewSelectionButton.getPreferredSize().height)
             );
             viewSelectionButton.addActionListener(e -> setView(obfuscatorViews.get(key)));
             sidePane.add(viewSelectionButton);

@@ -1,6 +1,7 @@
 package me.bannock.donutguard.ui;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import me.bannock.donutguard.ui.obf.views.ObfuscatorView;
 import me.bannock.donutguard.ui.topnav.TopNavView;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +20,14 @@ public class MainFrame extends JFrame {
     private JPanel contentPane;
     private JComponent currentView = null;
     private final TopNavView topNavView;
-    private final ObfuscatorView obfuscatorView;
+    private ObfuscatorView obfuscatorView;
+    private final Injector injector;
 
     @Inject
-    public MainFrame(TopNavView topNavView, ObfuscatorView obfuscatorView){
+    public MainFrame(TopNavView topNavView, ObfuscatorView obfuscatorView, Injector injector){
         this.topNavView = topNavView;
         this.obfuscatorView = obfuscatorView;
+        this.injector = injector;
     }
 
     public void start(){
@@ -47,10 +50,18 @@ public class MainFrame extends JFrame {
         // We start to fill the layout; we set currentView to obfuscatorView so
         // the panel gets removed when setView() is called
         setJMenuBar(topNavView);
-        contentPane.add(currentView = obfuscatorView, BorderLayout.CENTER);
+        setView(obfuscatorView);
 
         setVisible(true);
         logger.info("Main frame successfully constructed");
+    }
+
+    /**
+     * Refreshes the obfuscator view and syncs it with the current config
+     */
+    public void refreshObfuscatorView() {
+        obfuscatorView = injector.getInstance(ObfuscatorView.class);
+        setView(obfuscatorView);
     }
 
     /**

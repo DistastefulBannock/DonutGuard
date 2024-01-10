@@ -3,9 +3,9 @@ package me.bannock.donutguard.ui.topnav.controllers;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
-import me.bannock.donutguard.ui.topnav.TopNavView;
 import me.bannock.donutguard.ui.about.AboutFrame;
 import me.bannock.donutguard.ui.jobs.JobsFrame;
+import me.bannock.donutguard.ui.topnav.TopNavView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,9 +16,8 @@ public class TopNavController {
     private final Logger logger = LogManager.getLogger();
 
     public TopNavController(Injector injector, TopNavView topNavView){
-        // TODO: Implement config saving and loading
-        topNavView.getSaveConfig().addActionListener(evt -> System.err.println("TODO"));
-        topNavView.getLoadConfig().addActionListener(ect -> System.err.println("TODO"));
+        topNavView.getSaveConfig().addActionListener(injector.getInstance(SaveConfigActionListenerImpl.class));
+        topNavView.getLoadConfig().addActionListener(injector.getInstance(LoadConfigActionListenerImpl.class));
 
         // TODO: Implement processing as well as processing settings
         topNavView.getProcessingSettings().addActionListener(evt -> System.err.println("TODO"));

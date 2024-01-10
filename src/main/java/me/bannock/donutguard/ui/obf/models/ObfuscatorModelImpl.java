@@ -25,7 +25,8 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                 new FileSetting("input", config, config.input, "input",
                         ".jar, .zip","jar", "zip"),
                 new FileSetting("output", config, config.output, "output",
-                        ".jar, .zip","jar", "zip")));
+                        ".jar, .zip","jar", "zip")
+        ));
         obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());
         return obfuscatorViews;
     }
