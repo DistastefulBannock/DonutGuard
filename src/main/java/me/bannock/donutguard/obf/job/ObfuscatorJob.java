@@ -2,13 +2,11 @@ package me.bannock.donutguard.obf.job;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.Obfuscator;
+import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ObfuscatorJob implements Runnable {
 
@@ -16,35 +14,46 @@ public class ObfuscatorJob implements Runnable {
     private String threadId = "Obfuscator Job " + System.currentTimeMillis() + "." + System.nanoTime(); // This will be replaced by the obfuscator
 
     private final ConfigDTO configDTO;
-    private final Obfuscator obfuscator;
 
     private boolean hasStarted = false, failed = false;
 
     @Inject
-    public ObfuscatorJob(ConfigDTO configDTO, Obfuscator obfuscator){
+    public ObfuscatorJob(ConfigDTO configDTO){
         this.configDTO = SerializationUtils.clone(configDTO);
-        this.obfuscator = obfuscator;
     }
 
     @Override
     public void run() {
         ThreadContext.remove("threadId");
         ThreadContext.put("threadId", threadId);
-        logger.info("Starting obfuscation job...");
         hasStarted = true;
 
-        // TODO: Write obfuscator and implement log4j so we
-        //  can create a different console window for each job
-
-        try{
-            Thread.sleep(ThreadLocalRandom.current().nextLong(100, 30000));
-//            Thread.sleep(2500);
-        }catch (Exception e){
-            logger.warn("Interrupted while sleeping", e);
+        try {
+            runObfuscator();
+        }
+        catch (Exception e) {
+            if (!(e instanceof InterruptedException)) {
+                failed = true;
+                logger.error("An error occurred while running the obfuscator", e);
+                UiUtils.showErrorMessage("Obfuscator Error", "An error occurred while running the obfuscator." +
+                        "\nCheck the logs for more information.");
+            }
         }
 
-        logger.info("Finished obfuscation job");
         ThreadContext.remove("threadId");
+    }
+
+    /**
+     * Runs the obfuscator
+     * @throws Exception If an error occurs while running the obfuscator
+     */
+    private void runObfuscator() throws Exception {
+        logger.info("Starting obfuscation job...");
+        // TODO: Write obfuscator and implement log4j so we
+        //  can create a different console window for each job
+        //  !!! Remember to add code to check for Thread.interrupted()
+        //      so the job cancels when the users requests it
+        logger.info("Finished obfuscation job");
     }
 
     public boolean hasStarted() {
