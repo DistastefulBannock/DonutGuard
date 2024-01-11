@@ -24,12 +24,7 @@ public class TopNavController {
         topNavView.getLoadConfig().addActionListener(injector.getInstance(LoadConfigActionListenerImpl.class));
 
         topNavView.getViewObfuscationJobs()
-                .addActionListener(evt -> {
-                    logger.info("Opening a new jobs frame...");
-                    JobsFrame jobsFrame = injector.getInstance(JobsFrame.class);
-                    jobsFrame.setVisible(true);
-                    logger.info("Successfully opened a new jobs frame");
-                });
+                .addActionListener(evt -> openJobsFrame(injector));
 
         topNavView.getStart().addActionListener(evt -> createJobAndRun(injector));
 
@@ -59,6 +54,14 @@ public class TopNavController {
         ObfuscatorJob job = injector.getInstance(ObfuscatorJob.class);
         injector.getInstance(Obfuscator.class).submitJob(job);
         logger.info("Successfully created and queued a new obfuscator job");
+        openJobsFrame(injector);
+    }
+
+    private void openJobsFrame(Injector injector){
+        logger.info("Opening a new jobs frame...");
+        JobsFrame jobsFrame = injector.getInstance(JobsFrame.class);
+        jobsFrame.setVisible(true);
+        logger.info("Successfully opened a new jobs frame");
     }
 
 }

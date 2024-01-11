@@ -6,7 +6,6 @@ import me.bannock.donutguard.DonutGuard;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.MainFrame;
 import me.bannock.donutguard.utils.UiUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class LoadConfigActionListenerImpl implements ActionListener {
 
@@ -39,7 +39,8 @@ public class LoadConfigActionListenerImpl implements ActionListener {
             logger.info("Reading config from file...");
             File file = fileChooser.getSelectedFile();
             try {
-                ConfigDTO config = SerializationUtils.deserialize(FileUtils.readFileToByteArray(file));
+                ConfigDTO config = SerializationUtils.deserialize(
+                        Files.readAllBytes(file.toPath()));
                 injector.getInstance(DonutGuard.class).setConfig(config);
                 injector.getInstance(MainFrame.class).refreshObfuscatorView();
                 logger.info("Successfully read config from file");

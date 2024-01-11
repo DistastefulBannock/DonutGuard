@@ -23,21 +23,23 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
     @Override
     public Map<String, JComponent> getObfuscatorViews() {
         Map<String, JComponent> obfuscatorViews = new LinkedHashMap<>();
+        obfuscatorViews.put("IO Settings", new ObfuscatorSettingsView(
+                new FileSetting("input jar", config, config.input, "input",
+                        ".jar, .zip","jar", "zip"),
+                new FileSetting("output jar", config, config.output, "output",
+                        ".jar, .zip","jar", "zip")
+        ));
         obfuscatorViews.put("ClassWriter Settings", new ObfuscatorSettingsView(
                 new BooleanSetting("Compute Frames", config, config.computeFrames, "computeFrames"),
-                new BooleanSetting("Compute Maxes", config, config.computeMaxes, "computeMaxes")
+                new BooleanSetting("Compute Maxes", config, config.computeMaxes, "computeMaxes"),
+                new BooleanSetting("Include libs in output", config, config.includeLibsInOutput,
+                        "includeLibsInOutput")
         ));
         obfuscatorViews.put("Whitelist", new ObfuscatorSettingsView(
                 new StringListSetting("Whitelist", config, config.whitelist, "whitelist")
         ));
         obfuscatorViews.put("Blacklist", new ObfuscatorSettingsView(
                 new StringListSetting("Blacklist", config, config.blacklist, "blacklist")
-        ));
-        obfuscatorViews.put("IO Settings", new ObfuscatorSettingsView(
-                new FileSetting("input jar", config, config.input, "input",
-                        ".jar, .zip","jar", "zip"),
-                new FileSetting("output jar", config, config.output, "output",
-                        ".jar, .zip","jar", "zip")
         ));
         obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());
         return obfuscatorViews;

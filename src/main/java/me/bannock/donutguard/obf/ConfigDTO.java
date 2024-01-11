@@ -15,7 +15,7 @@ public class ConfigDTO implements Serializable {
     // file and using the absolute path string is a work-around to this.
     public File input = new File(new File("input.jar").getAbsolutePath()),
             output = new File(new File("output.jar").getAbsolutePath());
-    public boolean computeFrames = true, computeMaxes = true;
+    public boolean computeFrames = true, computeMaxes = true, includeLibsInOutput = false;
     public ArrayList<String> whitelist = new ArrayList<>(), blacklist = new ArrayList<>();
 
 
