@@ -25,8 +25,10 @@
 
     <loggers>
         <root level="debug">
-            <appender-ref ref="Console" level="debug" />
-            <appender-ref ref="Routing" level="debug"/>
+<!--            <appender-ref ref="Console" level="debug" />-->
+<!--            <appender-ref ref="Routing" level="debug"/>-->
+            <appender-ref ref="Console" level="info" />
+            <appender-ref ref="Routing" level="info" />
         </root>
     </loggers>
 

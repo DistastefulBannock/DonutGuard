@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 public class JarHandler {
@@ -64,7 +63,7 @@ public class JarHandler {
      * @param file The file to write the jar to
      * @param computeFrames Whether the class writer should compute frames
      * @param computeMaxes Whether the class writer should compute maxes
-     * @param includeNonMutated Whether non-mutated classes should be included in the built jar
+     * @param includeNonMutated Whether non-mutated entries should be included in the built jar
      * @throws RuntimeException If something went wrong while writing the file
      * @throws InterruptedException If the thread is interrupted while writing
      */
@@ -83,11 +82,12 @@ public class JarHandler {
             while ((lastEntry = lastEntry.getNextNode()) != null){
                 if (Thread.interrupted())
                     throw new InterruptedException("Obfuscation job was interrupted");
-                if (lastEntry instanceof DummyEntry)
+                if (lastEntry instanceof DummyEntry ||
+                        (!lastEntry.isShouldMutate() && !includeNonMutated))
                     continue; // Ignored
-                logger.info("Writing " + lastEntry.getPath() + "...");
+                logger.debug("Writing " + lastEntry.getPath() + "...");
 
-                ZipEntry zipEntry = new ZipEntry(lastEntry.getPath());
+                JarEntry zipEntry = new JarEntry(lastEntry.getPath());
                 try{
                     jos.putNextEntry(zipEntry);
                 }catch (ZipException e){
@@ -102,24 +102,26 @@ public class JarHandler {
                     if (entry.isShouldMutate() || includeNonMutated)
                         jos.write(entry.getContent());
                 }
-                else if (lastEntry instanceof ClassEntry){
+                else if (lastEntry instanceof ClassEntry)cancel:{
                     ClassEntry entry = (ClassEntry) lastEntry;
-                    if (entry.isShouldMutate() || includeNonMutated){
-                        ClassWriter classWriter = getClassWriter(computeFrames, computeMaxes);
-                        entry.getContent().accept(classWriter);
-                        // This adds a string to the constant pool, effectively watermarking the class
-                        classWriter.newUTF8(classWatermark);
-                        jos.write(classWriter.toByteArray());
-                    }
+                    if (!(entry.isShouldMutate() || includeNonMutated))
+                        break cancel;
+                    ClassWriter classWriter = getClassWriter(computeFrames, computeMaxes);
+                    entry.getContent().accept(classWriter);
+                    // This adds a string to the constant pool, effectively watermarking the class
+                    // See "C:\Program Files\Java\jdk-1.8\bin\javap" -v OutputtedClass.class
+                    classWriter.newUTF8(classWatermark);
+                    entry.getClassWriterTasks().forEach(c -> c.accept(entry.getContent(), classWriter));
+                    jos.write(classWriter.toByteArray());
                 }
                 jos.flush();
-                logger.info("Finished writing " + lastEntry.getPath());
+                logger.debug("Finished writing " + lastEntry.getPath());
             }
             logger.info("Finished writing entries");
 
-            logger.info("Adding watermark...");
+            logger.info("Adding jar watermark...");
             jos.setComment(jarWatermark);
-            logger.info("Added watermark");
+            logger.info("Added jar watermark");
 
             if (hadDuplicateEntries){
                 UiUtils.showErrorMessage("Had duplicate entries",
@@ -143,30 +145,20 @@ public class JarHandler {
      */
     private ClassWriter getClassWriter(boolean computeFrames, boolean computeMaxes){
         int flags = 0;
-        if (computeFrames)
-            flags |= ClassWriter.COMPUTE_FRAMES;
         if (computeMaxes)
             flags |= ClassWriter.COMPUTE_MAXS;
-        return new ClassWriter(flags) {
-            @Override
-            protected String getCommonSuperClass(String type1, String type2) {
-                // We need to override this because the class writer class is garbage
-                try {
-                    return super.getCommonSuperClass(type1, type2);
-                } catch (Exception e) {
-                    return "java/lang/Object";
-                }
-            }
-        };
+        if (computeFrames)
+            flags |= ClassWriter.COMPUTE_FRAMES;
+        return new ClassWriterThatCanComputeFrames(flags, this);
     }
 
     private Consumer<? super JarEntry> getEntryConsumer(JarFile jarFile,
                                                         boolean shouldMutateEntries){
         return entry -> {
-            if (entry == null)
+            if (entry == null || entry.isDirectory())
                 return;
 
-            logger.info("Loading entry \"" + entry.getName() + "\"...");
+            logger.debug("Loading entry \"" + entry.getName() + "\"...");
 
             String name = entry.getName();
             byte[] bytes;
@@ -184,14 +176,20 @@ public class JarHandler {
             if (name.toLowerCase().endsWith(".class")){
                 newEntry = new ClassEntry(name, shouldMutateEntries, bytes);
             }else{
-                newEntry = new ResourceEntry(name, true, bytes);
+                newEntry = new ResourceEntry(name, shouldMutateEntries, bytes);
             }
-            firstEntry.addNodeToEnd(newEntry);
-            logger.info("Successfully loaded entry \"" + entry.getName() + "\"");
+            try{
+                firstEntry.addNodeToEnd(newEntry);
+            }catch (IllegalArgumentException e){
+                logger.error("Something went wrong while adding new entry to linked list", e);
+                return;
+            }
+            logger.debug("Successfully loaded entry \"" + entry.getName() + "\"");
         };
     }
 
     public FileEntry<?> getFirstEntry() {
         return firstEntry;
     }
+
 }
