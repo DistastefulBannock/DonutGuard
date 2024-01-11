@@ -59,6 +59,9 @@ public class ClassEntry extends FileEntry<ClassNode> {
      * These are the absolute last thing ran before saving.
      * If you need to use the classwriter for something then
      * this is what you'd use.
+     * Please also keep in mind that the passed-in ClassNode objects
+     * have already been compiled by the ClassWriter. This means
+     * that any changes done to them will not appear in the final jar.
      * @param consumer The consumer to run
      */
     public void addClassWriterTask(BiConsumer<ClassNode, ClassWriter> consumer){
@@ -66,7 +69,7 @@ public class ClassEntry extends FileEntry<ClassNode> {
     }
 
     /**
-     * @return An unmodifiable list containing all the class writer tasks
+     * @return An unmodifiable list containing all the class writer tasks.
      */
     public List<BiConsumer<ClassNode, ClassWriter>> getClassWriterTasks() {
         return Collections.unmodifiableList(classWriterTasks);

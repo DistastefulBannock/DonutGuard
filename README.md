@@ -26,3 +26,4 @@ If you're looking to help contribute to the project then feel free to open a pul
  - Avoid drag-n-drop UI builders for new views or windows.
  - Indentation format is four space characters.
  - Avoid using more than three levels of indentation in your methods.
+ - Please do not "work around" any design patterns.
