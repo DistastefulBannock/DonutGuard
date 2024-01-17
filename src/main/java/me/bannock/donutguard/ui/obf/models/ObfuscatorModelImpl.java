@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.obf.settings.impl.BooleanSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.FileSetting;
+import me.bannock.donutguard.ui.obf.settings.impl.IntegerSetting;
 import me.bannock.donutguard.ui.obf.settings.list.impl.FileListSetting;
 import me.bannock.donutguard.ui.obf.settings.list.impl.StringListSetting;
 import me.bannock.donutguard.ui.obf.views.ObfuscatorSettingsView;
@@ -49,7 +50,9 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
         obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());
         obfuscatorViews.put("NOP Spammer", new ObfuscatorSettingsView(
                 new BooleanSetting("Mutator Enabled", config, config.nopSpammerEnabled,
-                        "nopSpammerEnabled")
+                        "nopSpammerEnabled"),
+                new IntegerSetting("NOPS per instruction", config, config.nopsPerInstruction,
+                        1, 100, 1, "nopsPerInstruction")
         ));
         return obfuscatorViews;
     }

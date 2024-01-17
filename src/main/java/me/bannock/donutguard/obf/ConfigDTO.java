@@ -16,9 +16,13 @@ public class ConfigDTO implements Serializable {
     // file and using the absolute path string is a work-around to this.
     public File input = new File(new File("input.jar").getAbsolutePath()),
             output = new File(new File("output.jar").getAbsolutePath());
-    public boolean computeFrames = false, computeMaxes = true, includeLibsInOutput = false;
+    public Boolean computeFrames = false, computeMaxes = true, includeLibsInOutput = false;
     public List<String> whitelist = new ArrayList<>(), blacklist = new ArrayList<>();
-    public boolean nopSpammerEnabled = false;
+
+    // Nop spammer mutator
+    public Boolean nopSpammerEnabled = false;
+    public Integer nopsPerInstruction = 2;
+
     public List<File> libraries = new ArrayList<>();
 
 

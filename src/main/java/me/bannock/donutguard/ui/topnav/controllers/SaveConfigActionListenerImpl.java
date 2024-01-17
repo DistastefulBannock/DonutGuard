@@ -30,7 +30,8 @@ public class SaveConfigActionListenerImpl implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent evt) {
         logger.info("Serializing config...");
-        byte[] data = SerializationUtils.serialize(injector.getInstance(ConfigDTO.class));
+        ConfigDTO config = injector.getInstance(ConfigDTO.class);
+        byte[] data = SerializationUtils.serialize(config);
         logger.info("Successfully serialized config");
         logger.info("Prompting user for file selection...");
         JFileChooser fileChooser = getSaveFileChooser();
