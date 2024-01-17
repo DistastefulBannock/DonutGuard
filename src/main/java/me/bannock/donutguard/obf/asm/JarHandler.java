@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassWriter;
 
+import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,13 +45,13 @@ public class JarHandler {
      * @throws RuntimeException If an error occurs while loading the jar file
      */
     public void loadJarFile(File file, boolean shouldMutate) throws RuntimeException{
-        logger.info("Loading jar file...");
+        logger.info("Loading jar file \"" + file.getAbsolutePath() + "\"...");
 
         try (JarFile jarFile = new JarFile(file)) {
             jarFile.entries().asIterator()
                     .forEachRemaining(getEntryConsumer(jarFile, shouldMutate));
-            logger.info("Successfully opened jar file \"" +
-                    jarFile.getName() + " " + jarFile.getVersion() + "\"");
+            logger.info("Successfully loaded jar file \"" +
+                    jarFile.getName() + "\"");
         } catch (IOException e) {
             logger.error("Failed to read jar file", e);
             throw new RuntimeException("Failed to read jar file", e);
@@ -124,10 +125,12 @@ public class JarHandler {
             logger.info("Added jar watermark");
 
             if (hadDuplicateEntries){
-                UiUtils.showErrorMessage("Had duplicate entries",
+                // We do this in another thread because this call is thread blocking
+                // until the popup is closed
+                SwingUtilities.invokeLater(() -> UiUtils.showErrorMessage("Had duplicate entries",
                         "Duplicate entries were found while writing the jar." +
                                 "\nThis may cause unexpected issues. Affected classes " +
-                                "can be found in the logs");
+                                "can be found in the logs"));
             }
 
         } catch (IOException e){

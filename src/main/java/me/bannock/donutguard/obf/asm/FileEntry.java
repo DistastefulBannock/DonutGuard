@@ -35,12 +35,13 @@ public abstract class FileEntry<T> {
      */
     public void addNodeToEnd(FileEntry<?> node){
         if (node.getPreviousNode() != null || node.getNextNode() != null){
-            logger.error("Node being is already inside of a linked list");
+            logger.warn("Node being is already inside of a linked list");
             throw new IllegalArgumentException("Node cannot already be in a linked list");
         }
         if (getCurrentlyAddedNodes().contains(node)){
-            logger.error("Node of same path is already present in linked list.");
-            throw new IllegalArgumentException("Node of same path is already present in linked list.");
+            logger.warn("Node of same path is already present in linked list.");
+            throw new IllegalArgumentException("Node of same path(\"" + node.getPath() +
+                    "\") is already present in linked list.");
         }
 
         // We first have to get the last node in our linked list so we can add our
@@ -50,6 +51,7 @@ public abstract class FileEntry<T> {
             currentNode = currentNode.getNextNode();
         currentNode.setNextNode(node);
         node.setPreviousNode(currentNode);
+        getCurrentlyAddedNodes().add(node);
         node.setCurrentlyAddedNodes(getCurrentlyAddedNodes());
     }
 

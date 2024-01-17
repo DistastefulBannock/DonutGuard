@@ -13,7 +13,7 @@ public class UiUtils {
     private static final Logger logger = LogManager.getLogger();
 
     /**
-     * Shows an error message dialog
+     * Shows an error message dialog. Blocks thread until dialog is closed
      * @param title The title of the dialog
      * @param message The message in the dialog
      */

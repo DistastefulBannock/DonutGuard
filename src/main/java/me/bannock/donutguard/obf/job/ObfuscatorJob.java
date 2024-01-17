@@ -65,10 +65,6 @@ public class ObfuscatorJob implements Runnable {
      */
     private void runObfuscator() throws Exception {
         logger.info("Starting obfuscation job...");
-        // TODO: Write obfuscator and implement log4j so we
-        //  can create a different console window for each job
-        //  !!! Remember to add code to check for Thread.interrupted()
-        //      so the job cancels when the users requests it
 
         logger.info("Creating job injector...");
         Injector injector = Guice.createInjector(new JobModule(this));
@@ -84,12 +80,6 @@ public class ObfuscatorJob implements Runnable {
             }
         }
         logger.info("Successfully created and loaded jar handler");
-
-        safelyLoopOverEntries(jarHandler, entry -> {
-            if (entry.getPath().toLowerCase().contains("manifest.mf")){
-                logger.info(entry.getPath());
-            }
-        });
 
         // We need to occasionally check for interrupts in case we need to cancel the job
         checkForInterrupt();
@@ -176,7 +166,7 @@ public class ObfuscatorJob implements Runnable {
         }
 
         jarHandler.writeJarFile(configDTO.output, configDTO.computeFrames,
-                configDTO.computeMaxes, false);
+                configDTO.computeMaxes, configDTO.includeLibsInOutput);
 
         logger.info("Finished obfuscation job");
     }
