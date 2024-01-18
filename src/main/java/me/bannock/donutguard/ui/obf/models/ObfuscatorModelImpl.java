@@ -51,8 +51,8 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
         obfuscatorViews.put("NOP Spammer", new ObfuscatorSettingsView(
                 new BooleanSetting("Mutator Enabled", config, config.nopSpammerEnabled,
                         "nopSpammerEnabled"),
-                new IntegerSetting("NOPS per instruction", config, config.nopsPerInstruction,
-                        1, 100, 1, "nopsPerInstruction")
+                new IntegerSetting("NOPs per instruction", config, config.nopsPerInstruction,
+                        "nopsPerInstruction", 1, 100, 1)
         ));
         return obfuscatorViews;
     }

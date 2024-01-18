@@ -33,7 +33,7 @@ public class IntegerSetting extends Setting<Integer> implements ChangeListener {
      * @param fieldName The name of the field to change in the config DTO class
      */
     public IntegerSetting(String name, ConfigDTO config, Integer value,
-                          Integer min, Integer max, Integer stepSize, String fieldName) {
+                          String fieldName, Integer min, Integer max, Integer stepSize) {
         super(name, config, value, fieldName);
         this.min = min;
         this.max = max;

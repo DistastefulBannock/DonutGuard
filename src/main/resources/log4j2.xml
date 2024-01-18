@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="WARN">
     <properties>
-        <property name="logMsgPattern">[%d{HH:mm:ss}] [%-5p] %c{2.} --- %msg%xEx%n</property>
+        <property name="fullLogMsgPattern">[%d{HH:mm:ss}] [%-5p] %c{2.} --- %msg%xEx%n</property>
+        <property name="minLogMsgPattern">%d{HH:mm} %-5p %c{1.} - %msg%n</property>
         <property name="logDir">logs</property><!-- ${sys:testLogDir} -->
     </properties>
     <appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="${logMsgPattern}"/>
+            <PatternLayout pattern="${fullLogMsgPattern}"/>
         </Console>
 
         <Routing name="Routing">
@@ -15,8 +16,17 @@
                     <file name="RollingFile-${ctx:threadId}"
                           fileName="${logDir}/DonutGuard ${ctx:threadId}.log"
                           Append="false">
-                        <PatternLayout pattern="${logMsgPattern}"/>
+                        <PatternLayout pattern="${fullLogMsgPattern}"/>
                     </file>
+                </Route>
+            </Routes>
+        </Routing>
+        <Routing name="DonutRouting">
+            <Routes pattern="$${ctx:threadId}">
+                <Route>
+                    <DonutAppender name="${ctx:threadId}">
+                        <PatternLayout pattern="${minLogMsgPattern}"/>
+                    </DonutAppender>
                 </Route>
             </Routes>
         </Routing>
@@ -25,10 +35,9 @@
 
     <loggers>
         <root level="debug">
-<!--            <appender-ref ref="Console" level="debug" />-->
-<!--            <appender-ref ref="Routing" level="debug"/>-->
             <appender-ref ref="Console" level="info" />
             <appender-ref ref="Routing" level="info" />
+            <appender-ref ref="DonutRouting" level="info" />
         </root>
     </loggers>
 

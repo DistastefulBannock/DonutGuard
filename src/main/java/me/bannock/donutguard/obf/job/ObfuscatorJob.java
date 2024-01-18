@@ -222,4 +222,7 @@ public class ObfuscatorJob implements Runnable {
         return jarHandler;
     }
 
+    public String getThreadId() {
+        return threadId;
+    }
 }

@@ -3,7 +3,8 @@ package me.bannock.donutguard.ui.jobs.views;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.ui.jobs.models.JobsViewModel;
-import me.bannock.donutguard.utils.UiUtils;
+import me.bannock.donutguard.ui.logs.LogsFrame;
+import me.bannock.donutguard.utils.ObfJobUtils;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -30,11 +31,11 @@ public class JobView extends JPanel {
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
 
-        { // Log file button should appear if a log file is available. This is temporary until a log viewer is implemented
-            File logFile = getLogFileLocation(jobName);
+        { // If a log file exists then there should be an available appender
+            File logFile = ObfJobUtils.getLogFileLocation(jobName);
             if (logFile.exists()) {
                 JButton logFileButton = new JButton("Open Log");
-                logFileButton.addActionListener(e -> UiUtils.openFile(logFile));
+                logFileButton.addActionListener(e -> new LogsFrame(jobName).setVisible(true));
                 buttons.add(logFileButton);
             }
         }
@@ -74,14 +75,6 @@ public class JobView extends JPanel {
             case NOT_FOUND: return "red";
             default: return "black";
         }
-    }
-
-    /**
-     * @param jobName The job name to get the log file for
-     * @return The log file for the given job name
-     */
-    private File getLogFileLocation(String jobName){
-        return new File("logs/DonutGuard " + jobName + ".log");
     }
 
 }

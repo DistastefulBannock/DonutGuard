@@ -1,6 +1,7 @@
 package me.bannock.donutguard.obf;
 
 import com.google.common.collect.ImmutableMap;
+import me.bannock.donutguard.logging.DonutAppenderManager;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +65,10 @@ public class Obfuscator {
         jobs.remove(job);
         String cacheFriendlyName = friendlyNameJobs.get(job);
         friendlyNameJobs.remove(job);
+
+        // Save memory on appenders that are no longer in use
+        DonutAppenderManager.stopManagingAppender(job.getThreadId());
+
         logger.info("Successfully removed job " + cacheFriendlyName);
     }
 
@@ -111,7 +116,7 @@ public class Obfuscator {
     private String getNewJobLabel(){
         logger.info("Generating a new job label...");
         long time = System.currentTimeMillis();
-        // I really don't want to risk giving two threads the same id so we sleep for 2 millis
+        // I really don't want to risk giving two threads the same id, so we sleep for 2 millis
         // here to make sure the next call will produce a different outcome
         try{
             Thread.sleep(2);
