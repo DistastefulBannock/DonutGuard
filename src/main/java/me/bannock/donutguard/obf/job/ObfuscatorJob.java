@@ -53,6 +53,8 @@ public class ObfuscatorJob implements Runnable {
                 logger.error("An error occurred while running the obfuscator", e);
                 UiUtils.showErrorMessage("Obfuscator Error", "An error occurred while running the obfuscator." +
                         "\nCheck the logs for more information.");
+            }else{
+                logger.info("Obfuscation job interrupted. Likely cancelled by user.");
             }
         }
 
@@ -197,8 +199,7 @@ public class ObfuscatorJob implements Runnable {
 
     private void checkForInterrupt() throws InterruptedException {
         if (Thread.interrupted()) {
-            logger.info("Obfuscation job was interrupted; likely cancelled by user.");
-            throw new InterruptedException("Obfuscation job was interrupted");
+            throw new InterruptedException("Obfuscation job was interrupted.");
         }
     }
 

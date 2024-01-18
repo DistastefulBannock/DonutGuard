@@ -95,8 +95,9 @@ public class LogsFrame extends JFrame implements Consumer<LogEvent> {
         //
         // We only get 100 so the program won't hang
         List<LogEvent> top100MostRecentLogs = appender.getLogs();
-        top100MostRecentLogs = top100MostRecentLogs.subList(
-                top100MostRecentLogs.size() - 100, top100MostRecentLogs.size());
+        if (top100MostRecentLogs.size() > 100) // Program will hang if frame launches with too many logs
+            top100MostRecentLogs = top100MostRecentLogs.subList(
+                    top100MostRecentLogs.size() - 100, top100MostRecentLogs.size());
         Document document = logs.getDocument();
         for (LogEvent log : top100MostRecentLogs){
             try {
