@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Obfuscator {
 
-    private static final int THREAD_POOL_SIZE = 5;
+    private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
     private final Logger logger = LogManager.getLogger();
     private final ThreadPoolExecutor executorService = new ThreadPoolExecutor(
             THREAD_POOL_SIZE, THREAD_POOL_SIZE, 0L,

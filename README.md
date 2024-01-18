@@ -8,7 +8,7 @@ If you encounter any bugs or errors, don't hesitate to [open an issue](https://g
 No pesky compiling, file-futzing, or CLI hell. Just run our fat jar and experience our rich user interface.
 
 ### 🧵 Multithreaded
-DonutGuard is multithreaded, giving you the option to run up to five different obfuscation jobs at once without worry of
+DonutGuard is multithreaded, giving you the option to run multiple obfuscation jobs at once without worry of
 freezing, stuttering, or glitching.
 
 ### 🔓 Open Source
