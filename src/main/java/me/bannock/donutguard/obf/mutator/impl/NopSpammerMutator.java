@@ -13,6 +13,7 @@ public class NopSpammerMutator extends Mutator {
 
     private final Logger logger = LogManager.getLogger();
     private final ConfigDTO config;
+    private int nopsCreated;
     @Inject
     public NopSpammerMutator(ConfigDTO configDTO){
         super("NOP Spammer", configDTO.nopSpammerEnabled);
@@ -20,12 +21,23 @@ public class NopSpammerMutator extends Mutator {
     }
 
     @Override
+    public void setup() {
+        nopsCreated = 0;
+    }
+
+    @Override
     public void firstPassClassTransform(ClassEntry entry) {
         loopOverMethods(entry, methodNode -> methodNode.instructions.forEach(insn -> {
             for (int i = 0; i < config.nopsPerInstruction; i++){
                 methodNode.instructions.insertBefore(insn, new InsnNode(Opcodes.NOP));
+                nopsCreated++;
             }
         }));
     }
 
+    @Override
+    public void cleanup() {
+        logger.info(String.format("Created %s NOPs", this.nopsCreated));
+        nopsCreated = 0;
+    }
 }

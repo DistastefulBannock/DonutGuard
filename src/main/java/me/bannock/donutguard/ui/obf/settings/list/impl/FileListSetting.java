@@ -24,6 +24,7 @@ public class FileListSetting extends ListSetting<File> {
     private final Logger logger = LogManager.getLogger();
 
     private File[] selectedFiles = new File[0];
+    private JTextPane fileTextPane;
 
     public FileListSetting(String name, ConfigDTO config, List<File> value, String fieldName) {
         super(name, config, value, fieldName);
@@ -42,7 +43,7 @@ public class FileListSetting extends ListSetting<File> {
         JPanel newInputPanel = new JPanel(true);
         newInputPanel.setLayout(new BorderLayout());
 
-        JTextPane fileTextPane = new JTextPane();
+        this.fileTextPane = new JTextPane();
         fileTextPane.setEditable(false);
         fileTextPane.setBackground(null);
         fileTextPane.setBorder(null);
@@ -106,6 +107,8 @@ public class FileListSetting extends ListSetting<File> {
             }
 
             // Once we have all the files, we add them to the list and refresh the list panel
+            this.selectedFiles = new File[0];
+            this.fileTextPane.setText("");
             getValue().addAll(files);
             refreshDisplayedList();
         };
