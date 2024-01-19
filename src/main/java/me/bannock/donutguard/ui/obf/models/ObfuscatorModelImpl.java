@@ -32,7 +32,7 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                         ".jar, .zip","jar", "zip")
         ));
         obfuscatorViews.put("Libraries", new ObfuscatorSettingsView(
-                new FileListSetting("libraries", config, config.libraries, "libraries")
+                new FileListSetting("Libraries", config, config.libraries, "libraries")
         ));
         obfuscatorViews.put("ClassWriter Settings", new ObfuscatorSettingsView(
                 new BooleanSetting("Compute Frames (Very Resource Intensive)", config,

@@ -29,6 +29,7 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
     }
 
     private JPanel listPanel;
+    private JPanel bottomBar;
     private JTextField inputField;
 
     @Override
@@ -40,9 +41,9 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
 
         // Scrollpane allows the user to scroll up and down if needed
         JScrollPane listContainer = new JScrollPane();
-        listContainer.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        listContainer.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         listContainer.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        listContainer.setBorder(null);
+        listContainer.setBorder(new EtchedBorder());
 
         this.listPanel = new JPanel(true);
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -50,7 +51,7 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
         listContainer.setViewportView(listPanel);
 
         // The bottom bar is used to type and add new entries into the list
-        JPanel bottomBar = new JPanel();
+        this.bottomBar = new JPanel();
         bottomBar.setLayout(new BorderLayout());
         this.inputField = new JTextField();
         JButton submitButton = new JButton("Submit");
@@ -115,11 +116,19 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
      */
     protected abstract T getInputFieldValue() throws RuntimeException;
 
+    protected JPanel getBottomBar() {
+        return bottomBar;
+    }
+
     /**
      * @return This setting's input field
      */
-    public JTextField getInputField() {
+    protected JTextField getInputField() {
         return inputField;
+    }
+
+    protected JPanel getListPanel() {
+        return listPanel;
     }
 
     @Override
@@ -142,4 +151,5 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
         logger.error("Filters are not compatible with list settings.");
         throw new RuntimeException("Filters are not supported with list settings.");
     }
+
 }

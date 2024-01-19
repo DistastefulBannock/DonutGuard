@@ -5,10 +5,10 @@ import me.bannock.donutguard.ui.obf.settings.Setting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ public class BooleanSetting extends Setting<Boolean> implements ActionListener {
     public BooleanSetting(String name, ConfigDTO config, Boolean value, String fieldName) {
         super(name, config, value, fieldName);
     }
-    private JRadioButton toggleSwitch;
+    private JCheckBox toggleSwitch;
 
     @Override
     public JComponent createAndGetComponent() {
@@ -35,7 +35,7 @@ public class BooleanSetting extends Setting<Boolean> implements ActionListener {
         JLabel nameLabel = new JLabel(getName());
         container.add(nameLabel, BorderLayout.WEST);
 
-        this.toggleSwitch = new JRadioButton();
+        this.toggleSwitch = new JCheckBox();
         toggleSwitch.setSelected(getValue());
         toggleSwitch.addActionListener(this);
         container.add(toggleSwitch, BorderLayout.EAST);
