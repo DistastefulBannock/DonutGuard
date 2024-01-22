@@ -8,7 +8,8 @@ public interface ObfuscatorModel {
 
     /**
      * @return The different views for the obfuscator
+     * @throws Exception If something goes wrong while getting the views
      */
-    Map<String, JComponent> getObfuscatorViews();
+    Map<String, JComponent> getObfuscatorViews() throws Exception;
 
 }

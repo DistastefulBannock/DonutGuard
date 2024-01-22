@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ObfuscatorView extends JPanel {
@@ -28,7 +29,15 @@ public class ObfuscatorView extends JPanel {
         setLayout(new BorderLayout());
 
         // Populate this map with any more views for the obfuscator
-        Map<String, JComponent> obfuscatorViews = model.getObfuscatorViews();
+        Map<String, JComponent> tmpObfuscatorViews;
+        try{
+            tmpObfuscatorViews = model.getObfuscatorViews();
+        }catch (Exception e){
+            logger.error("Something when wrong while grabbing the views from the model!", e);
+            tmpObfuscatorViews = new HashMap<>();
+        }
+        // Because we use lambdas with this var later
+        Map<String, JComponent> obfuscatorViews = tmpObfuscatorViews;
 
 
         // Scroll pane so we don't have to worry about the amount of categories in the side pane

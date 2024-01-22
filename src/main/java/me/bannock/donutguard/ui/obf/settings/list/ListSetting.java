@@ -31,6 +31,17 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
     private JPanel listPanel;
     private JPanel bottomBar;
     private JTextField inputField;
+    private JComponent help;
+
+    /**
+     * When used, places a help component to the right of the setting name
+     * @param helpComponent The help component to place
+     * @return This
+     */
+    public ListSetting<T> withHelpComponent(JComponent helpComponent){
+        this.help = helpComponent;
+        return this;
+    }
 
     @Override
     public JComponent createAndGetComponent() {
@@ -63,12 +74,17 @@ public abstract class ListSetting<T> extends Setting<List<T>> implements ActionL
         // entry on the list
         submitButton.addActionListener(this);
 
-        // Label for the setting name at the top
+        // We need another panel so we can add the help component if needed
+        JPanel northernPanel = new JPanel();
+        northernPanel.setLayout(new BorderLayout());
         JLabel nameLabel = new JLabel("<html><h4>" + getName() + ":</h4></html>");
+        northernPanel.add(nameLabel, BorderLayout.WEST);
+        if (help != null)
+            northernPanel.add(help, BorderLayout.EAST);
 
         settingPanel.add(listContainer, BorderLayout.CENTER);
         settingPanel.add(bottomBar, BorderLayout.SOUTH);
-        settingPanel.add(nameLabel, BorderLayout.NORTH);
+        settingPanel.add(northernPanel, BorderLayout.NORTH);
 
         logger.info("Successfully constructed list setting ui component");
         return settingPanel;

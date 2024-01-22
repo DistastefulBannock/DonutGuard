@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
 public class DonutGuard {
@@ -23,6 +24,11 @@ public class DonutGuard {
 
         // I hate large scrollbars, so this is the soulution
         UIManager.put("ScrollBar.width", 5);
+
+        // I think the tooltip delay on swing is too long
+        ToolTipManager.sharedInstance().setInitialDelay(500);
+        // The dismiss delay is stupid as well
+        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
     }
 
     private final Logger logger = LogManager.getLogger();
