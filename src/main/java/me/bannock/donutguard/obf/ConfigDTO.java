@@ -3,6 +3,7 @@ package me.bannock.donutguard.obf;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -17,7 +18,10 @@ public class ConfigDTO implements Serializable {
     public File input = new File(new File("input.jar").getAbsolutePath()),
             output = new File(new File("output.jar").getAbsolutePath());
     public Boolean computeFrames = false, computeMaxes = true, includeLibsInOutput = false;
-    public List<String> whitelist = new ArrayList<>(), blacklist = new ArrayList<>();
+    public List<String> whitelist = new ArrayList<>(),
+            blacklist = new ArrayList<>(Arrays.asList(
+                    "me/example/.+/Main.class", "obf/classWatermark.txt",
+                    "me/example/.+"));
 
     // Nop spammer mutator
     public Boolean nopSpammerEnabled = false;

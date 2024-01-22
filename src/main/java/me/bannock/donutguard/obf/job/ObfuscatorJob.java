@@ -9,6 +9,7 @@ import me.bannock.donutguard.obf.asm.JarHandler;
 import me.bannock.donutguard.obf.asm.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
+import me.bannock.donutguard.obf.filter.ListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import me.bannock.donutguard.utils.UiUtils;
@@ -180,8 +181,11 @@ public class ObfuscatorJob implements Runnable {
      * @param handler The handler to get the entries from
      * @param consumer Callback consumer. Will be fed every entry except dummies
      */
-    private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
+    private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer,
+                                       boolean loopOverBlacklistedEntries){
         FileEntry<?> currentEntry = jarHandler.getFirstEntry();
+        ListFilter blacklist = new ListFilter(configDTO.blacklist);
+        ListFilter whitelist = new ListFilter(configDTO.whitelist);
         while (currentEntry != null){
             // We get the next entry before running calling
             // any consumers as they may remove or change
@@ -189,12 +193,26 @@ public class ObfuscatorJob implements Runnable {
             FileEntry<?> nextEntry = currentEntry.getNextNode();
 
             // We now callback to the desired consumer
-            if (!(currentEntry instanceof DummyEntry))
+            if (!(currentEntry instanceof DummyEntry) &&
+                    (loopOverBlacklistedEntries ||
+                            !(blacklist.matches(currentEntry.getPath())
+                                    && !whitelist.matches(currentEntry.getPath()))))
                 consumer.accept(currentEntry);
 
             // Only now do we change the current entry variable
             currentEntry = nextEntry;
         }
+    }
+
+    /**
+     * Loops over entries of a JarHandler in such a way
+     * where it is safe for any mutators to move or remove
+     * nodes from the entry linked list
+     * @param handler The handler to get the entries from
+     * @param consumer Callback consumer. Will be fed every entry except dummies
+     */
+    private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
+        safelyLoopOverEntries(handler, consumer, false);
     }
 
     private void checkForInterrupt() throws InterruptedException {

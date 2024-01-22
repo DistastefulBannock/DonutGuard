@@ -41,11 +41,11 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                 new BooleanSetting("Include libs in output", config, config.includeLibsInOutput,
                         "includeLibsInOutput")
         ));
-        obfuscatorViews.put("Blacklist", new ObfuscatorSettingsView(
-                new StringListSetting("Blacklist", config, config.blacklist, "blacklist")
+        obfuscatorViews.put("Blacklist (regex)", new ObfuscatorSettingsView(
+                new StringListSetting("Blacklist (regex)", config, config.blacklist, "blacklist")
         ));
-        obfuscatorViews.put("Whitelist", new ObfuscatorSettingsView(
-                new StringListSetting("Whitelist", config, config.whitelist, "whitelist")
+        obfuscatorViews.put("Whitelist (regex)", new ObfuscatorSettingsView(
+                new StringListSetting("Whitelist (regex)", config, config.whitelist, "whitelist")
         ));
         obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());
         obfuscatorViews.put("NOP Spammer", new ObfuscatorSettingsView(
