@@ -1,4 +1,4 @@
-package me.bannock.donutguard.ui.obf.settings.list.impl;
+package me.bannock.donutguard.ui.obf.settings.list.impl.file;
 
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.obf.settings.list.ListSetting;
@@ -24,9 +24,23 @@ public class FileListSetting extends ListSetting<File> {
 
     private File[] selectedFiles = new File[0];
     private JTextPane fileTextPane;
+    private final String fileTypesLabel;
+    private final String[] supportedFileExtensions;
+    private CustomFileHandler[] fileHanders = new CustomFileHandler[0];
 
-    public FileListSetting(String name, ConfigDTO config, List<File> value, String fieldName) {
+    /**
+     * @param name The name of the setting
+     * @param config The config DTO object instance
+     * @param value The value of the setting
+     * @param fieldName The name of the field in the config DTO class
+     * @param fileTypesLabel The label to be displayed in the file chooser
+     * @param supportedFileExtensions The file extensions that will be supported by the file chooser
+     */
+    public FileListSetting(String name, ConfigDTO config, List<File> value, String fieldName,
+                           String fileTypesLabel, String... supportedFileExtensions) {
         super(name, config, value, fieldName);
+        this.fileTypesLabel = fileTypesLabel;
+        this.supportedFileExtensions = supportedFileExtensions;
     }
 
     @Override
@@ -59,6 +73,15 @@ public class FileListSetting extends ListSetting<File> {
         bottomBar.add(newInputPanel, BorderLayout.CENTER);
 
         return everything;
+    }
+
+    /**
+     * @param fileHandlers The file handlers that will be used to handle the files.
+     * @return This
+     */
+    public FileListSetting withFileHandlers(CustomFileHandler... fileHandlers){
+        this.fileHanders = fileHandlers;
+        return this;
     }
 
     private JButton getFileSelectorButton(JTextPane fileTextPane, JPanel newInputPanel) {
@@ -94,14 +117,20 @@ public class FileListSetting extends ListSetting<File> {
 
             // First, we need to collect all jars and zips so we can add them to the menu
             HashSet<File> files = new HashSet<>();
+
+            // This code really pisses me off.
+            // It loops through every selected file, and then passes
+            // them onto the handlers for processing. If a handler processes
+            // a file then the file is not added to the list and only the
+            // handler adds files. If a handler doesn't process a file then
+            // the file is just added. This code makes me want to vomit.
+            fileLoop:
             for (File file : this.selectedFiles){
-                if (file.isDirectory()){
-                    files.addAll(getGetJarsAndZipsFromDir(file));
+                if (file == null)
                     continue;
-                }
-                String lowerFileName = file.getName().toLowerCase();
-                if (!lowerFileName.endsWith(".zip") && !lowerFileName.endsWith(".jar"))
-                    continue;
+                for (CustomFileHandler handler : fileHanders){try{
+                    if (handler.handle(files, file))continue fileLoop;
+                }catch (Exception ignored){}}
                 files.add(file);
             }
 
@@ -111,50 +140,6 @@ public class FileListSetting extends ListSetting<File> {
             getValue().addAll(files);
             refreshDisplayedList();
         };
-    }
-
-    /**
-     * Recursive method that travels down directories, searching for jars and zips
-     * @return A hashset of all jars and zips found under the provided dir
-     */
-    private HashSet<File> getGetJarsAndZipsFromDir(File dir){
-        if (dir == null){
-            logger.warn("Dir cannot be null.");
-            throw new IllegalArgumentException("Dir cannot be null.");
-        }
-        if (!dir.exists() || !dir.isDirectory()){
-            logger.warn(String.format("Dir \"%s\" is not valid.", dir.getAbsolutePath()));
-            throw new IllegalArgumentException(String.format(
-                    "Dir \"%s\" is not a valid input for this method", dir.getAbsolutePath()));
-        }
-
-        HashSet<File> foundFiles = new HashSet<>();
-        File[] listFiles;
-        try{
-            listFiles = dir.listFiles();
-            if (listFiles == null)
-                listFiles = new File[0];
-        }catch (NullPointerException e){
-            logger.warn(String.format(
-                    "Something went wrong while getting the children files for \"%s\"",
-                    dir.getAbsolutePath()), e);
-            throw e;
-        }
-        for (File file : listFiles){
-
-            // We travel down to the subdirs of this subdir if it is a dir
-            if (file.isDirectory()){
-                foundFiles.addAll(getGetJarsAndZipsFromDir(file));
-                continue;
-            }
-
-            // Jars are just fancy zips, so we can add zips as well
-            String lowerFileName = file.getName().toLowerCase();
-            if (!lowerFileName.endsWith(".zip") && !lowerFileName.endsWith(".jar"))
-                continue;
-            foundFiles.add(file);
-        }
-        return foundFiles;
     }
 
     @Override
@@ -171,8 +156,8 @@ public class FileListSetting extends ListSetting<File> {
         fileChooser.setMultiSelectionEnabled(true);
         fileChooser.setAcceptAllFileFilterUsed(true);
 
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(".zip, .jar",
-                "zip", "jar");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                fileTypesLabel, supportedFileExtensions);
         fileChooser.setFileFilter(filter);
 
         return fileChooser;

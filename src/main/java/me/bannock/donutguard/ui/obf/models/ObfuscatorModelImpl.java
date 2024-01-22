@@ -6,8 +6,10 @@ import me.bannock.donutguard.ui.components.HelpButton;
 import me.bannock.donutguard.ui.obf.settings.impl.BooleanSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.FileSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.IntegerSetting;
-import me.bannock.donutguard.ui.obf.settings.list.impl.FileListSetting;
+import me.bannock.donutguard.ui.obf.settings.list.impl.file.FileListSetting;
 import me.bannock.donutguard.ui.obf.settings.list.impl.StringListSetting;
+import me.bannock.donutguard.ui.obf.settings.list.impl.file.impl.MavenPomFileHandlerImpl;
+import me.bannock.donutguard.ui.obf.settings.list.impl.file.impl.ZipAndJarRecursiveDirSearcherImpl;
 import me.bannock.donutguard.ui.obf.views.ObfuscatorSettingsView;
 import me.bannock.donutguard.utils.ResourceUtils;
 
@@ -37,7 +39,12 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                         "includeLibsInOutput")
         ));
         obfuscatorViews.put("Libraries", new ObfuscatorSettingsView(
-                new FileListSetting("Libraries", config, config.libraries, "libraries")
+                new FileListSetting("Libraries", config, config.libraries, "libraries",
+                        ".zip, .jar, .xml", "zip", "jar", "xml")
+                        .withFileHandlers(
+                                new ZipAndJarRecursiveDirSearcherImpl(),
+                                new MavenPomFileHandlerImpl()
+                        )
                         .withHelpComponent(new HelpButton(
                                 ResourceUtils.readString("ui/tooltips/librariesToolTip.html")))
         ));
