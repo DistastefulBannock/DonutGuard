@@ -9,7 +9,7 @@ import me.bannock.donutguard.obf.asm.JarHandler;
 import me.bannock.donutguard.obf.asm.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
-import me.bannock.donutguard.obf.filter.ListFilter;
+import me.bannock.donutguard.obf.filter.RegexListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import me.bannock.donutguard.utils.UiUtils;
@@ -184,8 +184,8 @@ public class ObfuscatorJob implements Runnable {
     private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer,
                                        boolean loopOverBlacklistedEntries){
         FileEntry<?> currentEntry = jarHandler.getFirstEntry();
-        ListFilter blacklist = new ListFilter(configDTO.blacklist);
-        ListFilter whitelist = new ListFilter(configDTO.whitelist);
+        RegexListFilter blacklist = new RegexListFilter(configDTO.blacklist);
+        RegexListFilter whitelist = new RegexListFilter(configDTO.whitelist);
         while (currentEntry != null){
             // We get the next entry before running calling
             // any consumers as they may remove or change

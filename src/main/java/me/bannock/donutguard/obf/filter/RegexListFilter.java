@@ -2,14 +2,14 @@ package me.bannock.donutguard.obf.filter;
 
 import java.util.Collection;
 
-public class ListFilter {
+public class RegexListFilter {
 
     private final Collection<String> matches;
 
     /**
      * @param matches A list of regex matchers that this filter will use to match
      */
-    public ListFilter(Collection<String> matches){
+    public RegexListFilter(Collection<String> matches){
         this.matches = matches;
     }
 
