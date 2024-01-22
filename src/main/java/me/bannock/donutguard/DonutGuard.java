@@ -22,8 +22,8 @@ public class DonutGuard {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         }catch(Exception ignored) {}
 
-        // I hate large scrollbars, so this is the soulution
-        UIManager.put("ScrollBar.width", 5);
+        // I hate large scrollbars, so this is the solution
+        UIManager.put("ScrollBar.width", 10);
 
         // I think the tooltip delay on swing is too long
         ToolTipManager.sharedInstance().setInitialDelay(500);

@@ -10,7 +10,7 @@ import javax.swing.ScrollPaneLayout;
 public class ObfuscatorSettingsView extends JScrollPane {
 
     public ObfuscatorSettingsView(Setting<?>... settings){
-        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         //setLayout(new GridLayout(Math.max(settings.length, 10), 1));
         setLayout(new ScrollPaneLayout());

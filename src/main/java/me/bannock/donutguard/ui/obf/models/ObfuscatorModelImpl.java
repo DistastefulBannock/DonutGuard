@@ -32,28 +32,30 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                 new FileSetting("input jar", config, config.input, "input",
                         ".jar, .zip","jar", "zip"),
                 new FileSetting("output jar", config, config.output, "output",
-                        ".jar, .zip","jar", "zip")
+                        ".jar, .zip","jar", "zip"),
+                new BooleanSetting("Include libs in output", config, config.includeLibsInOutput,
+                        "includeLibsInOutput")
         ));
         obfuscatorViews.put("Libraries", new ObfuscatorSettingsView(
                 new FileListSetting("Libraries", config, config.libraries, "libraries")
+                        .withHelpComponent(new HelpButton(
+                                ResourceUtils.readString("ui/tooltips/librariesToolTip.html")))
         ));
         obfuscatorViews.put("ClassWriter Settings", new ObfuscatorSettingsView(
                 new BooleanSetting("Compute Frames (Very Resource Intensive)", config,
                         config.computeFrames, "computeFrames"),
-                new BooleanSetting("Compute Maxes", config, config.computeMaxes, "computeMaxes"),
-                new BooleanSetting("Include libs in output", config, config.includeLibsInOutput,
-                        "includeLibsInOutput")
+                new BooleanSetting("Compute Maxes", config, config.computeMaxes, "computeMaxes")
         ));
         obfuscatorViews.put("Blacklist (regex)", new ObfuscatorSettingsView(
                 new StringListSetting("Blacklist (regex)", config, config.blacklist, "blacklist")
                         .withHelpComponent(new HelpButton(
-                                ResourceUtils.readString("ui/obf/blacklistToolTip.html"))
+                                ResourceUtils.readString("ui/tooltips/blacklistToolTip.html"))
                                 .withLinkAction(new URI("https://regex101.com/")))
         ));
         obfuscatorViews.put("Whitelist (regex)", new ObfuscatorSettingsView(
                 new StringListSetting("Whitelist (regex)", config, config.whitelist, "whitelist")
                         .withHelpComponent(new HelpButton(
-                                ResourceUtils.readString("ui/obf/whitelistToolTip.html"))
+                                ResourceUtils.readString("ui/tooltips/whitelistToolTip.html"))
                                 .withLinkAction(new URI("https://regex101.com/")))
         ));
         obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());

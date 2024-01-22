@@ -53,7 +53,7 @@ public class FileSetting extends Setting<File> implements ActionListener {
         this.fileLabel = new JLabel(getValue().getAbsolutePath());
         fileLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
         container.add(openFileMenuButton, BorderLayout.WEST);
-        container.add(fileLabel , BorderLayout.CENTER);
+        container.add(fileLabel, BorderLayout.CENTER);
 
         container.setMaximumSize(new Dimension(container.getMaximumSize().width,
                 container.getPreferredSize().height));

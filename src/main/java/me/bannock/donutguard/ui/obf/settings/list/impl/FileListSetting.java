@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 public class FileListSetting extends ListSetting<File> {
 
@@ -130,7 +129,18 @@ public class FileListSetting extends ListSetting<File> {
         }
 
         HashSet<File> foundFiles = new HashSet<>();
-        for (File file : Objects.requireNonNull(dir.listFiles())){
+        File[] listFiles;
+        try{
+            listFiles = dir.listFiles();
+            if (listFiles == null)
+                listFiles = new File[0];
+        }catch (NullPointerException e){
+            logger.warn(String.format(
+                    "Something went wrong while getting the children files for \"%s\"",
+                    dir.getAbsolutePath()), e);
+            throw e;
+        }
+        for (File file : listFiles){
 
             // We travel down to the subdirs of this subdir if it is a dir
             if (file.isDirectory()){

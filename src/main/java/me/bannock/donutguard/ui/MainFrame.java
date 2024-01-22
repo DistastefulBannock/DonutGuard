@@ -40,7 +40,7 @@ public class MainFrame extends JFrame {
 
         // We have to set these so the window doesn't look like garbage
         setSize(650, 550);
-        setResizable(false);
+//        setResizable(false);
         setTitle("DonutGuard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageIcon frameIcon = new ImageIcon(ResourceUtils.readBytes("ui/donut.png"));
