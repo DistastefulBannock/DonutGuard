@@ -1,5 +1,7 @@
 package me.bannock.donutguard.obf;
 
+import me.bannock.donutguard.obf.dictionary.Dictionary;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,11 +25,17 @@ public class ConfigDTO implements Serializable {
                     "me/example/(.+/Main\\.class|Main\\.class)", "obf/classWatermark\\.txt",
                     "me/example.*"));
 
+    public List<File> libraries = new ArrayList<>();
+
+    public Dictionary localVariableDict = Dictionary.ALPHABET;
+    public Dictionary methodDict = Dictionary.ALPHABET;
+    public Dictionary fieldDict = Dictionary.ALPHABET;
+    public Dictionary classDict = Dictionary.ALPHABET;
+    public Dictionary packageDict = Dictionary.ALPHABET;
+
     // Nop spammer mutator
     public Boolean nopSpammerEnabled = false;
     public Integer nopsPerInstruction = 2;
-
-    public List<File> libraries = new ArrayList<>();
 
 
 }

@@ -2,8 +2,10 @@ package me.bannock.donutguard.ui.obf.models;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.obf.dictionary.Dictionary;
 import me.bannock.donutguard.ui.components.HelpButton;
 import me.bannock.donutguard.ui.obf.settings.impl.BooleanSetting;
+import me.bannock.donutguard.ui.obf.settings.impl.EnumSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.FileSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.IntegerSetting;
 import me.bannock.donutguard.ui.obf.settings.list.impl.file.FileListSetting;
@@ -65,7 +67,23 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                                 ResourceUtils.readString("ui/tooltips/whitelistToolTip.html"))
                                 .withLinkAction(new URI("https://regex101.com/")))
         ));
-        obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView());
+        obfuscatorViews.put("Dictionary Settings", new ObfuscatorSettingsView(
+                new EnumSetting<>("Local variable dict", config,
+                        config.localVariableDict, "localVariableDict",
+                        Dictionary.values()),
+                new EnumSetting<>("Method dict", config,
+                        config.methodDict, "methodDict",
+                        Dictionary.values()),
+                new EnumSetting<>("Field dict", config,
+                        config.fieldDict, "fieldDict",
+                        Dictionary.values()),
+                new EnumSetting<>("Class dict", config,
+                        config.classDict, "classDict",
+                        Dictionary.values()),
+                new EnumSetting<>("Package dict", config,
+                        config.packageDict, "packageDict",
+                        Dictionary.values())
+        ));
         obfuscatorViews.put("NOP Spammer", new ObfuscatorSettingsView(
                 new BooleanSetting("Mutator Enabled", config, config.nopSpammerEnabled,
                         "nopSpammerEnabled"),
