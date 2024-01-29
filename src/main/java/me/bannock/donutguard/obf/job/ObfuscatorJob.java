@@ -39,6 +39,15 @@ public class ObfuscatorJob implements Runnable {
         this.configDTO = SerializationUtils.clone(configDTO);
     }
 
+    /**
+     * Populates a hashset of mutators with all the mutators that the obfuscator offers
+     * @param mutators The set to populate
+     * @param injector The injector used to create mutator instances
+     */
+    private void createMutators(HashSet<Mutator> mutators, Injector injector){
+        mutators.add(injector.getInstance(NopSpammerMutator.class));
+    }
+
     @Override
     public void run() {
         ThreadContext.remove("threadId");
@@ -90,7 +99,7 @@ public class ObfuscatorJob implements Runnable {
         // Create mutators
         logger.info("Creating mutators...");
         HashSet<Mutator> mutators = new LinkedHashSet<>();
-        mutators.add(injector.getInstance(NopSpammerMutator.class));
+        createMutators(mutators, injector);
         logger.info("Successfully created mutators");
 
         // As documented in the Mutator class, setup is called first

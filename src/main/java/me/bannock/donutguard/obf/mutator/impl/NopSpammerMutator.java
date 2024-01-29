@@ -14,6 +14,7 @@ public class NopSpammerMutator extends Mutator {
     private final Logger logger = LogManager.getLogger();
     private final ConfigDTO config;
     private int nopsCreated;
+
     @Inject
     public NopSpammerMutator(ConfigDTO configDTO){
         super("NOP Spammer", configDTO.nopSpammerEnabled);

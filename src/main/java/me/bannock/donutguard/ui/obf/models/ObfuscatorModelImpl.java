@@ -42,7 +42,7 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
         ));
         obfuscatorViews.put("Libraries", new ObfuscatorSettingsView(
                 new FileListSetting("Libraries", config, config.libraries, "libraries",
-                        ".zip, .jar, .xml", "zip", "jar", "xml")
+                        ".zip, .jar", "zip", "jar") // TODO: Once finished, add xml for poms
                         .withFileHandlers(
                                 new ZipAndJarRecursiveDirSearcherImpl(),
                                 new MavenPomFileHandlerImpl()
