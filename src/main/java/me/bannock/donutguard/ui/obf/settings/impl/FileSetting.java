@@ -30,6 +30,8 @@ public class FileSetting extends Setting<File> implements ActionListener {
      * @param config The config data transfer object
      * @param value The value of the setting
      * @param fieldName The name of the field in the config DTO that this setting is for
+     * @param acceptedFileDescription The description to show in the accepted file type box
+     * @param acceptedFileExtensions An array of the accepted file extensions
      */
     public FileSetting(String name, ConfigDTO config, File value, String fieldName,
                        String acceptedFileDescription, String... acceptedFileExtensions) {

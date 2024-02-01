@@ -27,6 +27,7 @@ public abstract class Setting<T> {
      * Creates a new setting
      * @param name The name of the setting
      * @param config The config data transfer object
+     * @param value The value of the setting
      * @param fieldName The name of the field in the config DTO that this setting is for
      */
     public Setting(String name, ConfigDTO config, T value, String fieldName){

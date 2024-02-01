@@ -3,10 +3,10 @@ package me.bannock.donutguard.ui.topnav.controllers;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.utils.ObfJobUtils;
 import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationException;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,7 +31,7 @@ public class SaveConfigActionListenerImpl implements ActionListener {
     public void actionPerformed(ActionEvent evt) {
         logger.info("Serializing config...");
         ConfigDTO config = injector.getInstance(ConfigDTO.class);
-        byte[] data = SerializationUtils.serialize(config);
+        byte[] data = ObfJobUtils.getConfigBytes(config);
         logger.info("Successfully serialized config");
         logger.info("Prompting user for file selection...");
         JFileChooser fileChooser = getSaveFileChooser();

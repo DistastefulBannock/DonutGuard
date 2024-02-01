@@ -5,9 +5,9 @@ import com.google.inject.Injector;
 import me.bannock.donutguard.DonutGuard;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.ui.MainFrame;
+import me.bannock.donutguard.utils.ObfJobUtils;
 import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationException;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 public class LoadConfigActionListenerImpl implements ActionListener {
 
@@ -39,8 +38,7 @@ public class LoadConfigActionListenerImpl implements ActionListener {
             logger.info("Reading config from file...");
             File file = fileChooser.getSelectedFile();
             try {
-                ConfigDTO config = SerializationUtils.deserialize(
-                        Files.readAllBytes(file.toPath()));
+                ConfigDTO config = ObfJobUtils.loadConfig(file);
                 injector.getInstance(DonutGuard.class).setConfig(config);
                 injector.getInstance(MainFrame.class).refreshObfuscatorView();
                 logger.info("Successfully read config from file");

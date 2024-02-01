@@ -1,11 +1,13 @@
 package me.bannock.donutguard.obf;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 import me.bannock.donutguard.logging.DonutAppenderManager;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +25,12 @@ public class Obfuscator {
             TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
     private final Map<ObfuscatorJob, Future<?>> jobs = new LinkedHashMap<>();
     private final Map<ObfuscatorJob, String> friendlyNameJobs = new LinkedHashMap<>();
+
+    @Inject
+    public Obfuscator(){
+        if (ThreadContext.get("threadId") == null)
+            ThreadContext.put("threadId", "Independent Start");
+    }
 
     /**
      * Request a job to be executed by the obfuscator

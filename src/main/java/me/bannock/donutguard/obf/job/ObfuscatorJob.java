@@ -35,8 +35,9 @@ public class ObfuscatorJob implements Runnable {
     private JarHandler jarHandler;
 
     @Inject
-    public ObfuscatorJob(ConfigDTO configDTO){
+    public ObfuscatorJob(ConfigDTO configDTO, JarHandler jarHandler){
         this.configDTO = SerializationUtils.clone(configDTO);
+        this.jarHandler = jarHandler;
     }
 
     /**

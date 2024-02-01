@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.obf.asm.JarHandler;
 
 public class JobModule extends AbstractModule {
 
@@ -22,6 +23,12 @@ public class JobModule extends AbstractModule {
     @Provides
     public ConfigDTO provideConfigDTO() {
         return job.getConfigDTO();
+    }
+
+    @Inject
+    @Provides
+    public JarHandler provideJarHandler(){
+        return job.getJarHandler();
     }
 
 }
