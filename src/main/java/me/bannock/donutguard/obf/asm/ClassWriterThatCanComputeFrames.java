@@ -111,6 +111,9 @@ public class ClassWriterThatCanComputeFrames extends ClassWriter {
     private ClassEntry findClassEntryWithType(String type){
         if (type.toLowerCase().endsWith(".class"))
             type = type.substring(0, type.length() - 6);
+        if (!parentHandler.getFirstEntry().containsPath(type))
+            return null; // containsPath uses a HashSet and is O(1),
+                         // so if we don't have the class then we won't waste resources searching
 
         type = type.replace(".", "/");
         FileEntry<?> current = parentHandler.getFirstEntry();

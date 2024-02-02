@@ -62,7 +62,7 @@ public class LoadConfigActionListenerImpl implements ActionListener {
         fileChooser.setFileSelectionMode(JFileChooser.OPEN_DIALOG);
         fileChooser.setAcceptAllFileFilterUsed(false);
 
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Binary file", "bin");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON", "json");
         fileChooser.setFileFilter(filter);
         return fileChooser;
     }

@@ -12,6 +12,7 @@ import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
 import me.bannock.donutguard.obf.filter.RegexListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
+import me.bannock.donutguard.obf.mutator.impl.string.LineNumberStringLiteralMutator;
 import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
@@ -47,6 +48,7 @@ public class ObfuscatorJob implements Runnable {
      */
     private void createMutators(HashSet<Mutator> mutators, Injector injector){
         mutators.add(injector.getInstance(NopSpammerMutator.class));
+        mutators.add(injector.getInstance(LineNumberStringLiteralMutator.class));
     }
 
     @Override

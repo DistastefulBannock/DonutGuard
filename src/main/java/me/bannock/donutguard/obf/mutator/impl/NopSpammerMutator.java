@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.impl.ClassEntry;
 import me.bannock.donutguard.obf.mutator.Mutator;
+import me.bannock.donutguard.utils.AsmUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
@@ -28,7 +29,7 @@ public class NopSpammerMutator extends Mutator {
 
     @Override
     public void firstPassClassTransform(ClassEntry entry) {
-        loopOverMethods(entry, methodNode -> methodNode.instructions.forEach(insn -> {
+        AsmUtils.loopOverMethods(entry, methodNode -> methodNode.instructions.forEach(insn -> {
             for (int i = 0; i < config.nopsPerInstruction; i++){
                 methodNode.instructions.insertBefore(insn, new InsnNode(Opcodes.NOP));
                 nopsCreated++;

@@ -1,15 +1,17 @@
 package me.bannock.donutguard.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.DummyObfuscatorModule;
 import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
-import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.AbstractMap;
 import java.util.Map;
@@ -61,7 +63,8 @@ public class ObfJobUtils {
      * @return The config object
      */
     public static ConfigDTO loadConfig(byte[] bytes){
-        return SerializationUtils.deserialize(bytes);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.fromJson(new String(bytes, StandardCharsets.UTF_8), ConfigDTO.class);
     }
 
     /**
@@ -80,7 +83,8 @@ public class ObfJobUtils {
      * @return The serialized bytes of the config
      */
     public static byte[] getConfigBytes(ConfigDTO config){
-        return SerializationUtils.serialize(config);
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        return gson.toJson(config).getBytes(StandardCharsets.UTF_8);
     }
 
 }

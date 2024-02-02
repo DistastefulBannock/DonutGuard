@@ -3,6 +3,7 @@ package me.bannock.donutguard.utils;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -59,7 +60,7 @@ class ObfJobUtilsTest {
     @Test
     void loadConfigResource() {
         ConfigDTO config = ObfJobUtils.loadConfig(
-                ResourceUtils.readBytes("obfUtils/loadConfigFromResource.bin")
+                ResourceUtils.readBytes("obfUtils/loadConfigFromResource.json")
         );
         assertTrue(config.nopSpammerEnabled); // This config has it enabled
     }
@@ -77,6 +78,16 @@ class ObfJobUtilsTest {
         ConfigDTO configFromFile = ObfJobUtils.loadConfig(tmpConfigFile);
         assertTrue(configFromFile.nopSpammerEnabled);
         tmpConfigFile.delete();
+    }
+
+    @Test
+    void makeSureConfigLoadingDoesntUseNullValuesWhenMissingInConfigFile(){
+        ConfigDTO config1 = new ConfigDTO();
+        ConfigDTO config2 = ObfJobUtils.loadConfig(
+                ResourceUtils.readBytes("obfUtils/empty.json")
+        );
+        assertArrayEquals(SerializationUtils.serialize(config1),
+                SerializationUtils.serialize(config2));
     }
 
 }

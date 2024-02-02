@@ -3,6 +3,7 @@ package me.bannock.donutguard.ui.obf.models;
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.dictionary.Dictionary;
+import me.bannock.donutguard.obf.mutator.impl.string.StringLiteralEncryptionType;
 import me.bannock.donutguard.ui.components.HelpButton;
 import me.bannock.donutguard.ui.obf.settings.impl.BooleanSetting;
 import me.bannock.donutguard.ui.obf.settings.impl.EnumSetting;
@@ -31,6 +32,11 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
 
     @Override
     public Map<String, JComponent> getObfuscatorViews() throws Exception {
+
+        // This code is a mess, but it isn't difficult to follow.
+        // The strings in the list are used to create buttons, which display
+        // their associated JComponent when clicked.
+        // ObfuscatorSettingsView is a view that holds and manages setting objects.
         Map<String, JComponent> obfuscatorViews = new LinkedHashMap<>();
         obfuscatorViews.put("IO Settings", new ObfuscatorSettingsView(
                 new FileSetting("input jar", config, config.input, "input",
@@ -38,7 +44,9 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                 new FileSetting("output jar", config, config.output, "output",
                         ".jar, .zip","jar", "zip"),
                 new BooleanSetting("Include libs in output", config, config.includeLibsInOutput,
-                        "includeLibsInOutput")
+                        "includeLibsInOutput"),
+                new BooleanSetting("Suppress \"Node of same path\" error", config,
+                        config.suppressNodeOfSamePathError, "suppressNodeOfSamePathError")
         ));
         obfuscatorViews.put("Libraries", new ObfuscatorSettingsView(
                 new FileListSetting("Libraries", config, config.libraries, "libraries",
@@ -82,13 +90,23 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                         Dictionary.values()),
                 new EnumSetting<>("Package dict", config,
                         config.packageDict, "packageDict",
-                        Dictionary.values())
+                        Dictionary.values()),
+                new IntegerSetting("Nested Package Count", config, config.nestedPackages,
+                        "nestedPackages", 0, 50, 1)
         ));
         obfuscatorViews.put("NOP Spammer", new ObfuscatorSettingsView(
                 new BooleanSetting("Mutator Enabled", config, config.nopSpammerEnabled,
                         "nopSpammerEnabled"),
                 new IntegerSetting("NOPs per instruction", config, config.nopsPerInstruction,
                         "nopsPerInstruction", 1, 100, 1)
+        ));
+        obfuscatorViews.put("String Encryption", new ObfuscatorSettingsView(
+                new BooleanSetting("String Literal Encryption Enabled",
+                        config, config.stringLiteralEncryptionEnabled,
+                        "stringLiteralEncryptionEnabled"),
+                new EnumSetting<>("String Encryption Variant", config,
+                        config.stringLiteralEncryptionType, "stringLiteralEncryptionType",
+                        StringLiteralEncryptionType.values())
         ));
         return obfuscatorViews;
     }

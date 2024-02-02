@@ -128,6 +128,11 @@ public class FileListSetting extends ListSetting<File> {
             for (File file : this.selectedFiles){
                 if (file == null)
                     continue;
+                // Sometimes the file chooser will return weird instances
+                // like one of Win32ShellFolder2. This breaks GSON, which we use
+                // for config serialization. My quick fix is to get the path
+                // and throw it in another file object.
+                file = new File(file.getAbsolutePath());
                 for (CustomFileHandler handler : fileHanders){try{
                     if (handler.handle(files, file))continue fileLoop;
                 }catch (Exception ignored){}}

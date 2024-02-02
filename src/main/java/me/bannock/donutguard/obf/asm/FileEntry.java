@@ -1,5 +1,6 @@
 package me.bannock.donutguard.obf.asm;
 
+import me.bannock.donutguard.obf.asm.impl.DummyEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +40,7 @@ public abstract class FileEntry<T> {
             throw new IllegalArgumentException("Node cannot already be in a linked list");
         }
         if (getCurrentlyAddedNodes().contains(node)){
-            logger.warn("Node of same path is already present in linked list.");
+//            logger.warn("Node of same path is already present in linked list.");
             throw new IllegalArgumentException("Node of same path(\"" + node.getPath() +
                     "\") is already present in linked list.");
         }
@@ -80,6 +81,24 @@ public abstract class FileEntry<T> {
         getCurrentlyAddedNodes().remove(this);
         this.path = path;
         getCurrentlyAddedNodes().add(this);
+    }
+
+    /**
+     * Checks if the self-managed linked list already contains an entry
+     * @param entry The entry to check
+     * @return True if the linked list contains the given entry, otherwise false
+     */
+    public boolean containsEntry(FileEntry<?> entry){
+        return getCurrentlyAddedNodes().contains(entry);
+    }
+
+    /**
+     * Checks if the self-managed linked list already contains a path
+     * @param path The path to check
+     * @return True if the linked list contains the given path, otherwise false
+     */
+    public boolean containsPath(String path){
+        return containsEntry(new DummyEntry(path));
     }
 
     public String getPath() {

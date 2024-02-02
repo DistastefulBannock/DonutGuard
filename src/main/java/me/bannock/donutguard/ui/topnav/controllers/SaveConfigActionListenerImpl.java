@@ -41,8 +41,8 @@ public class SaveConfigActionListenerImpl implements ActionListener {
             try {
                 logger.info("Writing config to file...");
                 File file = fileChooser.getSelectedFile();
-                if (!file.getAbsolutePath().toLowerCase().endsWith(".bin"))
-                    file = new File(file.getAbsolutePath() + ".bin");
+                if (!file.getAbsolutePath().toLowerCase().endsWith(".json"))
+                    file = new File(file.getAbsolutePath() + ".json");
                 FileUtils.writeByteArrayToFile(file, data, false);
                 logger.info("Successfully wrote config to file");
             } catch (IOException | SerializationException e) {
@@ -65,7 +65,7 @@ public class SaveConfigActionListenerImpl implements ActionListener {
         fileChooser.setFileSelectionMode(JFileChooser.OPEN_DIALOG);
         fileChooser.setAcceptAllFileFilterUsed(false);
 
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Binary file", "bin");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON", "json");
         fileChooser.setFileFilter(filter);
         return fileChooser;
     }

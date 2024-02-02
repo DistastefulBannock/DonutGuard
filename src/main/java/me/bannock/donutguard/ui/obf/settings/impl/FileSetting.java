@@ -74,7 +74,11 @@ public class FileSetting extends Setting<File> implements ActionListener {
         int result = fileChooser.showDialog(null, "Select");
         logger.info("User closed prompt");
         if(result == JFileChooser.APPROVE_OPTION){
-            File selectedFile = fileChooser.getSelectedFile();
+            // Sometimes this method call will return weird instances
+            // like one of Win32ShellFolder2. This breaks GSON, which we use
+            // for config serialization. My quick fix is to get the path
+            // and throw it in another file object.
+            File selectedFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
 
             // The setValue method sets the field in the config class. If it returns false,
             // then the value was not set because of an error or because of a value filter

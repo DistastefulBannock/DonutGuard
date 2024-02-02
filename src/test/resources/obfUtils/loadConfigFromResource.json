@@ -1,0 +1,29 @@
+{
+  "input": {
+    "path": "C:\\Users\\Donut\\IdeaProjects\\DonutGuard\\input.jar"
+  },
+  "output": {
+    "path": "C:\\Users\\Donut\\IdeaProjects\\DonutGuard\\output.jar"
+  },
+  "computeFrames": false,
+  "computeMaxes": true,
+  "includeLibsInOutput": false,
+  "logNodeOfSamePathError": false,
+  "whitelist": [],
+  "blacklist": [
+    "me/example/(.+/Main\\.class|Main\\.class)",
+    "obf/classWatermark\\.txt",
+    "me/example.*"
+  ],
+  "libraries": [],
+  "localVariableDict": "ALPHABET",
+  "methodDict": "ALPHABET",
+  "fieldDict": "ALPHABET",
+  "classDict": "ALPHABET",
+  "packageDict": "ALPHABET",
+  "nestedPackages": 0,
+  "nopSpammerEnabled": true,
+  "nopsPerInstruction": 2,
+  "stringLiteralEncryptionEnabled": false,
+  "stringLiteralEncryptionType": "IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS"
+}
