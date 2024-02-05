@@ -1,6 +1,6 @@
-package me.bannock.donutguard.obf.asm;
+package me.bannock.donutguard.obf.asm.entry;
 
-import me.bannock.donutguard.obf.asm.impl.DummyEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +22,7 @@ public abstract class FileEntry<T> {
     private final boolean shouldMutate, libraryEntry;
     private T content;
     private FileEntry<?> previousNode = null, nextNode = null;
-    private HashSet<FileEntry<?>> currentlyAddedNodes = new HashSet<>();
+    private FileEntryMetadata linkedListMetadata = new FileEntryMetadata(this);
 
     /**
      * @param path The path of the entry inside the jar
@@ -46,7 +46,7 @@ public abstract class FileEntry<T> {
             logger.warn("Node being is already inside of a linked list");
             throw new IllegalArgumentException("Node cannot already be in a linked list");
         }
-        if (getCurrentlyAddedNodes().contains(node)){
+        if (linkedListMetadata.getCurrentlyAddedNodes().contains(node)){
 //            logger.warn("Node of same path is already present in linked list.");
             throw new IllegalArgumentException("Node of same path(\"" + node.getPath() +
                     "\") is already present in linked list.");
@@ -54,13 +54,12 @@ public abstract class FileEntry<T> {
 
         // We first have to get the last node in our linked list so we can add our
         // new node to the linked list
-        FileEntry<?> currentNode = this;
-        while (currentNode.getNextNode() != null)
-            currentNode = currentNode.getNextNode();
-        currentNode.setNextNode(node);
-        node.setPreviousNode(currentNode);
-        getCurrentlyAddedNodes().add(node);
-        node.setCurrentlyAddedNodes(getCurrentlyAddedNodes());
+        FileEntry<?> lastNode = linkedListMetadata.getLastNode();
+        lastNode.setNextNode(node);
+        node.setPreviousNode(lastNode);
+        linkedListMetadata.setLastNode(node);
+        linkedListMetadata.getCurrentlyAddedNodes().add(node);
+        node.setLinkedListMetadata(linkedListMetadata);
     }
 
     /**
@@ -70,9 +69,15 @@ public abstract class FileEntry<T> {
     public void removeNode(){
         FileEntry<?> previous = getPreviousNode();
         FileEntry<?> next = getNextNode();
-        next.setPreviousNode(previous);
-        next.setNextNode(next);
-        setCurrentlyAddedNodes(new HashSet<>());
+        if (this == linkedListMetadata.getLastNode()){
+            linkedListMetadata.setLastNode(previousNode);
+        }
+        setLinkedListMetadata(new FileEntryMetadata(this));
+        if (next != null)
+            next.setPreviousNode(previous);
+        if (previous != null)
+            previous.setNextNode(next);
+        linkedListMetadata.setCurrentlyAddedNodes(new HashSet<>());
     }
 
     /**
@@ -81,13 +86,13 @@ public abstract class FileEntry<T> {
      * @param path The new path to use
      */
     public void setPath(String path) {
-        if (getCurrentlyAddedNodes().contains(this)){
+        if (linkedListMetadata.getCurrentlyAddedNodes().contains(this)){
             logger.error("Cannot set path to a path that is already in use");
             throw new IllegalArgumentException("Path is already in use");
         }
-        getCurrentlyAddedNodes().remove(this);
+        linkedListMetadata.getCurrentlyAddedNodes().remove(this);
         this.path = path;
-        getCurrentlyAddedNodes().add(this);
+        linkedListMetadata.getCurrentlyAddedNodes().add(this);
     }
 
     /**
@@ -96,7 +101,7 @@ public abstract class FileEntry<T> {
      * @return True if the linked list contains the given entry, otherwise false
      */
     public boolean containsEntry(FileEntry<?> entry){
-        return getCurrentlyAddedNodes().contains(entry);
+        return linkedListMetadata.getCurrentlyAddedNodes().contains(entry);
     }
 
     /**
@@ -144,12 +149,12 @@ public abstract class FileEntry<T> {
         this.nextNode = nextNode;
     }
 
-    private HashSet<FileEntry<?>> getCurrentlyAddedNodes() {
-        return currentlyAddedNodes;
+    public FileEntryMetadata getLinkedListMetadata() {
+        return linkedListMetadata;
     }
 
-    private void setCurrentlyAddedNodes(HashSet<FileEntry<?>> currentlyAddedNodes) {
-        this.currentlyAddedNodes = currentlyAddedNodes;
+    private void setLinkedListMetadata(FileEntryMetadata linkedListMetadata) {
+        this.linkedListMetadata = linkedListMetadata;
     }
 
     @Override

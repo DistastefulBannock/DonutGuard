@@ -1,6 +1,7 @@
 package me.bannock.donutguard.obf.asm;
 
-import me.bannock.donutguard.obf.asm.impl.ClassEntry;
+import me.bannock.donutguard.obf.asm.entry.FileEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassWriter;

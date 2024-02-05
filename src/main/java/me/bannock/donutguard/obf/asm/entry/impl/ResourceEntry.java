@@ -1,6 +1,6 @@
-package me.bannock.donutguard.obf.asm.impl;
+package me.bannock.donutguard.obf.asm.entry.impl;
 
-import me.bannock.donutguard.obf.asm.FileEntry;
+import me.bannock.donutguard.obf.asm.entry.FileEntry;
 
 public class ResourceEntry extends FileEntry<byte[]> {
 

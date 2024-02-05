@@ -1,7 +1,7 @@
 package me.bannock.donutguard.utils;
 
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.asm.impl.ClassEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;

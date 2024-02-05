@@ -4,11 +4,11 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.asm.FileEntry;
+import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.JarHandler;
-import me.bannock.donutguard.obf.asm.impl.ClassEntry;
-import me.bannock.donutguard.obf.asm.impl.DummyEntry;
-import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 import me.bannock.donutguard.obf.filter.RegexListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
@@ -62,7 +62,7 @@ public class ObfuscatorJob implements Runnable {
         try {
             runObfuscator();
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             if (!(e instanceof InterruptedException)) {
                 failed = true;
                 logger.error("An error occurred while running the obfuscator", e);
@@ -200,7 +200,7 @@ public class ObfuscatorJob implements Runnable {
         RegexListFilter blacklist = new RegexListFilter(configDTO.blacklist);
         RegexListFilter whitelist = new RegexListFilter(configDTO.whitelist);
         while (currentEntry != null){
-            // We get the next entry before running calling any consumers as they may remove or change
+            // We get the next entry before calling any consumers as they may remove or change
             // where the current entry is on the list. If this node is moved to the end then it would
             // end the job early because it assumes that it is the last node. Keeping track of the next
             // node here will prevent that.

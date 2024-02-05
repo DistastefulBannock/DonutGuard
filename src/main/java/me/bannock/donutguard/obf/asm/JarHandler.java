@@ -2,9 +2,10 @@ package me.bannock.donutguard.obf.asm;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.asm.impl.ClassEntry;
-import me.bannock.donutguard.obf.asm.impl.DummyEntry;
-import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
+import me.bannock.donutguard.obf.asm.entry.FileEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 import me.bannock.donutguard.utils.IoUtils;
 import me.bannock.donutguard.utils.ResourceUtils;
 import me.bannock.donutguard.utils.UiUtils;

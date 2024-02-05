@@ -1,7 +1,7 @@
 package me.bannock.donutguard.obf.mutator;
 
-import me.bannock.donutguard.obf.asm.impl.ClassEntry;
-import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 
 /**
  * The mutator base class.

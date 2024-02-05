@@ -2,7 +2,7 @@ package me.bannock.donutguard.obf.mutator.impl.string;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.asm.impl.ClassEntry;
+import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.string.linenum.MethodMetadata;
 import me.bannock.donutguard.obf.mutator.impl.string.linenum.StringMetadata;
