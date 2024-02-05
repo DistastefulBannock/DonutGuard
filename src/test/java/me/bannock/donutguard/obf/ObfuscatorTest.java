@@ -1,10 +1,7 @@
-package me.bannock.donutguard;
+package me.bannock.donutguard.obf;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.CustomObfuscatorModule;
-import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import org.junit.jupiter.api.Test;
@@ -13,7 +10,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class DonutGuardTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ObfuscatorTest {
 
     @Test
     void quickStartExample(){
@@ -23,17 +22,19 @@ public class DonutGuardTest {
         config.input = new File("tools/Evaluator-1.0-SNAPSHOT.jar");
         config.output = new File("output1.jar");
 
-        // A simple module will just store and use the passed in config.
-//        Injector injector = Guice.createInjector(new SimpleObfuscatorModule(configDTO));
+        // This module constructor just stores and uses the passed in config instance.
+        // You are unable to change the object reference used by created jobs
+        // when using this configuration.
+        Injector injector = Guice.createInjector(new ObfuscatorModule(config));
 
-        // You could also use a CustomObfuscatorModule if you wish to
+        // You could also use a provider if you wish to
         // provide the config from a field, variable, or with guice.
         // In the example below, we create a new provider and pass it into
-        // a custom module. Since the provider is called every time it needs
+        // the module. Since the provider is called every time it needs
         // to be injected, you could add logic or return from a changing field.
         // You may get a provider from guice as well, check out
         // me.bannock.donutguard.DonutGuardModule for an example of this.
-        Injector injector = Guice.createInjector(new CustomObfuscatorModule(() -> config));
+//        Injector injector = Guice.createInjector(new ObfuscatorModule(() -> config));
 
         // Create the Obfuscator instance with guice
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
@@ -68,6 +69,22 @@ public class DonutGuardTest {
         obfuscator.removeJob(job1);
         obfuscator.removeJob(job2);
 
+    }
+
+    @Test
+    void jobNotFoundTest(){
+        ConfigDTO config = new ConfigDTO();
+        config.input = new File("tools/Evaluator-1.0-SNAPSHOT.jar");
+        Injector injector = Guice.createInjector(new ObfuscatorModule(config));
+        Obfuscator obfuscator1 = injector.getInstance(Obfuscator.class);
+        Obfuscator obfuscator2 = injector.getInstance(Obfuscator.class);
+        ObfuscatorJob job1 = injector.getInstance(ObfuscatorJob.class);
+        ObfuscatorJob job2 = injector.getInstance(ObfuscatorJob.class);
+        assertSame(obfuscator1.getJobStatus(job1), JobStatus.NOT_FOUND);
+        obfuscator1.submitJob(job1);
+        assertNotSame(obfuscator1.getJobStatus(job1), JobStatus.NOT_FOUND);
+        assertSame(obfuscator2.getJobStatus(job1), JobStatus.NOT_FOUND);
+        assertSame(obfuscator1.getJobStatus(job2), JobStatus.NOT_FOUND);
     }
 
 }

@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.CustomObfuscatorModule;
+import me.bannock.donutguard.obf.ObfuscatorModule;
 import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.ui.MainFrame;
 
@@ -30,7 +30,7 @@ public class DonutGuardModule extends AbstractModule {
     @Provides
     public Obfuscator provideObfuscator(Provider<ConfigDTO> provider){
         if (this.obfuscatorInstance == null)
-            this.obfuscatorInstance = Guice.createInjector(new CustomObfuscatorModule(provider))
+            this.obfuscatorInstance = Guice.createInjector(new ObfuscatorModule(provider))
                     .getInstance(Obfuscator.class);
         return obfuscatorInstance;
     }
