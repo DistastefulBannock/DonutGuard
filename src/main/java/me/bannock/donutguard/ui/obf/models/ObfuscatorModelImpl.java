@@ -108,6 +108,11 @@ public class ObfuscatorModelImpl implements ObfuscatorModel {
                         config.stringLiteralEncryptionType, "stringLiteralEncryptionType",
                         StringLiteralEncryptionType.values())
         ));
+        obfuscatorViews.put("Dev testing", new ObfuscatorSettingsView(
+                new BooleanSetting("Dev testing mutator enabled",
+                        config, config.devTestMutatorEnabled,
+                        "devTestMutatorEnabled")
+        ));
         return obfuscatorViews;
     }
 }

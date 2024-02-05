@@ -44,15 +44,15 @@ public class JarHandler {
      * Loads a jar file as well as its entries into this jar handler.
      * Will not clear any existing entries.
      * @param file The jar file to load
-     * @param shouldMutate Whether the mutators should mutate the classes in this jar
+     * @param isLibrary Whether the handler should mark the entry as part of a library
      * @throws RuntimeException If an error occurs while loading the jar file
      */
-    public void loadJarFile(File file, boolean shouldMutate) throws RuntimeException{
+    public void loadJarFile(File file, boolean isLibrary) throws RuntimeException{
         logger.info("Loading jar file \"" + file.getAbsolutePath() + "\"...");
 
         try (JarFile jarFile = new JarFile(file)) {
             jarFile.entries().asIterator()
-                    .forEachRemaining(getEntryConsumer(jarFile, shouldMutate));
+                    .forEachRemaining(getEntryConsumer(jarFile, isLibrary));
             logger.info("Successfully loaded jar file \"" +
                     jarFile.getName() + "\"");
         } catch (IOException e) {
@@ -67,12 +67,12 @@ public class JarHandler {
      * @param file The file to write the jar to
      * @param computeFrames Whether the class writer should compute frames
      * @param computeMaxes Whether the class writer should compute maxes
-     * @param includeNonMutated Whether non-mutated entries should be included in the built jar
+     * @param includeLibraryEntries Whether library entries should be included in the built jar
      * @throws RuntimeException If something went wrong while writing the file
      * @throws InterruptedException If the thread is interrupted while writing
      */
     public void writeJarFile(File file, boolean computeFrames, boolean computeMaxes,
-                             boolean includeNonMutated) throws RuntimeException, InterruptedException{
+                             boolean includeLibraryEntries) throws RuntimeException, InterruptedException{
         logger.info("Writing jar file...");
         final String classWatermark = ResourceUtils.readString("obf/classWatermark.txt");
         final String jarWatermark = ResourceUtils.readString("obf/jarWatermark.txt");
@@ -87,7 +87,7 @@ public class JarHandler {
                 if (Thread.interrupted())
                     throw new InterruptedException("Obfuscation job was interrupted");
                 if (lastEntry instanceof DummyEntry ||
-                        (!lastEntry.isShouldMutate() && !includeNonMutated))
+                        (lastEntry.isLibraryEntry() && !includeLibraryEntries))
                     continue; // Ignored
                 logger.debug("Writing " + lastEntry.getPath() + "...");
 
@@ -103,13 +103,10 @@ public class JarHandler {
 
                 if (lastEntry instanceof ResourceEntry){
                     ResourceEntry entry = (ResourceEntry) lastEntry;
-                    if (entry.isShouldMutate() || includeNonMutated)
-                        jos.write(entry.getContent());
+                    jos.write(entry.getContent());
                 }
-                else if (lastEntry instanceof ClassEntry)cancel:{
+                else if (lastEntry instanceof ClassEntry){
                     ClassEntry entry = (ClassEntry) lastEntry;
-                    if (!(entry.isShouldMutate() || includeNonMutated))
-                        break cancel;
                     ClassWriter classWriter = getClassWriter(computeFrames, computeMaxes);
                     entry.getContent().accept(classWriter);
                     // This adds a string to the constant pool, effectively watermarking the class
@@ -159,7 +156,7 @@ public class JarHandler {
     }
 
     private Consumer<? super JarEntry> getEntryConsumer(JarFile jarFile,
-                                                        boolean shouldMutateEntries){
+                                                        boolean isLibrary){
         return entry -> {
             if (entry == null || entry.isDirectory())
                 return;
@@ -180,9 +177,9 @@ public class JarHandler {
             // is of a jar file
             FileEntry<?> newEntry;
             if (name.toLowerCase().endsWith(".class")){
-                newEntry = new ClassEntry(name, shouldMutateEntries, bytes);
+                newEntry = new ClassEntry(name, !isLibrary, isLibrary, bytes);
             }else{
-                newEntry = new ResourceEntry(name, shouldMutateEntries, bytes);
+                newEntry = new ResourceEntry(name, !isLibrary, isLibrary, bytes);
             }
             try{
                 firstEntry.addNodeToEnd(newEntry);

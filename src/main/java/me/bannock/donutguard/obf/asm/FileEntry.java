@@ -7,26 +7,33 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashSet;
 import java.util.Objects;
 
+/**
+ * This class is an abstraction for entries inside of zip/jar files.
+ * It has a self-managed linked list that keeps track of all entries
+ * in an archive. You are only able to add nodes to the end or remove them,
+ * you are not able to insert them in the middle.
+ * @param <T> The type of content that this entry contains
+ */
 public abstract class FileEntry<T> {
 
     private final Logger logger = LogManager.getLogger();
 
     private String path;
-    private final boolean resource, shouldMutate;
+    private final boolean shouldMutate, libraryEntry;
     private T content;
     private FileEntry<?> previousNode = null, nextNode = null;
     private HashSet<FileEntry<?>> currentlyAddedNodes = new HashSet<>();
 
     /**
      * @param path The path of the entry inside the jar
-     * @param isResource Whether the entry is a resource
      * @param shouldMutate Whether the program should mutate this entry
+     * @param libraryEntry Whether the class is part of a library
      * @param content The content of the entry
      */
-    public FileEntry(String path, boolean isResource, boolean shouldMutate, T content){
+    public FileEntry(String path, boolean shouldMutate, boolean libraryEntry, T content){
         this.path = path;
-        this.resource = isResource;
         this.shouldMutate = shouldMutate;
+        this.libraryEntry = libraryEntry;
         this.content = content;
     }
 
@@ -105,12 +112,12 @@ public abstract class FileEntry<T> {
         return path;
     }
 
-    public boolean isResource() {
-        return resource;
-    }
-
     public boolean isShouldMutate() {
         return shouldMutate;
+    }
+
+    public boolean isLibraryEntry() {
+        return libraryEntry;
     }
 
     public T getContent() {

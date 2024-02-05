@@ -4,8 +4,8 @@ import me.bannock.donutguard.obf.asm.FileEntry;
 
 public class ResourceEntry extends FileEntry<byte[]> {
 
-    public ResourceEntry(String path, boolean shouldMutate, byte[] content) {
-        super(path, true, shouldMutate, content);
+    public ResourceEntry(String path, boolean shouldMutate, boolean libraryEntry, byte[] content) {
+        super(path, shouldMutate, libraryEntry, content);
     }
 
 }

@@ -46,5 +46,7 @@ public class ConfigDTO implements Serializable {
     public StringLiteralEncryptionType stringLiteralEncryptionType =
             StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS;
 
+    public boolean devTestMutatorEnabled = false;
+
 
 }

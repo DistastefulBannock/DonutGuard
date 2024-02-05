@@ -12,6 +12,7 @@ import me.bannock.donutguard.obf.asm.impl.ResourceEntry;
 import me.bannock.donutguard.obf.filter.RegexListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
+import me.bannock.donutguard.obf.mutator.impl.TestMutator;
 import me.bannock.donutguard.obf.mutator.impl.string.LineNumberStringLiteralMutator;
 import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -49,6 +50,7 @@ public class ObfuscatorJob implements Runnable {
     private void createMutators(HashSet<Mutator> mutators, Injector injector){
         mutators.add(injector.getInstance(NopSpammerMutator.class));
         mutators.add(injector.getInstance(LineNumberStringLiteralMutator.class));
+        mutators.add(injector.getInstance(TestMutator.class));
     }
 
     @Override
@@ -86,10 +88,10 @@ public class ObfuscatorJob implements Runnable {
         logger.info("Successfully created job injector");
         logger.info("Creating and loading jar handler...");
         this.jarHandler = injector.getInstance(JarHandler.class);
-        jarHandler.loadJarFile(getConfigDTO().input, true);
+        jarHandler.loadJarFile(getConfigDTO().input, false);
         for (File file : configDTO.libraries){
             try{
-                jarHandler.loadJarFile(file, false);
+                jarHandler.loadJarFile(file, true);
             }catch (Exception e){
                 logger.warn("Something went wrong while loading a library");
             }
@@ -193,38 +195,37 @@ public class ObfuscatorJob implements Runnable {
      * @param handler The handler to get the entries from
      * @param consumer Callback consumer. Will be fed every entry except dummies
      */
-    private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer,
-                                       boolean loopOverBlacklistedEntries){
-        FileEntry<?> currentEntry = jarHandler.getFirstEntry();
+    private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
+        FileEntry<?> currentEntry = handler.getFirstEntry();
         RegexListFilter blacklist = new RegexListFilter(configDTO.blacklist);
         RegexListFilter whitelist = new RegexListFilter(configDTO.whitelist);
         while (currentEntry != null){
-            // We get the next entry before running calling
-            // any consumers as they may remove or change
-            // where the current entry is on the list
+            // We get the next entry before running calling any consumers as they may remove or change
+            // where the current entry is on the list. If this node is moved to the end then it would
+            // end the job early because it assumes that it is the last node. Keeping track of the next
+            // node here will prevent that.
             FileEntry<?> nextEntry = currentEntry.getNextNode();
 
             // We now callback to the desired consumer
-            if (!(currentEntry instanceof DummyEntry) &&
-                    (loopOverBlacklistedEntries ||
-                            !(blacklist.matches(currentEntry.getPath())
-                                    && !whitelist.matches(currentEntry.getPath()))))
+            boolean shouldProcess = currentEntry.isShouldMutate()
+                    && !(currentEntry instanceof DummyEntry)
+                    && (!blacklist.matches(currentEntry.getPath())
+                    || whitelist.matches(currentEntry.getPath()));
+            if (shouldProcess)
                 consumer.accept(currentEntry);
+
+            // This is to ensure newly added classes aren't dropped by our loop. To explain:
+            // When a new class is created by our tool, it is added to the end of the linked list.
+            // While we are able to remove nodes from the linked list, we are not able to insert them
+            // anywhere but the end. Our next node is logged before the add operation is done by the mutator.
+            // If a mutator adds a new node on the last entry then it would drop the entry and not pass it to
+            // our mutators. This check ensures that any new nodes be processed.
+            if (nextEntry == null && currentEntry.getNextNode() != null)
+                nextEntry = currentEntry.getNextNode();
 
             // Only now do we change the current entry variable
             currentEntry = nextEntry;
         }
-    }
-
-    /**
-     * Loops over entries of a JarHandler in such a way
-     * where it is safe for any mutators to move or remove
-     * nodes from the entry linked list
-     * @param handler The handler to get the entries from
-     * @param consumer Callback consumer. Will be fed every entry except dummies
-     */
-    private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
-        safelyLoopOverEntries(handler, consumer, false);
     }
 
     private void checkForInterrupt() throws InterruptedException {

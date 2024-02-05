@@ -21,10 +21,11 @@ public class ClassEntry extends FileEntry<ClassNode> {
     /**
      * @param path The path of the entry inside the jar
      * @param shouldMutate Whether the program should mutate this entry
+     * @param libraryEntry Whether the class is part of a library
      * @param classBytes The bytes of the classs
      */
-    public ClassEntry(String path, boolean shouldMutate, byte[] classBytes) {
-        super(path, false, shouldMutate, null);
+    public ClassEntry(String path, boolean shouldMutate, boolean libraryEntry, byte[] classBytes) {
+        super(path, shouldMutate, libraryEntry, null);
         this.classWriterTasks = new ArrayList<>();
 
         logger.debug("Reading class bytes...");
@@ -44,10 +45,19 @@ public class ClassEntry extends FileEntry<ClassNode> {
     /**
      * @param path The path of the entry inside the jar
      * @param shouldMutate Whether the program should mutate this entry
+     * @param classBytes The bytes of the classs
+     */
+    public ClassEntry(String path, boolean shouldMutate, byte[] classBytes) {
+        this(path, shouldMutate, false, classBytes);
+    }
+
+    /**
+     * @param path The path of the entry inside the jar
+     * @param shouldMutate Whether the program should mutate this entry
      * @param node The ClassNode object
      */
     public ClassEntry(String path, boolean shouldMutate, ClassNode node) {
-        super(path, false, shouldMutate, node);
+        super(path, shouldMutate, false, node);
         this.classWriterTasks = new ArrayList<>();
     }
 
