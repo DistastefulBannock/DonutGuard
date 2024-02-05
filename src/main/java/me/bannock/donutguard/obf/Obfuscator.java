@@ -16,6 +16,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class manages instances of ObfuscatorJob. No obfuscation is done
+ * in this class, nor should it ever be done. It only manages jobs.
+ */
 public class Obfuscator {
 
     private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();

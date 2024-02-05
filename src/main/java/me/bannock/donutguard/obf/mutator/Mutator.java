@@ -16,6 +16,10 @@ import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
  * <li>secondPassResourceTransform (called for every resource entry; finally moves to next mutator)</li>
  * <li>cleanup (called on every mutator; still called before class writer consumers)</li>
  * </ol>
+ * <br/>
+ * This class is created once per ObfuscatorJob. Its enabled state should not change after creation.
+ * It is only used for the specific job it was created for. It may run twice if the same job is rerun,
+ * but otherwise its usually discarded.
  */
 public abstract class Mutator {
 

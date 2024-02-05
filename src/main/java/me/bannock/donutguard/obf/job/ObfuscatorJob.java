@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.function.Consumer;
 
+/**
+ * This class handles the code behind the obfuscation. It creates and uses the mutators.
+ */
 public class ObfuscatorJob implements Runnable {
 
     private final Logger logger = LogManager.getLogger();
