@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
-public class  DonutGuard {
+public class DonutGuard {
 
     static{
         // First, we set the look and feel because it looks better this way
