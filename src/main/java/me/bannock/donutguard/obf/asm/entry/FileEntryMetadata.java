@@ -2,6 +2,11 @@ package me.bannock.donutguard.obf.asm.entry;
 
 import java.util.HashSet;
 
+/**
+ * Metadata object for FileEntry class. Every node in the FileEntry's self-managed linked list
+ * is given the same metadata object. This allows for them to easily grab the end of the list,
+ * or the content of the list in the form of a hashset.
+ */
 public class FileEntryMetadata {
 
     /**
