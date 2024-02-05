@@ -55,7 +55,9 @@ public class ObfuscatorTest {
         obfuscator.submitJob(job2);
 
         // The jobs will run on different threads, so we will do a simple busy sleep until
-        // both jobs are completed
+        // both jobs are completed. Ideally your program should continue to run without
+        // something like this, but since we are removing the jobs below, we need to wait
+        // for them to complete.
         HashSet<JobStatus> endedStatuses = new HashSet<>(
                 Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)
         );
