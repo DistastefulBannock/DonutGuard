@@ -24,7 +24,7 @@ public class ObfuscatorTest {
 
         // This module constructor just stores and uses the passed in config instance.
         // You are unable to change the object reference used by created jobs
-        // when using this configuration.
+        // when using this module.
         Injector injector = Guice.createInjector(new ObfuscatorModule(config));
 
         // You could also use a provider if you wish to
