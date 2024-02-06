@@ -14,7 +14,7 @@ public class Configuration implements Serializable {
 
     private static final long serialVersionUID = 3621L;
 
-    private final Logger logger = LogManager.getLogger();
+    private transient final Logger logger = LogManager.getLogger();
 
     private final Map<String, Object> keys;
 
