@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+@Deprecated(forRemoval = true)
 public class ConfigDTO implements Serializable {
 
     // Don't change this or old configs will not be able to load anymore

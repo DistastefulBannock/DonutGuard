@@ -11,6 +11,10 @@ import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import me.bannock.donutguard.obf.mutator.impl.TestMutator;
 import me.bannock.donutguard.obf.mutator.impl.string.LineNumberStringLiteralMutator;
 
+/**
+ * This module is used internally by the ObfuscatorJob class to create and
+ * initialize mutators.
+ */
 public class JobModule extends AbstractModule {
 
     private final ObfuscatorJob job;
