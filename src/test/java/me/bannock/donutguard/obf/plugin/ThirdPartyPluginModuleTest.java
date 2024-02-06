@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import me.bannock.donutguard.obf.mutator.Mutator;
 
-public class ThirdPartyPluginTest extends AbstractModule {
+public class ThirdPartyPluginModuleTest extends AbstractModule {
 
     @Override
     protected void configure() {
