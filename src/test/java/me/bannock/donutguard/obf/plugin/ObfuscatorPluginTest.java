@@ -23,7 +23,7 @@ public class ObfuscatorPluginTest {
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
         ConfigDTO config = new ConfigDTO();
         config.input = new File("tools/Evaluator-1.0-SNAPSHOT.jar");
-        ObfuscatorJob job = jobFactory.create(config, new ThirdPartyPlugin());
+        ObfuscatorJob job = jobFactory.create(config, new ThirdPartyPluginTest());
         obfuscator.submitJob(job);
         HashSet<JobStatus> endedStatuses = new HashSet<>(
                 Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)

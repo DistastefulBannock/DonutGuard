@@ -4,9 +4,9 @@ import me.bannock.donutguard.obf.mutator.Mutator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ThirdPartyMutator extends Mutator {
+public class ThirdPartyMutatorTest extends Mutator {
         private final Logger logger = LogManager.getLogger();
-        public ThirdPartyMutator() {
+        public ThirdPartyMutatorTest() {
             super("Third Party Test Mutator", true);
         }
 

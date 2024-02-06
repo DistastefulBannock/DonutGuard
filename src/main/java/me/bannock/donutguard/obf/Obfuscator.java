@@ -7,7 +7,6 @@ import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,8 +31,7 @@ public class Obfuscator {
 
     @Inject
     public Obfuscator(){
-        if (ThreadContext.get("threadId") == null)
-            ThreadContext.put("threadId", "Independent Start");
+
     }
 
     /**
