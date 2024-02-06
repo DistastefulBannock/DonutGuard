@@ -1,7 +1,12 @@
 package me.bannock.donutguard.obf;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
+import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
+import me.bannock.donutguard.obf.asm.JarHandler;
+import me.bannock.donutguard.obf.asm.JarHandlerFactory;
+import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
 import me.bannock.donutguard.obf.config.ConfigurationGroup;
@@ -21,6 +26,9 @@ public class ObfuscatorModule extends AbstractModule {
         install(new com.google.inject.assistedinject.FactoryModuleBuilder()
                 .implement(ObfuscatorJob.class, ObfuscatorJob.class)
                 .build(ObfuscatorJobFactory.class));
+        install(new com.google.inject.assistedinject.FactoryModuleBuilder()
+                .implement(JarHandler.class, JarHandler.class)
+                .build(JarHandlerFactory.class));
         bindConfiguration();
     }
 
@@ -28,6 +36,12 @@ public class ObfuscatorModule extends AbstractModule {
         Multibinder<ConfigurationGroup> configurationGroupMultibinder =
                 Multibinder.newSetBinder(binder(), ConfigurationGroup.class);
         configurationGroupMultibinder.addBinding().to(DefaultConfigGroup.class);
+    }
+
+    @Inject
+    @Provides
+    public JarHandler provideJarHandler(Configuration configuration, JarHandlerFactory handlerFactory){
+        return handlerFactory.create(configuration);
     }
 
 }

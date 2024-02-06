@@ -1,8 +1,7 @@
-package me.bannock.donutguard.obf.plugin;
+package me.bannock.donutguard.obf.mutator;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
-import me.bannock.donutguard.obf.mutator.Mutator;
 
 public class ThirdPartyPluginModuleTest extends AbstractModule {
 

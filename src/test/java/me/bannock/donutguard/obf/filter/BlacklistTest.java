@@ -1,4 +1,4 @@
-package me.bannock.donutguard.obf.plugin;
+package me.bannock.donutguard.obf.filter;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -15,10 +15,12 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class ObfuscatorPluginTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class BlacklistTest {
 
     @Test
-    void usePlugin(){
+    void blacklistTest(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
@@ -30,6 +32,10 @@ public class ObfuscatorPluginTest {
                 Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)
         );
         while (!endedStatuses.contains(obfuscator.getJobStatus(job)));
+        // The third party mutator sets this value to true in their config instance.
+        // Checking to ensure that there are no references shared as the mutators should be using
+        // a deep clone of the config
+        assertFalse(DefaultConfigGroup.NOP_SPAM_ENABLED.get(config));
     }
 
 }

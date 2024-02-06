@@ -5,6 +5,7 @@ import me.bannock.donutguard.obf.mutator.impl.string.StringLiteralEncryptionType
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DefaultConfigGroup extends ConfigurationGroup {
 
@@ -26,10 +27,10 @@ public class DefaultConfigGroup extends ConfigurationGroup {
     public static final ConfigKey<Boolean> INCLUDE_LIBS_IN_OUTPUT =
             new ConfigKey<>("Include libs in output", false);
 
-    public static final ConfigKey<ArrayList<String>> BLACKLIST =
-            new ConfigKey<>("Blacklist", new ArrayList<>());
-    public static final ConfigKey<ArrayList<String>> WHITELIST =
-            new ConfigKey<>("Whitelist", new ArrayList<>());
+    public static final ConfigKey<HashMap<String, ArrayList<String>>> BLACKLIST =
+            new ConfigKey<>("Blacklist", new HashMap<>());
+    public static final ConfigKey<HashMap<String, ArrayList<String>>> WHITELIST =
+            new ConfigKey<>("Whitelist", new HashMap<>());
 
     public static final ConfigKey<Dictionary> LOCAL_VAR_DICT =
             new ConfigKey<>("Local var dict", Dictionary.ALPHABET);

@@ -8,13 +8,14 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import me.bannock.donutguard.obf.asm.JarHandler;
+import me.bannock.donutguard.obf.asm.JarHandlerFactory;
 import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
-import me.bannock.donutguard.obf.filter.RegexListFilter;
+import me.bannock.donutguard.obf.filter.RegexMapFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -46,10 +47,10 @@ public class ObfuscatorJob implements Runnable {
     @AssistedInject
     public ObfuscatorJob(@Assisted Configuration configuration,
                          @Assisted Module[] jobModulePlugins,
-                         JarHandler jarHandler){
+                         JarHandlerFactory jarHandlerFactory){
         this.configuration = SerializationUtils.clone(configuration);
         this.jobModulePlugins = jobModulePlugins;
-        this.jarHandler = jarHandler;
+        this.jarHandler = jarHandlerFactory.create(configuration);
     }
 
     @Override
@@ -92,6 +93,7 @@ public class ObfuscatorJob implements Runnable {
         this.jarHandler = injector.getInstance(JarHandler.class);
         logger.info("Creating mutators...");
         Set<Mutator> mutators = injector.getInstance(Key.get(new TypeLiteral<>() {}));
+        logger.info("Created mutator...");
         jarHandler.loadJarFile(DefaultConfigGroup.INPUT.get(configuration), false);
         for (File file : DefaultConfigGroup.LIBRARIES.get(configuration)){
             try{
@@ -126,7 +128,9 @@ public class ObfuscatorJob implements Runnable {
             if (mutator.isDisabled())
                 continue;
             safelyLoopOverEntries(jarHandler, entry -> {
-                if (!(entry instanceof ClassEntry))
+                // TODO: Test mutator specific blacklist and whitelist
+                if (!(entry instanceof ClassEntry)
+                        || isEntryBlacklistedForMutator(mutator.getClass(), entry))
                     return;
                 logger.debug("Preforming first pass for class entry \"" +
                         entry.getPath() + "\"...");
@@ -136,7 +140,8 @@ public class ObfuscatorJob implements Runnable {
             });
             checkForInterrupt();
             safelyLoopOverEntries(jarHandler, entry -> {
-                if (!(entry instanceof ResourceEntry))
+                if (!(entry instanceof ResourceEntry)
+                        || isEntryBlacklistedForMutator(mutator.getClass(), entry))
                     return;
                 logger.debug("Preforming first pass for resource entry \"" +
                         entry.getPath() + "\"...");
@@ -148,7 +153,8 @@ public class ObfuscatorJob implements Runnable {
             mutator.intermission();
             checkForInterrupt();
             safelyLoopOverEntries(jarHandler, entry -> {
-                if (!(entry instanceof ClassEntry))
+                if (!(entry instanceof ClassEntry)
+                        || isEntryBlacklistedForMutator(mutator.getClass(), entry))
                     return;
                 logger.debug("Preforming second pass for class entry \"" +
                         entry.getPath() + "\"...");
@@ -158,7 +164,8 @@ public class ObfuscatorJob implements Runnable {
             });
             checkForInterrupt();
             safelyLoopOverEntries(jarHandler, entry -> {
-                if (!(entry instanceof ResourceEntry))
+                if (!(entry instanceof ResourceEntry)
+                        || isEntryBlacklistedForMutator(mutator.getClass(), entry))
                     return;
                 logger.debug("Preforming second pass for resource entry \"" +
                         entry.getPath() + "\"...");
@@ -189,6 +196,24 @@ public class ObfuscatorJob implements Runnable {
     }
 
     /**
+     * Checks if an entry is blacklisted for a specific mutator
+     * @param mutatorClass The mutator class to check when using black and white list
+     * @param entry The entry to compare the matchers to
+     * @return true if the object shouldn't be run under the mutator, otherwise false
+     */
+    private boolean isEntryBlacklistedForMutator(Class<? extends Mutator> mutatorClass,
+                                                 FileEntry<?> entry){
+        String key = mutatorClass.getName();
+        RegexMapFilter blacklist = new RegexMapFilter(
+                DefaultConfigGroup.BLACKLIST.get(configuration)
+        );
+        RegexMapFilter whitelist = new RegexMapFilter(
+                DefaultConfigGroup.WHITELIST.get(configuration)
+        );
+        return !blacklist.matches(key, entry.getPath()) || whitelist.matches(key, entry.getPath());
+    }
+
+    /**
      * Loops over entries of a JarHandler in such a way
      * where it is safe for any mutators to move or remove
      * nodes from the entry linked list
@@ -197,10 +222,12 @@ public class ObfuscatorJob implements Runnable {
      */
     private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
         FileEntry<?> currentEntry = handler.getFirstEntry();
-        RegexListFilter blacklist = new RegexListFilter(
+        // TODO: Make global blacklist and whitelist overrideable by mutator-specific
+        //       whitelist
+        RegexMapFilter blacklist = new RegexMapFilter(
                 DefaultConfigGroup.BLACKLIST.get(configuration)
         );
-        RegexListFilter whitelist = new RegexListFilter(
+        RegexMapFilter whitelist = new RegexMapFilter(
                 DefaultConfigGroup.WHITELIST.get(configuration)
         );
         while (currentEntry != null){
@@ -213,8 +240,8 @@ public class ObfuscatorJob implements Runnable {
             // We now callback to the desired consumer
             boolean shouldProcess = currentEntry.isShouldMutate()
                     && !(currentEntry instanceof DummyEntry)
-                    && (!blacklist.matches(currentEntry.getPath())
-                    || whitelist.matches(currentEntry.getPath()));
+                    && (!blacklist.matches(null, currentEntry.getPath()) // null key is global
+                    || whitelist.matches(null, currentEntry.getPath()));
             if (shouldProcess)
                 consumer.accept(currentEntry);
 

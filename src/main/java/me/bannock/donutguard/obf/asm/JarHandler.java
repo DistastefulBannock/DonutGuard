@@ -1,6 +1,7 @@
 package me.bannock.donutguard.obf.asm;
 
-import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
@@ -36,8 +37,8 @@ public class JarHandler {
     private final DummyEntry firstEntry;
     private final Configuration config;
 
-    @Inject
-    public JarHandler(Configuration config) {
+    @AssistedInject
+    public JarHandler(@Assisted Configuration config) {
         firstEntry = new DummyEntry();
         this.config = config;
     }

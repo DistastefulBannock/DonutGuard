@@ -99,4 +99,17 @@ public class ObfuscatorTest {
         assertSame(obfuscator1.getJobStatus(job2), JobStatus.NOT_FOUND);
     }
 
+    @Test
+    void whyIsThisHappeningToMe(){
+        Injector injector = Guice.createInjector(new ObfuscatorModule());
+
+        // This loads config groups
+        Configuration configuration = injector.getInstance(Configuration.class);
+
+        // This also loads config groups? What the fuck
+        ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
+        ObfuscatorJob job = jobFactory.create(configuration);
+
+    }
+
 }

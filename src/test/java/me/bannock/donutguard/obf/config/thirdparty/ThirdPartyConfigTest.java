@@ -7,7 +7,8 @@ import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ThirdPartyConfigTest {
 
@@ -23,5 +24,5 @@ public class ThirdPartyConfigTest {
         ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.set(config, false);
         assertFalse(ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.get(config));
     }
-
+    
 }

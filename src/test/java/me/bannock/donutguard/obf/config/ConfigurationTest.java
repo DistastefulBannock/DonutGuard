@@ -42,6 +42,10 @@ class ConfigurationTest {
         Configuration configuration1 = injector.getInstance(Configuration.class);
         Configuration configuration2 = SerializationUtils.clone(configuration1);
         assertNotSame(configuration1, configuration2);
+        assertNotSame(DefaultConfigGroup.INPUT.get(configuration1),
+                DefaultConfigGroup.INPUT.get(configuration2));
+        assertNotSame(DefaultConfigGroup.BLACKLIST.get(configuration1),
+                DefaultConfigGroup.BLACKLIST.get(configuration2));
     }
 
     @Test
