@@ -16,9 +16,9 @@ class ConfigurationTest {
     void testDonutGuardConfigGroup(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration config = injector.getInstance(Configuration.class);
-        assertTrue(DonutGuardConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
-        DonutGuardConfigGroup.DEV_TEST_MUTATOR_ENABLED.set(config, false);
-        assertFalse(DonutGuardConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        assertFalse(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.set(config, true);
+        assertTrue(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
     }
 
     @Test

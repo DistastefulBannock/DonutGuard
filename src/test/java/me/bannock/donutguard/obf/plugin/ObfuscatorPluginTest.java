@@ -2,9 +2,10 @@ package me.bannock.donutguard.obf.plugin;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.Obfuscator;
 import me.bannock.donutguard.obf.ObfuscatorModule;
+import me.bannock.donutguard.obf.config.Configuration;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
@@ -21,8 +22,8 @@ public class ObfuscatorPluginTest {
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
-        ConfigDTO config = new ConfigDTO();
-        config.input = new File("tools/Evaluator-1.0-SNAPSHOT.jar");
+        Configuration config = injector.getInstance(Configuration.class);
+        DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
         ObfuscatorJob job = jobFactory.create(config, new ThirdPartyPluginModuleTest());
         obfuscator.submitJob(job);
         HashSet<JobStatus> endedStatuses = new HashSet<>(

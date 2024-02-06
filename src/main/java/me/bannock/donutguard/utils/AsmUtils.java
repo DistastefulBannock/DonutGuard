@@ -1,7 +1,8 @@
 package me.bannock.donutguard.utils;
 
-import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
+import me.bannock.donutguard.obf.config.Configuration;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -54,12 +55,12 @@ public class AsmUtils {
      * @param config The config to grab the dictionaries from
      * @return A unique method name
      */
-    public static String getUniqueMethodName(ClassNode node, ConfigDTO config){
+    public static String getUniqueMethodName(ClassNode node, Configuration config){
         // It's an array because java cries when you use lambdas with non-final local vars
-        String[] name = {config.methodDict.uniqueMethod()};
+        String[] name = {DefaultConfigGroup.METHOD_DICT.get(config).uniqueMethod()};
         while (node.methods.stream()
                 .anyMatch(methodNode -> methodNode.name.equals(name[0]))){
-            name[0] = config.methodDict.uniqueMethod();
+            name[0] = DefaultConfigGroup.METHOD_DICT.get(config).uniqueMethod();
         }
         return name[0];
     }
@@ -70,7 +71,7 @@ public class AsmUtils {
      * @param config The config to grab the dictionaries from
      * @return A unique method name
      */
-    public static String getUniqueMethodName(ClassEntry entry, ConfigDTO config){
+    public static String getUniqueMethodName(ClassEntry entry, Configuration config){
         return getUniqueMethodName(entry.getContent(), config);
     }
 
@@ -80,12 +81,12 @@ public class AsmUtils {
      * @param config The config to grab the dictionaries from
      * @return A unique field name
      */
-    public static String getUniqueFieldName(ClassNode node, ConfigDTO config){
+    public static String getUniqueFieldName(ClassNode node, Configuration config){
         // It's an array because java cries when you use lambdas with non-final local vars
-        String[] name = {config.fieldDict.uniqueField()};
+        String[] name = {DefaultConfigGroup.FIELD_DICT.get(config).uniqueField()};
         while (node.fields.stream()
                 .anyMatch(fieldNode -> fieldNode.name.equals(name[0]))){
-            name[0] = config.fieldDict.uniqueField();
+            name[0] = DefaultConfigGroup.FIELD_DICT.get(config).uniqueField();
         }
         return name[0];
     }
@@ -96,7 +97,7 @@ public class AsmUtils {
      * @param config The config to grab the dictionaries from
      * @return A unique field name
      */
-    public static String getUniqueFielddName(ClassEntry entry, ConfigDTO config){
+    public static String getUniqueFielddName(ClassEntry entry, Configuration config){
         return getUniqueFieldName(entry.getContent(), config);
     }
 

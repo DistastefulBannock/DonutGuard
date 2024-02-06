@@ -1,11 +1,12 @@
 package me.bannock.donutguard.obf.asm;
 
 import com.google.inject.Inject;
-import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
+import me.bannock.donutguard.obf.config.Configuration;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.utils.IoUtils;
 import me.bannock.donutguard.utils.ResourceUtils;
 import me.bannock.donutguard.utils.UiUtils;
@@ -33,10 +34,10 @@ public class JarHandler {
     // to ensure that we always have the first entry in the linked list
     // since a dummy will never be given to a mutator
     private final DummyEntry firstEntry;
-    private final ConfigDTO config;
+    private final Configuration config;
 
     @Inject
-    public JarHandler(ConfigDTO config) {
+    public JarHandler(Configuration config) {
         firstEntry = new DummyEntry();
         this.config = config;
     }
@@ -185,7 +186,7 @@ public class JarHandler {
             try{
                 firstEntry.addNodeToEnd(newEntry);
             }catch (IllegalArgumentException e){
-                if (!this.config.suppressNodeOfSamePathError) // Setting name is close enough
+                if (!DefaultConfigGroup.SUPPRESS_DUPE_NODE_ERRORS.get(config)) // Setting name is close enough
                     logger.error("Something went wrong while adding new entry to linked list", e);
                 return;
             }

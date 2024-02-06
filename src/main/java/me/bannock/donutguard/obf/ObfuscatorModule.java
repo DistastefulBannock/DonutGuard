@@ -5,7 +5,7 @@ import com.google.inject.multibindings.Multibinder;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
 import me.bannock.donutguard.obf.config.ConfigurationGroup;
-import me.bannock.donutguard.obf.config.DonutGuardConfigGroup;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import org.apache.logging.log4j.ThreadContext;
 
 
@@ -27,7 +27,7 @@ public class ObfuscatorModule extends AbstractModule {
     private void bindConfiguration(){
         Multibinder<ConfigurationGroup> configurationGroupMultibinder =
                 Multibinder.newSetBinder(binder(), ConfigurationGroup.class);
-        configurationGroupMultibinder.addBinding().to(DonutGuardConfigGroup.class);
+        configurationGroupMultibinder.addBinding().to(DefaultConfigGroup.class);
     }
 
 }

@@ -2,6 +2,8 @@ package me.bannock.donutguard.obf;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import me.bannock.donutguard.obf.config.Configuration;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
@@ -18,16 +20,18 @@ public class ObfuscatorTest {
 
     @Test
     void quickStartExample(){
-        // This will create the default config.
-        // You may also load one from a file by calling ObfJobUtils.loadConfig
-        ConfigDTO config = new ConfigDTO();
-        config.input = new File("tools/Evaluator-1.0-SNAPSHOT.jar");
-        config.output = new File("output1.jar");
 
         // This module constructor just stores and uses the passed in config instance.
         // You are unable to change the object reference used by created jobs
         // when using this module.
         Injector injector = Guice.createInjector(new ObfuscatorModule());
+
+        // This will create the default config.
+        // You may also load one from a file by calling ObfJobUtils.loadConfig
+        Configuration config = injector.getInstance(Configuration.class);
+        DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
+        DefaultConfigGroup.OUTPUT.set(config, new File("output1.jar"));
+
 
         // You could also use a provider if you wish to
         // provide the config from a field, variable, or with guice.
@@ -51,8 +55,8 @@ public class ObfuscatorTest {
 
         // In this example we change the config and create a second job to show the
         // multithreading capabilities.
-        config.nopSpammerEnabled = true;
-        config.output = new File("output2.jar");
+        DefaultConfigGroup.NOP_SPAM_ENABLED.set(config, true);
+        DefaultConfigGroup.OUTPUT.set(config, new File("output2.jar"));
         ObfuscatorJob job2 = jobFactory.create(config);
 
         // We then tell the obfuscator to queue the jobs. They will soon be ran.
@@ -80,9 +84,9 @@ public class ObfuscatorTest {
 
     @Test
     void jobNotFoundTest(){
-        ConfigDTO config = new ConfigDTO();
-        config.input = new File("tools/Evaluator-1.0-SNAPSHOT.jar");
         Injector injector = Guice.createInjector(new ObfuscatorModule());
+        Configuration config = injector.getInstance(Configuration.class);
+        DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
         Obfuscator obfuscator1 = injector.getInstance(Obfuscator.class);
         Obfuscator obfuscator2 = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);

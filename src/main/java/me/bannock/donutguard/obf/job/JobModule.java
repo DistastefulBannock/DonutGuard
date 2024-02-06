@@ -4,8 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
-import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.JarHandler;
+import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import me.bannock.donutguard.obf.mutator.impl.TestMutator;
@@ -39,8 +39,8 @@ public class JobModule extends AbstractModule {
 
     @Inject
     @Provides
-    public ConfigDTO provideConfigDTO() {
-        return job.getConfigDTO();
+    public Configuration provideConfig() {
+        return job.getConfig();
     }
 
     @Inject

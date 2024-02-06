@@ -45,7 +45,9 @@ public abstract class ConfigurationGroup {
                    continue;
                }
                ConfigKey<?> key = ((ConfigKey<?>)field.get(null));
-               key.assignGroup(this);
+               try{
+                   key.assignGroup(this);
+               }catch (IllegalStateException ignored){} // We don't really care
                key.setObject(configuration, key.getDefaultValue());
            }catch (IllegalAccessException e){
                logger.warn("Could not access key field. Please make sure that it is public.", e);

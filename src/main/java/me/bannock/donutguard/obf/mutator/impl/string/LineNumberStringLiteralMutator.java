@@ -1,8 +1,9 @@
 package me.bannock.donutguard.obf.mutator.impl.string;
 
 import com.google.inject.Inject;
-import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
+import me.bannock.donutguard.obf.config.Configuration;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.string.linenum.MethodMetadata;
 import me.bannock.donutguard.obf.mutator.impl.string.linenum.StringMetadata;
@@ -41,7 +42,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class LineNumberStringLiteralMutator extends Mutator {
 
     private final Logger logger = LogManager.getLogger();
-    private final ConfigDTO config;
+    private final Configuration config;
     private int stringsEncrypted = 0, lineNumbersRemoved = 0, methodsCreated = 0, fieldsCreated = 0;
     private Map<MethodNode, MethodMetadata> methodMetadataMap;
     private Set<StringMetadata> encryptedStrings;
@@ -49,9 +50,10 @@ public class LineNumberStringLiteralMutator extends Mutator {
     private FieldNode encryptedStringsField, decryptedValueCacheArray;
 
     @Inject
-    public LineNumberStringLiteralMutator(ConfigDTO config) {
-        super("String Literal Encryption", config.stringLiteralEncryptionEnabled &&
-                config.stringLiteralEncryptionType ==
+    public LineNumberStringLiteralMutator(Configuration config) {
+        super("String Literal Encryption",
+                DefaultConfigGroup.STRING_ENC_ENABLED.get(config)
+                        && DefaultConfigGroup.STRING_ENC_TYPE.get(config) ==
                         StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
         this.config = config;
     }
@@ -130,10 +132,10 @@ public class LineNumberStringLiteralMutator extends Mutator {
      * @param entry The class entry to check generated names against
      */
     private void createDecryptMethodVariables(ClassEntry entry){
-        decryptMethodName = this.config.methodDict.uniqueMethod();
+        decryptMethodName = DefaultConfigGroup.METHOD_DICT.get(config).uniqueMethod();
         while (entry.getContent().methods.stream()
                 .anyMatch(methodNode -> methodNode.name.equals(decryptMethodName))){
-            decryptMethodName = this.config.methodDict.uniqueMethod();
+            decryptMethodName = DefaultConfigGroup.METHOD_DICT.get(config).uniqueMethod();
         }
     }
 

@@ -7,12 +7,13 @@ import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.JarHandler;
 import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
+import me.bannock.donutguard.obf.config.Configuration;
+import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.filter.RegexListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.utils.UiUtils;
@@ -35,8 +36,7 @@ public class ObfuscatorJob implements Runnable {
 
     private final Logger logger = LogManager.getLogger();
     private String threadId = "Obfuscator Job " + System.currentTimeMillis() + "." + System.nanoTime(); // This will be replaced by the obfuscator
-
-    private final ConfigDTO configDTO;
+    private final Configuration configuration;
     private final Module[] jobModulePlugins;
 
     private boolean hasStarted = false, failed = false;
@@ -44,8 +44,10 @@ public class ObfuscatorJob implements Runnable {
     private JarHandler jarHandler;
 
     @AssistedInject
-    public ObfuscatorJob(@Assisted ConfigDTO configDTO, @Assisted Module[] jobModulePlugins, JarHandler jarHandler){
-        this.configDTO = SerializationUtils.clone(configDTO);
+    public ObfuscatorJob(@Assisted Configuration configuration,
+                         @Assisted Module[] jobModulePlugins,
+                         JarHandler jarHandler){
+        this.configuration = SerializationUtils.clone(configuration);
         this.jobModulePlugins = jobModulePlugins;
         this.jarHandler = jarHandler;
     }
@@ -78,9 +80,6 @@ public class ObfuscatorJob implements Runnable {
      * @throws Exception If an error occurs while running the obfuscator
      */
     private void runObfuscator() throws Exception {
-        if (configDTO.nopSpammerEnabled){
-            System.out.println("test");
-        }
         logger.info("Starting obfuscation job...");
 
         logger.info("Creating job injector...");
@@ -93,8 +92,8 @@ public class ObfuscatorJob implements Runnable {
         this.jarHandler = injector.getInstance(JarHandler.class);
         logger.info("Creating mutators...");
         Set<Mutator> mutators = injector.getInstance(Key.get(new TypeLiteral<>() {}));
-        jarHandler.loadJarFile(getConfigDTO().input, false);
-        for (File file : configDTO.libraries){
+        jarHandler.loadJarFile(DefaultConfigGroup.INPUT.get(configuration), false);
+        for (File file : DefaultConfigGroup.LIBRARIES.get(configuration)){
             try{
                 jarHandler.loadJarFile(file, true);
             }catch (Exception e){
@@ -181,8 +180,10 @@ public class ObfuscatorJob implements Runnable {
                     mutator.getName() + "\" mutator");
         }
 
-        jarHandler.writeJarFile(configDTO.output, configDTO.computeFrames,
-                configDTO.computeMaxes, configDTO.includeLibsInOutput);
+        jarHandler.writeJarFile(DefaultConfigGroup.OUTPUT.get(configuration),
+                DefaultConfigGroup.COMPUTE_FRAMES.get(configuration),
+                DefaultConfigGroup.COMPUTE_MAXES.get(configuration),
+                DefaultConfigGroup.INCLUDE_LIBS_IN_OUTPUT.get(configuration));
 
         logger.info("Finished obfuscation job");
     }
@@ -196,8 +197,12 @@ public class ObfuscatorJob implements Runnable {
      */
     private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
         FileEntry<?> currentEntry = handler.getFirstEntry();
-        RegexListFilter blacklist = new RegexListFilter(configDTO.blacklist);
-        RegexListFilter whitelist = new RegexListFilter(configDTO.whitelist);
+        RegexListFilter blacklist = new RegexListFilter(
+                DefaultConfigGroup.BLACKLIST.get(configuration)
+        );
+        RegexListFilter whitelist = new RegexListFilter(
+                DefaultConfigGroup.WHITELIST.get(configuration)
+        );
         while (currentEntry != null){
             // We get the next entry before calling any consumers as they may remove or change
             // where the current entry is on the list. If this node is moved to the end then it would
@@ -245,8 +250,8 @@ public class ObfuscatorJob implements Runnable {
         this.threadId = threadId;
     }
 
-    protected ConfigDTO getConfigDTO() {
-        return configDTO;
+    protected Configuration getConfig() {
+        return configuration;
     }
 
     public JarHandler getJarHandler() {

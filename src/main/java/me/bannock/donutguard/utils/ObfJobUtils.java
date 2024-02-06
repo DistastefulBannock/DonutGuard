@@ -2,7 +2,7 @@ package me.bannock.donutguard.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import me.bannock.donutguard.obf.ConfigDTO;
+import me.bannock.donutguard.obf.config.Configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +24,9 @@ public class ObfJobUtils {
      * @param bytes The bytes of the config
      * @return The config object
      */
-    public static ConfigDTO loadConfig(byte[] bytes){
+    public static Configuration loadConfig(byte[] bytes){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.fromJson(new String(bytes, StandardCharsets.UTF_8), ConfigDTO.class);
+        return gson.fromJson(new String(bytes, StandardCharsets.UTF_8), Configuration.class);
     }
 
     /**
@@ -35,7 +35,7 @@ public class ObfJobUtils {
      * @return The config object
      * @throws IOException If something went wrong while reading the file
      */
-    public static ConfigDTO loadConfig(File file) throws IOException{
+    public static Configuration loadConfig(File file) throws IOException{
         return loadConfig(Files.readAllBytes(file.toPath()));
     }
 
@@ -44,7 +44,7 @@ public class ObfJobUtils {
      * @param config The config instance
      * @return The serialized bytes of the config
      */
-    public static byte[] getConfigBytes(ConfigDTO config){
+    public static byte[] getConfigBytes(Configuration config){
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         return gson.toJson(config).getBytes(StandardCharsets.UTF_8);
     }
