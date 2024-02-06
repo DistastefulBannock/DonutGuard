@@ -4,12 +4,15 @@ import com.google.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class Configuration {
+public class Configuration implements Serializable {
+
+    private static final long serialVersionUID = 3621L;
 
     private final Logger logger = LogManager.getLogger();
 
@@ -28,6 +31,16 @@ public class Configuration {
             logger.info("Successfully loaded group");
         }
         logger.info("Successfully loaded configuration groups");
+    }
+
+    /**
+     * DO NOT CALL THIS CONSTRUCTOR.
+     * It is used by separate classes for loading of data.
+     * If you use this to create a config then no values will be initialized.
+     * You should create this object with a guice injector.
+     */
+    public Configuration(){
+        this.keys = new LinkedHashMap<>();
     }
 
     /**

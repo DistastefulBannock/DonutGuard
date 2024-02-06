@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public abstract class ConfigurationGroup {
 
     private final Logger logger = LogManager.getLogger();
@@ -25,6 +26,10 @@ public abstract class ConfigurationGroup {
                 continue;
             if (!Modifier.isStatic(field.getModifiers())){
                 logger.warn("ConfigKey must be static to be entered into a configuration.");
+                continue;
+            }
+            else if (!Modifier.isFinal(field.getModifiers())){
+                logger.warn("ConfigKey must be final to be entered into a configuration.");
                 continue;
             }
             keyFields.add(field);

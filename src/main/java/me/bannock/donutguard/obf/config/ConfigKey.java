@@ -1,8 +1,9 @@
 package me.bannock.donutguard.obf.config;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ConfigKey<T> {
+public class ConfigKey<T extends Serializable> {
 
     private final String name;
     private final T defaultValue;
