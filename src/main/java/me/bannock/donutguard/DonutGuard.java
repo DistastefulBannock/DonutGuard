@@ -3,7 +3,6 @@ package me.bannock.donutguard;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.util.Modules;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.ObfuscatorModule;
 import me.bannock.donutguard.ui.MainFrame;
@@ -73,7 +72,8 @@ public class DonutGuard {
 
     public static void main(String[] args) {
         Guice.createInjector(
-                Modules.override(new ObfuscatorModule(() -> null)).with(new DonutGuardModule()),
+                new DonutGuardModule(),
+                new ObfuscatorModule(),
                 new UiModule()
         ).getInstance(DonutGuard.class).start();
     }

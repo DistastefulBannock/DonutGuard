@@ -2,6 +2,7 @@ package me.bannock.donutguard.ui.topnav;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
 import me.bannock.donutguard.ui.topnav.controllers.TopNavController;
 
 import javax.swing.JMenu;
@@ -21,7 +22,7 @@ public class TopNavView extends JMenuBar {
     private final JMenuItem github, about;
 
     @Inject
-    public TopNavView(Injector injector){
+    public TopNavView(Injector injector, ObfuscatorJobFactory jobFactory){
         setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JMenu fileDropdown = new JMenu("File");
@@ -42,7 +43,7 @@ public class TopNavView extends JMenuBar {
         add(processDropdown);
         add(help);
 
-        new TopNavController(injector, this);
+        new TopNavController(injector, this, jobFactory);
     }
 
     public JMenuItem getSaveConfig() {

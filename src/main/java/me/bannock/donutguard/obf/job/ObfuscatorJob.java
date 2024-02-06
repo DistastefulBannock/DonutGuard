@@ -1,8 +1,12 @@
 package me.bannock.donutguard.obf.job;
 
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.TypeLiteral;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import me.bannock.donutguard.obf.ConfigDTO;
 import me.bannock.donutguard.obf.asm.JarHandler;
 import me.bannock.donutguard.obf.asm.entry.FileEntry;
@@ -18,6 +22,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -30,17 +37,17 @@ public class ObfuscatorJob implements Runnable {
     private String threadId = "Obfuscator Job " + System.currentTimeMillis() + "." + System.nanoTime(); // This will be replaced by the obfuscator
 
     private final ConfigDTO configDTO;
+    private final Module[] jobModulePlugins;
 
     private boolean hasStarted = false, failed = false;
 
     private JarHandler jarHandler;
-    private final Set<Mutator> mutators;
 
-    @Inject
-    public ObfuscatorJob(ConfigDTO configDTO, JarHandler jarHandler, Set<Mutator> mutators){
+    @AssistedInject
+    public ObfuscatorJob(@Assisted ConfigDTO configDTO, @Assisted Module[] jobModulePlugins, JarHandler jarHandler){
         this.configDTO = SerializationUtils.clone(configDTO);
+        this.jobModulePlugins = jobModulePlugins;
         this.jarHandler = jarHandler;
-        this.mutators = mutators;
     }
 
     @Override
@@ -71,13 +78,21 @@ public class ObfuscatorJob implements Runnable {
      * @throws Exception If an error occurs while running the obfuscator
      */
     private void runObfuscator() throws Exception {
+        if (configDTO.nopSpammerEnabled){
+            System.out.println("test");
+        }
         logger.info("Starting obfuscation job...");
 
         logger.info("Creating job injector...");
-        Injector injector = Guice.createInjector(new JobModule(this));
+        List<Module> guiceModules = new ArrayList<>();
+        guiceModules.add(new JobModule(this));
+        guiceModules.addAll(Arrays.asList(jobModulePlugins));
+        Injector injector = Guice.createInjector(guiceModules.toArray(new Module[0]));
         logger.info("Successfully created job injector");
         logger.info("Creating and loading jar handler...");
         this.jarHandler = injector.getInstance(JarHandler.class);
+        logger.info("Creating mutators...");
+        Set<Mutator> mutators = injector.getInstance(Key.get(new TypeLiteral<>() {}));
         jarHandler.loadJarFile(getConfigDTO().input, false);
         for (File file : configDTO.libraries){
             try{
