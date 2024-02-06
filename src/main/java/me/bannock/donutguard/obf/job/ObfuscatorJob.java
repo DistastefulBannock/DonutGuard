@@ -210,7 +210,10 @@ public class ObfuscatorJob implements Runnable {
         RegexMapFilter whitelist = new RegexMapFilter(
                 DefaultConfigGroup.WHITELIST.get(configuration)
         );
-        return !blacklist.matches(key, entry.getPath()) || whitelist.matches(key, entry.getPath());
+        return !(blacklist.matches(key, entry.getPath())
+                    || blacklist.matches(null /* global blacklist */, entry.getPath()))
+                || (whitelist.matches(key, entry.getPath())
+                    || whitelist.matches(null /* global whitelist */, entry.getPath()));
     }
 
     /**
@@ -222,14 +225,6 @@ public class ObfuscatorJob implements Runnable {
      */
     private void safelyLoopOverEntries(JarHandler handler, Consumer<FileEntry<?>> consumer){
         FileEntry<?> currentEntry = handler.getFirstEntry();
-        // TODO: Make global blacklist and whitelist overrideable by mutator-specific
-        //       whitelist
-        RegexMapFilter blacklist = new RegexMapFilter(
-                DefaultConfigGroup.BLACKLIST.get(configuration)
-        );
-        RegexMapFilter whitelist = new RegexMapFilter(
-                DefaultConfigGroup.WHITELIST.get(configuration)
-        );
         while (currentEntry != null){
             // We get the next entry before calling any consumers as they may remove or change
             // where the current entry is on the list. If this node is moved to the end then it would
@@ -239,9 +234,7 @@ public class ObfuscatorJob implements Runnable {
 
             // We now callback to the desired consumer
             boolean shouldProcess = currentEntry.isShouldMutate()
-                    && !(currentEntry instanceof DummyEntry)
-                    && (!blacklist.matches(null, currentEntry.getPath()) // null key is global
-                    || whitelist.matches(null, currentEntry.getPath()));
+                    && !(currentEntry instanceof DummyEntry);
             if (shouldProcess)
                 consumer.accept(currentEntry);
 

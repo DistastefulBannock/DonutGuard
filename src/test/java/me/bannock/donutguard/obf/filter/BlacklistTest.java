@@ -24,8 +24,10 @@ public class BlacklistTest {
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
+
         Configuration config = injector.getInstance(Configuration.class);
         DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
+
         ObfuscatorJob job = jobFactory.create(config, new ThirdPartyPluginModuleTest());
         obfuscator.submitJob(job);
         HashSet<JobStatus> endedStatuses = new HashSet<>(
