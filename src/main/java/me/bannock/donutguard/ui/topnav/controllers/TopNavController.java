@@ -51,6 +51,7 @@ public class TopNavController {
 
     private void createJobAndRun(Injector injector){
         logger.info("Creating and queuing a new obfuscator job...");
+        // Horrid UI code. I hate this
         ObfuscatorJob job = injector.getInstance(ObfuscatorJob.class);
         injector.getInstance(Obfuscator.class).submitJob(job);
         logger.info("Successfully created and queued a new obfuscator job");

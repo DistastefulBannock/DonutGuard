@@ -4,16 +4,13 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ConfigDTO;
-import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.JarHandler;
+import me.bannock.donutguard.obf.asm.entry.FileEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 import me.bannock.donutguard.obf.filter.RegexListFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
-import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
-import me.bannock.donutguard.obf.mutator.impl.TestMutator;
-import me.bannock.donutguard.obf.mutator.impl.string.LineNumberStringLiteralMutator;
 import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,8 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -38,22 +34,13 @@ public class ObfuscatorJob implements Runnable {
     private boolean hasStarted = false, failed = false;
 
     private JarHandler jarHandler;
+    private final Set<Mutator> mutators;
 
     @Inject
-    public ObfuscatorJob(ConfigDTO configDTO, JarHandler jarHandler){
+    public ObfuscatorJob(ConfigDTO configDTO, JarHandler jarHandler, Set<Mutator> mutators){
         this.configDTO = SerializationUtils.clone(configDTO);
         this.jarHandler = jarHandler;
-    }
-
-    /**
-     * Populates a hashset of mutators with all the mutators that the obfuscator offers
-     * @param mutators The set to populate
-     * @param injector The injector used to create mutator instances
-     */
-    private void createMutators(HashSet<Mutator> mutators, Injector injector){
-        mutators.add(injector.getInstance(NopSpammerMutator.class));
-        mutators.add(injector.getInstance(LineNumberStringLiteralMutator.class));
-        mutators.add(injector.getInstance(TestMutator.class));
+        this.mutators = mutators;
     }
 
     @Override
@@ -103,12 +90,6 @@ public class ObfuscatorJob implements Runnable {
 
         // We need to occasionally check for interrupts in case we need to cancel the job
         checkForInterrupt();
-
-        // Create mutators
-        logger.info("Creating mutators...");
-        HashSet<Mutator> mutators = new LinkedHashSet<>();
-        createMutators(mutators, injector);
-        logger.info("Successfully created mutators");
 
         // As documented in the Mutator class, setup is called first
         // for every mutator
