@@ -4,7 +4,6 @@ import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -72,12 +71,12 @@ public abstract class FileEntry<T> {
         if (this == linkedListMetadata.getLastNode()){
             linkedListMetadata.setLastNode(previousNode);
         }
+        getLinkedListMetadata().getCurrentlyAddedNodes().remove(this);
         setLinkedListMetadata(new FileEntryMetadata(this));
         if (next != null)
             next.setPreviousNode(previous);
         if (previous != null)
             previous.setNextNode(next);
-        linkedListMetadata.setCurrentlyAddedNodes(new HashSet<>());
     }
 
     /**
@@ -149,12 +148,19 @@ public abstract class FileEntry<T> {
         this.nextNode = nextNode;
     }
 
-    public FileEntryMetadata getLinkedListMetadata() {
+    protected FileEntryMetadata getLinkedListMetadata() {
         return linkedListMetadata;
     }
 
     private void setLinkedListMetadata(FileEntryMetadata linkedListMetadata) {
         this.linkedListMetadata = linkedListMetadata;
+    }
+
+    /**
+     * @return The amount of nodes in this entry's self-managed linked list
+     */
+    public int getLinkedListSize(){
+        return getLinkedListMetadata().getCurrentlyAddedNodes().size();
     }
 
     @Override

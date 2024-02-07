@@ -57,4 +57,20 @@ public class ConfigKeyMultiMap<Q extends Serializable, E extends Serializable> e
         return removed;
     }
 
+    /**
+     * Clears all entries tied to a specific key
+     * @param config configuration to use when fetching/clearing the values
+     * @param key The key to wipe the values for
+     * @return True if the entries were cleared, otherwise false
+     */
+    public boolean clear(Configuration config, Q key){
+        HashMap<Q, ArrayList<E>> map = get(config);
+        if (map == null)
+            return false;
+        if (map.get(key) == null)
+            return true;
+        map.remove(key);
+        return true;
+    }
+
 }

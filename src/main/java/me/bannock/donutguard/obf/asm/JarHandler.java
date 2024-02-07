@@ -199,4 +199,11 @@ public class JarHandler {
         return firstEntry;
     }
 
+    /**
+     * @return The amount of entries loaded into this jar handler
+     */
+    public int getEntriesAmount(){
+        return firstEntry.getLinkedListSize();
+    }
+
 }

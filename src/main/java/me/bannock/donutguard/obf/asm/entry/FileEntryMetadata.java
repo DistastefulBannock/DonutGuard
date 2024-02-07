@@ -14,6 +14,7 @@ public class FileEntryMetadata {
      */
     protected FileEntryMetadata(FileEntry<?> lastNode){
         this.lastNode = lastNode;
+        currentlyAddedNodes.add(lastNode);
     }
 
     private HashSet<FileEntry<?>> currentlyAddedNodes = new HashSet<>();
