@@ -1,4 +1,7 @@
-package me.bannock.donutguard.obf.config;
+package me.bannock.donutguard.obf.config.special;
+
+import me.bannock.donutguard.obf.config.ConfigKey;
+import me.bannock.donutguard.obf.config.Configuration;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -19,6 +22,18 @@ public class ConfigKeyMap<Q extends Serializable, E extends Serializable> extend
         if (map == null)
             throw new IllegalStateException("Current map is null");
         map.put(key, value);
+    }
+
+    /**
+     * Removes a value from the map
+     * @param config The configuration to use when putting the key/value pair
+     * @param key The key to use when removing the key/value pair on the map
+     */
+    public void remove(Configuration config, Q key){
+        HashMap<Q, E> map = get(config);
+        if (map == null)
+            return;
+        map.remove(key);
     }
 
     /**

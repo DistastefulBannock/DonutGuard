@@ -9,13 +9,12 @@ import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
+import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class BlacklistTest {
 
@@ -27,6 +26,10 @@ public class BlacklistTest {
 
         Configuration config = injector.getInstance(Configuration.class);
         DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
+        DefaultConfigGroup.NOP_SPAM_ENABLED.set(config, true);
+        DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.set(config, true);
+        DefaultConfigGroup.BLACKLIST.add(config, null, "dev/sim0n/evaluator/Main.class");
+        DefaultConfigGroup.WHITELIST.add(config, NopSpammerMutator.class.getName(), "dev/sim0n/evaluator/Main.class");
 
         ObfuscatorJob job = jobFactory.create(config, new ThirdPartyPluginModuleTest());
         obfuscator.submitJob(job);
@@ -34,10 +37,6 @@ public class BlacklistTest {
                 Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)
         );
         while (!endedStatuses.contains(obfuscator.getJobStatus(job)));
-        // The third party mutator sets this value to true in their config instance.
-        // Checking to ensure that there are no references shared as the mutators should be using
-        // a deep clone of the config
-        assertFalse(DefaultConfigGroup.NOP_SPAM_ENABLED.get(config));
     }
 
 }

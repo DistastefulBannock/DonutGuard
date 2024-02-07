@@ -210,10 +210,11 @@ public class ObfuscatorJob implements Runnable {
         RegexMapFilter whitelist = new RegexMapFilter(
                 DefaultConfigGroup.WHITELIST.get(configuration)
         );
-        return !(blacklist.matches(key, entry.getPath())
-                    || blacklist.matches(null /* global blacklist */, entry.getPath()))
-                || (whitelist.matches(key, entry.getPath())
-                    || whitelist.matches(null /* global whitelist */, entry.getPath()));
+        boolean isBlacklisted = blacklist.matches(key, entry.getPath())
+                || blacklist.matches(null /* global blacklist */, entry.getPath());
+        boolean isWhitelisted = whitelist.matches(key, entry.getPath())
+                || whitelist.matches(null /* global whitelist */, entry.getPath());
+        return isBlacklisted && !isWhitelisted;
     }
 
     /**
