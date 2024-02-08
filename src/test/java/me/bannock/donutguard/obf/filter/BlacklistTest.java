@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,16 +36,17 @@ public class BlacklistTest {
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
 
-        { // First test
+        HashSet<JobStatus> endedStatuses = new HashSet<>(
+                Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)
+        );
+
+        { // First test tests for single mutator blacklist
             DefaultConfigGroup.BLACKLIST.add(config, BlacklistMutatorTest.class.getName(),
                     "dev/sim0n/evaluator/Main\\.class");
 
             ObfuscatorJob job = jobFactory.create(config, new BlacklistMutatorModuleTest());
             obfuscator.submitJob(job);
 
-            HashSet<JobStatus> endedStatuses = new HashSet<>(
-                    Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)
-            );
             while (!endedStatuses.contains(obfuscator.getJobStatus(job)));
 
             // We remove all entries besides 1. We also have the single dummy entry.
@@ -65,13 +67,28 @@ public class BlacklistTest {
 
             obfuscator.submitJob(job);
 
-            HashSet<JobStatus> endedStatuses = new HashSet<>(
-                    Arrays.asList(JobStatus.CANCELLED, JobStatus.COMPLETED, JobStatus.FAILED)
-            );
             while (!endedStatuses.contains(obfuscator.getJobStatus(job)));
 
             // 32 in input jar + 1 dummy entry. Removing only two would result in 31
             assertEquals(31, job.getJarHandler().getEntriesAmount());
+        }
+
+        { // Third test tests for mutator blacklist alongside global whitelist
+            DefaultConfigGroup.BLACKLIST.set(config, new HashMap<>());
+            DefaultConfigGroup.WHITELIST.set(config, new HashMap<>());
+            DefaultConfigGroup.BLACKLIST.add(config, BlacklistMutatorTest.class.getName(),
+                    ".*");
+            DefaultConfigGroup.WHITELIST.add(config, null,
+                    "dev/sim0n/evaluator/Main\\.class");
+
+            ObfuscatorJob job = jobFactory.create(config, new BlacklistMutatorModuleTest());
+
+            obfuscator.submitJob(job);
+
+            while (!endedStatuses.contains(obfuscator.getJobStatus(job)));
+
+            // 32 in input jar + 1 dummy entry. Removing only one would result in 32
+            assertEquals(32, job.getJarHandler().getEntriesAmount());
         }
 
         tempJar.delete();
