@@ -43,7 +43,7 @@ public class DefaultConfigGroup extends ConfigurationGroup {
     public static final ConfigKey<Dictionary> PACKAGE_DICT =
             new ConfigKey<>("Package dict", Dictionary.ALPHABET);
     public static final ConfigKey<Integer> NESTED_PACKAGES =
-            new ConfigKey<>("Nested package count", 0);
+            new ConfigKey<>("Nested package count", 2);
 
     public static final ConfigKey<Boolean> DEV_TEST_MUTATOR_ENABLED =
             new ConfigKey<>("Dev test mutator enabled", false);

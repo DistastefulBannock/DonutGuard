@@ -25,7 +25,10 @@ public class ClassEntry extends FileEntry<ClassNode> {
      * @param classBytes The bytes of the classs
      */
     public ClassEntry(String path, boolean shouldMutate, boolean libraryEntry, byte[] classBytes) {
-        super(path, shouldMutate, libraryEntry, null);
+        // Optional slash in regex is for potential directory transformer
+        super(path +
+                ((path.toLowerCase().matches(".*\\.class/?")) ? "" : ".class"),
+                shouldMutate, libraryEntry, null);
         this.classWriterTasks = new ArrayList<>();
 
         logger.debug("Reading class bytes...");

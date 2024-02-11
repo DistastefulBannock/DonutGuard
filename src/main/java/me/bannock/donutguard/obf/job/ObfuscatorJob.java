@@ -128,7 +128,6 @@ public class ObfuscatorJob implements Runnable {
             if (mutator.isDisabled())
                 continue;
             safelyLoopOverEntries(jarHandler, entry -> {
-                // TODO: Test mutator specific blacklist and whitelist
                 if (!(entry instanceof ClassEntry)
                         || isEntryBlacklistedForMutator(mutator.getClass(), entry))
                     return;
