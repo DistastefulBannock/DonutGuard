@@ -51,7 +51,8 @@ public class ClassEntry extends FileEntry<ClassNode> {
      * @param classBytes The bytes of the classs
      */
     public ClassEntry(String path, boolean shouldMutate, byte[] classBytes) {
-        this(path, shouldMutate, false, classBytes);
+        this(path +
+                ((path.toLowerCase().matches(".*\\.class/?")) ? "" : ".class"), shouldMutate, false, classBytes);
     }
 
     /**
@@ -60,7 +61,8 @@ public class ClassEntry extends FileEntry<ClassNode> {
      * @param node The ClassNode object
      */
     public ClassEntry(String path, boolean shouldMutate, ClassNode node) {
-        super(path, shouldMutate, false, node);
+        super(path +
+                ((path.toLowerCase().matches(".*\\.class/?")) ? "" : ".class"), shouldMutate, false, node);
         this.classWriterTasks = new ArrayList<>();
     }
 

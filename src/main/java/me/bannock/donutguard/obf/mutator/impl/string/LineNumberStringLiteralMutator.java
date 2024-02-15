@@ -15,11 +15,15 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.FrameNode;
+import org.objectweb.asm.tree.IincInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.LookupSwitchInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
@@ -30,7 +34,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -51,7 +54,8 @@ public class LineNumberStringLiteralMutator extends Mutator {
 
     private final Logger logger = LogManager.getLogger();
     private final Configuration config;
-    private int stringsEncrypted = 0, lineNumbersRemoved = 0, methodsCreated = 0, fieldsCreated = 0;
+    private int stringsEncrypted = 0, lineNumbersRemoved = 0, classesCreated,
+            methodsCreated = 0, fieldsCreated = 0;
     private Map<MethodNode, MethodMetadata> methodMetadataMap;
     private Set<StringMetadata> encryptedStrings;
     private ClassNode decryptMembersOwner;
@@ -71,6 +75,7 @@ public class LineNumberStringLiteralMutator extends Mutator {
     public void setup() {
         stringsEncrypted = 0;
         lineNumbersRemoved = 0;
+        classesCreated = 0;
         methodsCreated = 0;
         fieldsCreated = 0;
     }
@@ -86,6 +91,11 @@ public class LineNumberStringLiteralMutator extends Mutator {
         // We first remove line numbers as we use them as we will use them as an identifier
         // in our decryption method
         scrubLineNumbers(entry);
+
+        // Before we do anything, we must make sure that this class even has strings for us to encrypt
+        boolean foundString = isFoundString(entry);
+        if (!foundString)
+            return;
 
         // We now give a new line number to each method. This value will later be
         // used to decrypt our string literals
@@ -151,8 +161,14 @@ public class LineNumberStringLiteralMutator extends Mutator {
      */
     private void populateDecryptionMethod(ClassEntry entry){
 
-        final int INDEX_PARAM = 0;
-        final int LINE_NUM_INDEX = 1;
+        final int ENCRYPTED_INDEX_PARAM = 0;
+        final int INDEX = 1;
+        final int LINE_NUM_INDEX = 2;
+        final int ENCRYPTED_STRING = 3;
+        final int ENCRYPTION_KEY = 4;
+        final int ENCRYPTION_INC = 5;
+        final int LOOP_INDEX = 6;
+        final int FINAL_CHARS = 7;
 
         // First, we must get the method's line number so we can get the array index
         InsnList insnList = new InsnList();
@@ -169,10 +185,147 @@ public class LineNumberStringLiteralMutator extends Mutator {
                 "java/lang/StackTraceElement", "getLineNumber", "()I")); // I
         insnList.add(new VarInsnNode(Opcodes.ISTORE, LINE_NUM_INDEX));
 
-        insnList.add(new VarInsnNode(Opcodes.ILOAD, INDEX_PARAM)); // I
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, ENCRYPTED_INDEX_PARAM)); // I
         insnList.add(new VarInsnNode(Opcodes.ILOAD, LINE_NUM_INDEX)); // I, I
         insnList.add(new InsnNode(Opcodes.IXOR)); // I
-        insnList.add(new VarInsnNode(Opcodes.ISTORE, LINE_NUM_INDEX));
+        insnList.add(new VarInsnNode(Opcodes.ISTORE, INDEX));
+
+        LabelNode endCacheIf = new LabelNode();
+        insnList.add(new FieldInsnNode(Opcodes.GETSTATIC, decryptMembersOwner.name,
+                decryptedValueCacheArray.name, decryptedValueCacheArray.desc)); // [String
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, INDEX)); // I, [String
+        insnList.add(new InsnNode(Opcodes.AALOAD)); // String
+        insnList.add(new InsnNode(Opcodes.DUP)); // String, String
+        insnList.add(new JumpInsnNode(Opcodes.IFNULL, endCacheIf)); // String
+        insnList.add(new InsnNode(Opcodes.DUP)); // String, String
+        insnList.add(new InsnNode(Opcodes.DUP)); // String, String, String
+        insnList.add(new InsnNode(Opcodes.ARETURN)); // String, String
+        insnList.add(endCacheIf); // String
+        insnList.add(new FrameNode(Opcodes.F_NEW, 3,
+                new Object[]{1, 1, 1},
+                1, new Object[]{"java/lang/String"}));
+        insnList.add(new InsnNode(Opcodes.POP));
+
+        // Now we have to get the encrypted string from the class's array. The number we
+        // xored with the line number beforehand is the index for the encrypted value
+        insnList.add(new FieldInsnNode(Opcodes.GETSTATIC, decryptMembersOwner.name,
+                encryptedStringsField.name, encryptedStringsField.desc)); // [String
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, INDEX)); // I, [String
+        insnList.add(new InsnNode(Opcodes.AALOAD)); // String
+        insnList.add(new VarInsnNode(Opcodes.ASTORE, ENCRYPTED_STRING));
+
+        // Now we must grab the key and increment values from this huge switch statement
+        int[] keys = new int[encryptedStrings.size()];
+        LabelNode[] labels = new LabelNode[encryptedStrings.size()];
+        {
+            int i = 0;
+            for (StringMetadata meta : encryptedStrings){
+                keys[i] = meta.getIndex();
+                labels[i] = new LabelNode();
+
+                i++;
+            }
+        }
+        LabelNode defaultLabel = new LabelNode();
+        LabelNode endSwitchLabel = new LabelNode();
+        insnList.add(AsmUtils.toInsnNode(
+                ThreadLocalRandom.current().nextInt(0, 3621000))); // I
+        insnList.add(new VarInsnNode(Opcodes.ISTORE, ENCRYPTION_KEY));
+        insnList.add(AsmUtils.toInsnNode(
+                ThreadLocalRandom.current().nextInt(0, 3621000))); // I
+        insnList.add(new VarInsnNode(Opcodes.ISTORE, ENCRYPTION_INC));
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, INDEX)); // I
+        insnList.add(new LookupSwitchInsnNode(defaultLabel, keys, labels));
+        {
+            int i = 0;
+            for (StringMetadata meta : encryptedStrings){
+                insnList.add(labels[i]);
+                insnList.add(new FrameNode(Opcodes.F_NEW, 6,
+                        new Object[]{1, 1, 1, "java/lang/String", 1, 1},
+                        0, new Object[0]));
+                insnList.add(AsmUtils.toInsnNode(meta.getKey() ^
+                        meta.getParentMethod().getStartingLineNumber())); // I
+                insnList.add(new VarInsnNode(Opcodes.ILOAD, LINE_NUM_INDEX)); // I, I
+                insnList.add(new InsnNode(Opcodes.IXOR)); // I
+                insnList.add(new VarInsnNode(Opcodes.ISTORE, ENCRYPTION_KEY));
+                insnList.add(AsmUtils.toInsnNode(meta.getInc() ^
+                        meta.getParentMethod().getStartingLineNumber())); // I
+                insnList.add(new VarInsnNode(Opcodes.ILOAD, LINE_NUM_INDEX)); // I, I
+                insnList.add(new InsnNode(Opcodes.IXOR)); // I
+                insnList.add(new VarInsnNode(Opcodes.ISTORE, ENCRYPTION_INC));
+                insnList.add(new JumpInsnNode(Opcodes.GOTO, endSwitchLabel));
+
+                i++;
+            }
+        }
+        insnList.add(defaultLabel);
+        insnList.add(new FrameNode(Opcodes.F_NEW, 6,
+                new Object[]{1, 1, 1, "java/lang/String", 1, 1},
+                0, new Object[0]));
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, INDEX));
+        insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/String",
+                "valueOf", "(I)Ljava/lang/String;"));
+        insnList.add(new InsnNode(Opcodes.ARETURN));
+        insnList.add(endSwitchLabel);
+        insnList.add(new FrameNode(Opcodes.F_NEW, 6,
+                new Object[]{1, 1, 1, "java/lang/String", 1, 1},
+                0, new Object[0]));
+
+        // Now we write the decryption routine
+        LabelNode loopStart = new LabelNode();
+        LabelNode loopEnd = new LabelNode();
+        insnList.add(AsmUtils.toInsnNode(0)); // I
+        insnList.add(new VarInsnNode(Opcodes.ISTORE, LOOP_INDEX));
+        insnList.add(new VarInsnNode(Opcodes.ALOAD, ENCRYPTED_STRING)); // String
+        insnList.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/String",
+                "toCharArray", "()[C")); // [C
+        insnList.add(loopStart);
+        insnList.add(new FrameNode(Opcodes.F_NEW, 7,
+                new Object[]{1, 1, 1, "java/lang/String", 1, 1, 1},
+                1, new Object[]{"[C"}));
+        insnList.add(new InsnNode(Opcodes.DUP)); // [C, [C
+        insnList.add(new InsnNode(Opcodes.ARRAYLENGTH)); // I, [C
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, LOOP_INDEX)); // I, I, [C
+        insnList.add(new InsnNode(Opcodes.SWAP)); // I, I, [C
+        insnList.add(new JumpInsnNode(Opcodes.IF_ICMPGE, loopEnd)); // [C
+        insnList.add(new InsnNode(Opcodes.DUP)); // [C, [C
+        insnList.add(new InsnNode(Opcodes.DUP)); // [C, [C, [C
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, LOOP_INDEX)); // I, [C, [C, [C
+        insnList.add(new InsnNode(Opcodes.CALOAD)); // C, [C, [C
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, ENCRYPTION_INC)); // I, C, [C, [C
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, LOOP_INDEX)); // I, I, C, [C, [C
+        insnList.add(AsmUtils.toInsnNode(1)); // I, I, I, C, [C, [C
+        insnList.add(new InsnNode(Opcodes.IADD)); // I, I, C, [C, [C
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, ENCRYPTION_KEY)); // I, I, I, C, [C, [C
+        insnList.add(new InsnNode(Opcodes.IMUL)); // I, I, C, [C, [C
+        insnList.add(new InsnNode(Opcodes.IMUL)); // I, C, [C, [C
+        insnList.add(new InsnNode(Opcodes.IXOR)); // I, [C, [C
+        insnList.add(new InsnNode(Opcodes.I2C)); // C, [C, [C
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, LOOP_INDEX)); // I, C, [C, [C
+        insnList.add(new InsnNode(Opcodes.SWAP)); // C, I, [C, [C
+        insnList.add(new InsnNode(Opcodes.CASTORE)); // [C
+        insnList.add(new IincInsnNode(LOOP_INDEX, 1));
+        insnList.add(new JumpInsnNode(Opcodes.GOTO, loopStart));
+        insnList.add(loopEnd);
+        insnList.add(new FrameNode(Opcodes.F_NEW, 7,
+                new Object[]{1, 1, 1, "java/lang/String", 1, 1, 1},
+                1, new Object[]{"[C"}));
+
+        // Create new string and return
+        insnList.add(new VarInsnNode(Opcodes.ASTORE, FINAL_CHARS));
+        insnList.add(new TypeInsnNode(Opcodes.NEW, "java/lang/String")); // String
+        insnList.add(new InsnNode(Opcodes.DUP)); // String, String
+        insnList.add(new VarInsnNode(Opcodes.ALOAD, FINAL_CHARS)); // [C, String, String
+        insnList.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/String",
+                "<init>", "([C)V")); // String
+        insnList.add(new InsnNode(Opcodes.DUP)); // String, String
+        insnList.add(new FieldInsnNode(Opcodes.GETSTATIC, decryptMembersOwner.name,
+                decryptedValueCacheArray.name, decryptedValueCacheArray.desc)); // [String, String, String
+        insnList.add(new InsnNode(Opcodes.SWAP)); // String, [String, String
+        insnList.add(new VarInsnNode(Opcodes.ILOAD, INDEX)); // I, String, [String, String
+        insnList.add(new InsnNode(Opcodes.SWAP)); // String, I, [String, String
+        insnList.add(new InsnNode(Opcodes.AASTORE)); // String
+        insnList.add(new InsnNode(Opcodes.ARETURN));
 
         decryptMethod.instructions = insnList;
     }
@@ -238,7 +391,7 @@ public class LineNumberStringLiteralMutator extends Mutator {
             InsnList insns = currentMethod.instructions;
             insns.add(new InsnNode(Opcodes.DUP)); // [String, [String
             insns.add(AsmUtils.toInsnNode(i)); // int, [String, [String
-            insns.add(new LdcInsnNode(encryptString(meta))); // String, int, [String, [String
+            insns.add(new LdcInsnNode(meta.getEncrypted())); // String, int, [String, [String
             insns.add(new InsnNode(Opcodes.AASTORE)); // [String
             stringsEncrypted++;
 
@@ -253,22 +406,6 @@ public class LineNumberStringLiteralMutator extends Mutator {
         currentMethod.instructions.add(new InsnNode(Opcodes.RETURN));
 
         return calledDecryptionMethods;
-    }
-
-    /**
-     * Encrypts a string with its metadata
-     * @param meta The metadata object for the string
-     * @return The encrypted string
-     */
-    private String encryptString(StringMetadata meta){
-        Objects.requireNonNull(meta);
-
-        char[] chars = meta.getValue().toCharArray();
-        for (int i = 0; i < chars.length; i++){
-            chars[i] = (char)(chars[i] ^ (meta.getInc() * i * meta.getKey()));
-        }
-
-        return new String(chars).intern();
     }
 
     private int currentArrayIndex = 0;
@@ -286,20 +423,32 @@ public class LineNumberStringLiteralMutator extends Mutator {
 
             LdcInsnNode stringConstantLoad = (LdcInsnNode) abstractInsnNode;
             StringMetadata meta = null;
+            final int maxAttempts = 256;
+            int attempts = 0;
             do{
                 meta = new StringMetadata((String)stringConstantLoad.cst,
-                        currentArrayIndex++,
-                        ThreadLocalRandom.current().nextInt(3621, 36210),
+                        currentArrayIndex,
+                        ThreadLocalRandom.current().nextInt(3621, 362100),
                         ThreadLocalRandom.current().nextInt(1, 255),
                         methodMetadataMap.get(methodNode));
+                attempts++;
+                if (attempts >= maxAttempts){
+                    logger.warn(String.format("String \"%s\" could not be encrypted " +
+                            "without potentially compromising the integrity of the string " +
+                            "decrypter.%nThis may happen if a unique encrypted value " +
+                            "cannot be generated (String too short/too many strings in class)",
+                            (String)stringConstantLoad.cst));
+                    return;
+                }
             }while(encryptedStrings.contains(meta));
+            currentArrayIndex++;
             encryptedStrings.add(meta);
 
             // We now replace the string load with a method call to our decrypt method
             InsnList callDecryptMethod = new InsnList();
 
             callDecryptMethod.add(AsmUtils.toInsnNode(meta.getIndex() ^
-                    meta.getParentMethod().getXorValue()));
+                    meta.getParentMethod().getStartingLineNumber()));
             callDecryptMethod.add(AsmUtils.generateMethodCallFromNode(decryptMethod,
                     decryptMembersOwner, false));
 
@@ -348,6 +497,7 @@ public class LineNumberStringLiteralMutator extends Mutator {
                     "java/lang/Object",
                     new String[0]
             );
+            classesCreated++;
 
             // This adds the new class to the output jar. Needed if we're making
             // new classes because otherwise we won't have the class
@@ -361,6 +511,8 @@ public class LineNumberStringLiteralMutator extends Mutator {
         decryptMembersOwner.methods.add(decryptMethod);
         decryptMembersOwner.fields.add(encryptedStringsField);
         decryptMembersOwner.fields.add(decryptedValueCacheArray);
+        methodsCreated++;
+        fieldsCreated += 2;
     }
 
     private int currentLineNumber = 0;
@@ -378,13 +530,11 @@ public class LineNumberStringLiteralMutator extends Mutator {
                     || methodNode.instructions.size() == 0)
                 return;
 
-            final int hideLineNumIncrementXor = ThreadLocalRandom.current().nextInt(3621, 10000);
-            MethodMetadata meta = new MethodMetadata(startingLineNumber,
-                    incrementAmount, hideLineNumIncrementXor);
+            currentLineNumber += incrementAmount;
+            int lineNumber = currentLineNumber;
+            MethodMetadata meta = new MethodMetadata(lineNumber,
+                    incrementAmount);
             methodMetadataMap.put(methodNode, meta); // Needed to keep track of changes
-
-            // We xor the number to make the numbers seem more random
-            int lineNumber = (currentLineNumber += incrementAmount) ^ hideLineNumIncrementXor;
             InsnList addLineNumber = new InsnList();
             LabelNode lineLabel = new LabelNode();
             LineNumberNode lineNumberNode = new LineNumberNode(lineNumber, lineLabel);
@@ -394,6 +544,25 @@ public class LineNumberStringLiteralMutator extends Mutator {
             AbstractInsnNode firstNode = methodNode.instructions.getFirst();
             methodNode.instructions.insertBefore(firstNode, addLineNumber);
         });
+    }
+
+    /**
+     * Scans a class for string constant loads and returns true if any are found
+     * @param entry The entry to scan
+     * @return True if string constant loads were found, otherwise false
+     */
+    private static boolean isFoundString(ClassEntry entry) {
+        for (MethodNode methodNode : entry.getContent().methods){
+            for (AbstractInsnNode abstractInsnNode : methodNode.instructions){
+                if (!(abstractInsnNode instanceof LdcInsnNode))
+                    continue;
+                LdcInsnNode ldc = (LdcInsnNode) abstractInsnNode;
+                if (!(ldc.cst instanceof String))
+                    continue;
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -419,6 +588,7 @@ public class LineNumberStringLiteralMutator extends Mutator {
 
         logger.info(String.format("Encrypted %s string literals", stringsEncrypted));
         logger.info(String.format("Removed %s line number nodes", lineNumbersRemoved));
+        logger.info(String.format("Created %s classes", classesCreated));
         logger.info(String.format("Created %s methods", methodsCreated));
         logger.info(String.format("Created %s fields", fieldsCreated));
     }

@@ -27,6 +27,7 @@ class LineNumberStringLiteralMutatorTest {
         DefaultConfigGroup.STRING_ENC_ENABLED.set(config, true);
         DefaultConfigGroup.STRING_ENC_TYPE.set(config,
                 StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
+//        DefaultConfigGroup.COMPUTE_FRAMES.set(config, true);
 
         File tempJar = File.createTempFile("Donutguard", "tmp.jar");
         tempJar.deleteOnExit();
