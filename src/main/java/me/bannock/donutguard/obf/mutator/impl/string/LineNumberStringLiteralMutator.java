@@ -318,6 +318,8 @@ public class LineNumberStringLiteralMutator extends Mutator {
         insnList.add(new VarInsnNode(Opcodes.ALOAD, FINAL_CHARS)); // [C, String, String
         insnList.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/String",
                 "<init>", "([C)V")); // String
+        insnList.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/String",
+                "intern", "()Ljava/lang/String;")); // String
         insnList.add(new InsnNode(Opcodes.DUP)); // String, String
         insnList.add(new FieldInsnNode(Opcodes.GETSTATIC, decryptMembersOwner.name,
                 decryptedValueCacheArray.name, decryptedValueCacheArray.desc)); // [String, String, String
@@ -416,9 +418,14 @@ public class LineNumberStringLiteralMutator extends Mutator {
      */
     private void replaceStringConstantLoads(ClassEntry entry){
         currentArrayIndex = 0;
+        final int MAX_UTF8_STRING_SIZE = 65535; // This is a value pulled from inside ASM.
+                                                // If we write new strings larger than that
+                                                // then ASM will crash.
         AsmUtils.loopOverAllInsn(entry, (methodNode, abstractInsnNode) -> {
             if (!(abstractInsnNode instanceof LdcInsnNode)
-                    || !(((LdcInsnNode)abstractInsnNode).cst instanceof String))
+                    || !(((LdcInsnNode)abstractInsnNode).cst instanceof String)
+                    || ((String)(((LdcInsnNode)abstractInsnNode).cst))
+                    .toCharArray().length >= MAX_UTF8_STRING_SIZE / 8) // 8 bytes per character.
                 return;
 
             LdcInsnNode stringConstantLoad = (LdcInsnNode) abstractInsnNode;
