@@ -59,4 +59,10 @@ public class DefaultConfigGroup extends ConfigurationGroup {
             new ConfigKey<>("String enc type",
                     StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
 
+    public static final ConfigKey<Boolean> REPLACE_WITH_INDY_ENABLED =
+            new ConfigKey<>("Replace with invoke dynamic enabled", false);
+
+    public static final ConfigKey<Boolean> STRIP_LOCAL_VAR_METADATA =
+            new ConfigKey<>("Strip local bar metadata", false);
+
 }

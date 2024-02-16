@@ -9,6 +9,7 @@ import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import me.bannock.donutguard.obf.mutator.impl.TestMutator;
+import me.bannock.donutguard.obf.mutator.impl.calls.ReplaceWithInDyMutator;
 import me.bannock.donutguard.obf.mutator.impl.string.LineNumberStringLiteralMutator;
 
 /**
@@ -33,6 +34,7 @@ public class JobModule extends AbstractModule {
         Multibinder<Mutator> mutatorMultibinder = Multibinder.newSetBinder(binder(), Mutator.class);
         mutatorMultibinder.addBinding().to(NopSpammerMutator.class);
         mutatorMultibinder.addBinding().to(LineNumberStringLiteralMutator.class);
+        mutatorMultibinder.addBinding().to(ReplaceWithInDyMutator.class);
 
         mutatorMultibinder.addBinding().to(TestMutator.class); // It's for testing so it's last
     }

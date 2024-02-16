@@ -31,7 +31,8 @@ public class AsmUtils {
      * @param consumer The consumer to call back to
      */
     public static void loopOverMethods(ClassNode node, Consumer<MethodNode> consumer){
-        node.methods.forEach(consumer);
+        for (int i = 0; i < node.methods.size(); i++)
+            consumer.accept(node.methods.get(i));
     }
 
     /**
