@@ -58,4 +58,12 @@ public abstract class ConfigurationGroup {
 
     }
 
+    /**
+     * Can be overridden if desired
+     * @return The friendly name for this config group
+     */
+    public String getFriendlyName(){
+        return getClass().getSimpleName();
+    }
+
 }
