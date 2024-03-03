@@ -2,7 +2,6 @@ package me.bannock.donutguard.obf.config;
 
 import me.bannock.donutguard.obf.config.special.ConfigKeyMultiMap;
 import me.bannock.donutguard.obf.dictionary.Dictionary;
-import me.bannock.donutguard.obf.mutator.impl.string.StringLiteralEncryptionType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,25 +43,5 @@ public class DefaultConfigGroup extends ConfigurationGroup {
             new ConfigKey<>("Package dict", Dictionary.ALPHABET);
     public static final ConfigKey<Integer> NESTED_PACKAGES =
             new ConfigKey<>("Nested package count", 2);
-
-    public static final ConfigKey<Boolean> DEV_TEST_MUTATOR_ENABLED =
-            new ConfigKey<>("Dev test mutator enabled", false);
-
-    public static final ConfigKey<Boolean> NOP_SPAM_ENABLED =
-            new ConfigKey<>("NOP spammer enabled", false);
-    public static final ConfigKey<Integer> NOP_SPAM_COUNT =
-            new ConfigKey<>("NOP spam count", 2);
-
-    public static final ConfigKey<Boolean> STRING_ENC_ENABLED =
-            new ConfigKey<>("String enc enabled", false);
-    public static final ConfigKey<StringLiteralEncryptionType> STRING_ENC_TYPE =
-            new ConfigKey<>("String enc type",
-                    StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
-
-    public static final ConfigKey<Boolean> REPLACE_WITH_INDY_ENABLED =
-            new ConfigKey<>("Replace with invoke dynamic enabled", false);
-
-    public static final ConfigKey<Boolean> STRIP_LOCAL_VAR_METADATA =
-            new ConfigKey<>("Strip local bar metadata", false);
 
 }

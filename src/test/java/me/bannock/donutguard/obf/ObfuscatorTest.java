@@ -7,6 +7,7 @@ import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
+import me.bannock.donutguard.obf.mutator.cfg.NopSpamCfgGroup;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -55,7 +56,7 @@ public class ObfuscatorTest {
 
         // In this example we change the config and create a second job to show the
         // multithreading capabilities.
-        DefaultConfigGroup.NOP_SPAM_ENABLED.set(config, true);
+        NopSpamCfgGroup.NOP_SPAM_ENABLED.set(config, true);
         DefaultConfigGroup.OUTPUT.set(config, new File("output2.jar"));
         ObfuscatorJob job2 = jobFactory.create(config);
 

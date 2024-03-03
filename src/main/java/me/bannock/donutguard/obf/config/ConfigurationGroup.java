@@ -25,11 +25,13 @@ public abstract class ConfigurationGroup {
             if (!ConfigKey.class.isAssignableFrom(field.getType()))
                 continue;
             if (!Modifier.isStatic(field.getModifiers())){
-                logger.warn("ConfigKey must be static to be entered into a configuration.");
+                logger.warn(String.format("ConfigKey \"%s\" must be static to " +
+                        "be entered into a configuration.", field.getName()));
                 continue;
             }
             else if (!Modifier.isFinal(field.getModifiers())){
-                logger.warn("ConfigKey must be final to be entered into a configuration.");
+                logger.warn(String.format("ConfigKey \"%s\" must be final to " +
+                        "be entered into a configuration.", field.getName()));
                 continue;
             }
             keyFields.add(field);

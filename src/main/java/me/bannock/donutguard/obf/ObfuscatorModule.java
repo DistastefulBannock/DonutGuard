@@ -11,6 +11,10 @@ import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
 import me.bannock.donutguard.obf.config.ConfigurationGroup;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
+import me.bannock.donutguard.obf.mutator.cfg.NopSpamCfgGroup;
+import me.bannock.donutguard.obf.mutator.cfg.TestingCfgGroup;
+import me.bannock.donutguard.obf.mutator.impl.calls.IndyConfigGroup;
+import me.bannock.donutguard.obf.mutator.impl.string.StringEncConfigGroup;
 import org.apache.logging.log4j.ThreadContext;
 
 
@@ -36,6 +40,10 @@ public class ObfuscatorModule extends AbstractModule {
         Multibinder<ConfigurationGroup> configurationGroupMultibinder =
                 Multibinder.newSetBinder(binder(), ConfigurationGroup.class);
         configurationGroupMultibinder.addBinding().to(DefaultConfigGroup.class);
+        configurationGroupMultibinder.addBinding().to(TestingCfgGroup.class);
+        configurationGroupMultibinder.addBinding().to(NopSpamCfgGroup.class);
+        configurationGroupMultibinder.addBinding().to(IndyConfigGroup.class);
+        configurationGroupMultibinder.addBinding().to(StringEncConfigGroup.class);
     }
 
     @Inject

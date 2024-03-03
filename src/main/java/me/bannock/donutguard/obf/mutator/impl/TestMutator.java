@@ -6,6 +6,7 @@ import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.mutator.Mutator;
+import me.bannock.donutguard.obf.mutator.cfg.TestingCfgGroup;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -16,7 +17,7 @@ public class TestMutator extends Mutator {
 
     @Inject
     public TestMutator(Configuration config, JarHandler jarHandler) {
-        super("Testing Mutator", DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        super("Testing Mutator", TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
         this.config = config;
         this.jarHandler = jarHandler;
     }

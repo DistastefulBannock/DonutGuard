@@ -3,7 +3,6 @@ package me.bannock.donutguard.obf.mutator.impl.calls;
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.config.Configuration;
-import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.utils.AsmUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +32,7 @@ public class ReplaceWithInDyMutator extends Mutator {
     @Inject
     public ReplaceWithInDyMutator(Configuration config) {
         super("ReplaceWithInDyMutator",
-                DefaultConfigGroup.REPLACE_WITH_INDY_ENABLED.get(config));
+                IndyConfigGroup.REPLACE_WITH_INDY_ENABLED.get(config));
         this.config = config;
     }
 

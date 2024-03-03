@@ -12,4 +12,5 @@ public class ThirdPartyConfigModuleTest extends AbstractModule {
                 Multibinder.newSetBinder(binder(), ConfigurationGroup.class);
         configurationGroupMultibinder.addBinding().to(ThirdPartyConfigGroupTest.class);
     }
+
 }

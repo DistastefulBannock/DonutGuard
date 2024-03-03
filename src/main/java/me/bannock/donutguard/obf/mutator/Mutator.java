@@ -5,6 +5,7 @@ import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 
 /**
  * The mutator base class.
+ * class in case you wish to add ConfigKeys to your subclass.
  * Non-mutable entries will not be passed into mutators.
  * Methods should be called in this order:
  * <ol>

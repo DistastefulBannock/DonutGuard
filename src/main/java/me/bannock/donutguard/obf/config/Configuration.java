@@ -35,9 +35,10 @@ public class Configuration implements Serializable {
 
     /**
      * DO NOT CALL THIS CONSTRUCTOR.
-     * It is used by separate classes for loading of data.
-     * If you use this to create a config then no values will be initialized.
-     * You should create this object with a guice injector.
+     * It is used by special classes that load data for this class.
+     * If you use this to create a config then no values will be
+     * initialized unless done via reflection. You should always
+     * create this object with a guice injector.
      */
     public Configuration(){
         this.keys = new LinkedHashMap<>();

@@ -3,7 +3,6 @@ package me.bannock.donutguard.obf.mutator.impl.string;
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.config.Configuration;
-import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.obf.mutator.impl.string.linenum.MethodMetadata;
 import me.bannock.donutguard.obf.mutator.impl.string.linenum.StringMetadata;
@@ -65,8 +64,8 @@ public class LineNumberStringLiteralMutator extends Mutator {
     @Inject
     public LineNumberStringLiteralMutator(Configuration config) {
         super("String Literal Encryption",
-                DefaultConfigGroup.STRING_ENC_ENABLED.get(config)
-                        && DefaultConfigGroup.STRING_ENC_TYPE.get(config) ==
+                StringEncConfigGroup.STRING_ENC_ENABLED.get(config)
+                        && StringEncConfigGroup.STRING_ENC_TYPE.get(config) ==
                         StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
         this.config = config;
     }

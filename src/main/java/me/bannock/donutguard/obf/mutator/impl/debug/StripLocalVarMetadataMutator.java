@@ -2,8 +2,8 @@ package me.bannock.donutguard.obf.mutator.impl.debug;
 
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
+import me.bannock.donutguard.obf.config.ConfigKey;
 import me.bannock.donutguard.obf.config.Configuration;
-import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.mutator.Mutator;
 import me.bannock.donutguard.utils.AsmUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,13 +11,15 @@ import org.apache.logging.log4j.Logger;
 
 public class StripLocalVarMetadataMutator extends Mutator {
 
+    public static final ConfigKey<Boolean> STRIP_LOCAL_VAR_METADATA =
+            new ConfigKey<>("Strip local bar metadata", false);
+
     private final Logger logger = LogManager.getLogger();
     private int localsRemoved = 0;
 
     @Inject
     public StripLocalVarMetadataMutator(Configuration config) {
-        super("Strip local var metadata",
-                DefaultConfigGroup.STRIP_LOCAL_VAR_METADATA.get(config));
+        super("Strip local var metadata", STRIP_LOCAL_VAR_METADATA.get(config));
     }
 
     @Override

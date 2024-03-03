@@ -3,8 +3,8 @@ package me.bannock.donutguard.obf.mutator.impl;
 import com.google.inject.Inject;
 import me.bannock.donutguard.obf.asm.entry.impl.ClassEntry;
 import me.bannock.donutguard.obf.config.Configuration;
-import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.mutator.Mutator;
+import me.bannock.donutguard.obf.mutator.cfg.NopSpamCfgGroup;
 import me.bannock.donutguard.utils.AsmUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +19,7 @@ public class NopSpammerMutator extends Mutator {
 
     @Inject
     public NopSpammerMutator(Configuration config){
-        super("NOP Spammer", DefaultConfigGroup.NOP_SPAM_ENABLED.get(config));
+        super("NOP Spammer", NopSpamCfgGroup.NOP_SPAM_ENABLED.get(config));
         this.config = config;
     }
 
@@ -31,7 +31,7 @@ public class NopSpammerMutator extends Mutator {
     @Override
     public void firstPassClassTransform(ClassEntry entry) {
         AsmUtils.loopOverMethods(entry, methodNode -> methodNode.instructions.forEach(insn -> {
-            for (int i = 0; i < DefaultConfigGroup.NOP_SPAM_COUNT.get(config); i++){
+            for (int i = 0; i < NopSpamCfgGroup.NOP_SPAM_COUNT.get(config); i++){
                 methodNode.instructions.insertBefore(insn, new InsnNode(Opcodes.NOP));
                 nopsCreated++;
             }

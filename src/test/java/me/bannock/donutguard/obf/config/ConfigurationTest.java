@@ -4,6 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ObfuscatorModule;
+import me.bannock.donutguard.obf.mutator.cfg.NopSpamCfgGroup;
+import me.bannock.donutguard.obf.mutator.cfg.TestingCfgGroup;
 import me.bannock.donutguard.utils.ConfigurationUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,9 @@ class ConfigurationTest {
     void testDonutGuardConfigGroup(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration config = injector.getInstance(Configuration.class);
-        assertFalse(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
-        DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.set(config, true);
-        assertTrue(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        assertFalse(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.set(config, true);
+        assertTrue(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
     }
 
     @Test
@@ -52,12 +54,12 @@ class ConfigurationTest {
     void configurationSaveLoadTest(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration configuration1 = injector.getInstance(Configuration.class);
-        DefaultConfigGroup.NOP_SPAM_ENABLED.set(configuration1, true);
+        NopSpamCfgGroup.NOP_SPAM_ENABLED.set(configuration1, true);
         byte[] bytes = ConfigurationUtils.getConfigBytes(configuration1);
         Configuration configuration2 = ConfigurationUtils.loadConfig(bytes);
         assertNotSame(configuration1, configuration2);
-        assertSame(DefaultConfigGroup.NOP_SPAM_ENABLED.get(configuration1),
-                DefaultConfigGroup.NOP_SPAM_ENABLED.get(configuration2));
+        assertSame(NopSpamCfgGroup.NOP_SPAM_ENABLED.get(configuration1),
+                NopSpamCfgGroup.NOP_SPAM_ENABLED.get(configuration2));
     }
 
 }

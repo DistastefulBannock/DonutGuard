@@ -24,7 +24,7 @@ class ReplaceWithInDyMutatorTest {
         Injector injector = Guice.createInjector(new ObfuscatorModule());
 
         Configuration config = injector.getInstance(Configuration.class);
-        DefaultConfigGroup.REPLACE_WITH_INDY_ENABLED.set(config, true);
+        IndyConfigGroup.REPLACE_WITH_INDY_ENABLED.set(config, true);
 //        DefaultConfigGroup.COMPUTE_FRAMES.set(config, true);
 
         File tempJar = File.createTempFile("Donutguard", "tmp.jar");

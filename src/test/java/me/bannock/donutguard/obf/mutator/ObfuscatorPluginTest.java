@@ -9,6 +9,7 @@ import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.job.JobStatus;
 import me.bannock.donutguard.obf.job.ObfuscatorJob;
 import me.bannock.donutguard.obf.job.ObfuscatorJobFactory;
+import me.bannock.donutguard.obf.mutator.cfg.NopSpamCfgGroup;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -35,7 +36,7 @@ public class ObfuscatorPluginTest {
         // The third party mutator sets this value to true in their config instance.
         // Checking to ensure that there are no references shared as the mutators should be using
         // a deep clone of the config
-        assertFalse(DefaultConfigGroup.NOP_SPAM_ENABLED.get(config));
+        assertFalse(NopSpamCfgGroup.NOP_SPAM_ENABLED.get(config));
     }
 
 }
