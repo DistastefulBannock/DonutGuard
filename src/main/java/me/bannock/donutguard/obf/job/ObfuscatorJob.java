@@ -17,7 +17,6 @@ import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.obf.filter.RegexMapFilter;
 import me.bannock.donutguard.obf.mutator.Mutator;
-import me.bannock.donutguard.utils.UiUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,8 +65,7 @@ public class ObfuscatorJob implements Runnable {
             if (!(e instanceof InterruptedException)) {
                 failed = true;
                 logger.error("An error occurred while running the obfuscator", e);
-                UiUtils.showErrorMessage("Obfuscator Error", "An error occurred while running the obfuscator." +
-                        "\nCheck the logs for more information.");
+                throw new RuntimeException(e);
             }else{
                 logger.info("Obfuscation job interrupted. Likely cancelled by user.");
             }

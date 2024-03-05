@@ -10,12 +10,10 @@ import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
 import me.bannock.donutguard.utils.IoUtils;
 import me.bannock.donutguard.utils.ResourceUtils;
-import me.bannock.donutguard.utils.UiUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassWriter;
 
-import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -128,12 +126,9 @@ public class JarHandler {
             logger.info("Added jar watermark");
 
             if (hadDuplicateEntries){
-                // We do this in another thread because this call is thread blocking
-                // until the popup is closed
-                SwingUtilities.invokeLater(() -> UiUtils.showErrorMessage("Had duplicate entries",
-                        "Duplicate entries were found while writing the jar." +
-                                "\nThis may cause unexpected issues. Affected classes " +
-                                "can be found in the logs"));
+                logger.error("Duplicate entries were found while writing the jar." +
+                        "\nThis may cause unexpected issues. Affected classes " +
+                        "can be found in the logs");
             }
 
         } catch (IOException e){

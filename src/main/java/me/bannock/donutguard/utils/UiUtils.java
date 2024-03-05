@@ -31,9 +31,6 @@ public class UiUtils {
             Desktop.getDesktop().open(file);
         } catch (IOException e) {
             logger.warn("Failed to open file in default editor", e);
-            showErrorMessage("Failed to open file",
-                    "Failed to open file in default editor." +
-                            "\nCheck the logs for more information.");
             throw new RuntimeException(e);
         }
     }
