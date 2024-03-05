@@ -24,7 +24,7 @@ public class ResourceUtils {
         try (InputStream in = ResourceUtils.class.getClassLoader().getResourceAsStream(resourcePath);
              ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             if (in == null){
-                logger.warn("Resource input stream is null; see below:");
+                logger.error("Resource input stream is null; see below:");
                 throw new NullPointerException("Resource input stream is null");
             }
             byte[] buffer = new byte[1024];
