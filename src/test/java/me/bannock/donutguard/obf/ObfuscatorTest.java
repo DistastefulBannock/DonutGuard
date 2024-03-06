@@ -30,8 +30,8 @@ public class ObfuscatorTest {
         // This will create the default config.
         // You may also load one from a file by calling ObfJobUtils.loadConfig
         Configuration config = injector.getInstance(Configuration.class);
-        DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
-        DefaultConfigGroup.OUTPUT.set(config, new File("output1.jar"));
+        DefaultConfigGroup.INPUT.setFile(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
+        DefaultConfigGroup.OUTPUT.setFile(config, new File("output1.jar"));
 
 
         // You could also use a provider if you wish to
@@ -56,8 +56,8 @@ public class ObfuscatorTest {
 
         // In this example we change the config and create a second job to show the
         // multithreading capabilities.
-        NopSpamCfgGroup.NOP_SPAM_ENABLED.set(config, true);
-        DefaultConfigGroup.OUTPUT.set(config, new File("output2.jar"));
+        NopSpamCfgGroup.NOP_SPAM_ENABLED.setBool(config, true);
+        DefaultConfigGroup.OUTPUT.setFile(config, new File("output2.jar"));
         ObfuscatorJob job2 = jobFactory.create(config);
 
         // We then tell the obfuscator to queue the jobs. They will soon be ran.
@@ -87,7 +87,7 @@ public class ObfuscatorTest {
     void jobNotFoundTest(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration config = injector.getInstance(Configuration.class);
-        DefaultConfigGroup.INPUT.set(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
+        DefaultConfigGroup.INPUT.setFile(config, new File("tools/Evaluator-1.0-SNAPSHOT.jar"));
         Obfuscator obfuscator1 = injector.getInstance(Obfuscator.class);
         Obfuscator obfuscator2 = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);

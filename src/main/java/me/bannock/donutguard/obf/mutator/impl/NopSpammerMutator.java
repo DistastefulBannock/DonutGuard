@@ -19,7 +19,7 @@ public class NopSpammerMutator extends Mutator {
 
     @Inject
     public NopSpammerMutator(Configuration config){
-        super("NOP Spammer", NopSpamCfgGroup.NOP_SPAM_ENABLED.get(config));
+        super("NOP Spammer", NopSpamCfgGroup.NOP_SPAM_ENABLED.getBool(config));
         this.config = config;
     }
 
@@ -31,7 +31,7 @@ public class NopSpammerMutator extends Mutator {
     @Override
     public void firstPassClassTransform(ClassEntry entry) {
         AsmUtils.loopOverMethods(entry, methodNode -> methodNode.instructions.forEach(insn -> {
-            for (int i = 0; i < NopSpamCfgGroup.NOP_SPAM_COUNT.get(config); i++){
+            for (int i = 0; i < NopSpamCfgGroup.NOP_SPAM_COUNT.getInt(config); i++){
                 methodNode.instructions.insertBefore(insn, new InsnNode(Opcodes.NOP));
                 nopsCreated++;
             }

@@ -16,13 +16,13 @@ public class ThirdPartyConfigTest {
     void testDonutGuardConfigGroup(){
         Injector injector = Guice.createInjector(new ObfuscatorModule(), new ThirdPartyConfigModuleTest());
         Configuration config = injector.getInstance(Configuration.class);
-        assertFalse(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
-        TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.set(config, true);
-        assertTrue(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        assertFalse(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
+        TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.setBool(config, true);
+        assertTrue(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
 
-        assertTrue(ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.get(config));
-        ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.set(config, false);
-        assertFalse(ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.get(config));
+        assertTrue(ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.getBool(config));
+        ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.setBool(config, false);
+        assertFalse(ThirdPartyConfigGroupTest.THIRD_PARTY_MUTATOR_ON.getBool(config));
     }
     
 }

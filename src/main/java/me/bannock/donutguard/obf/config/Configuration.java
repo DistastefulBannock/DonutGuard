@@ -49,7 +49,7 @@ public class Configuration implements Serializable {
      * @param group The group that the key is in
      * @param key The name of the key
      * @param type The type that the value for the key is
-     * @return The value for this key
+     * @return The value for this key. Will throw exception if value is null
      * @param <T> The type that the value for this key is
      */
     protected <T> T get(ConfigurationGroup group, String key, Class<T> type){
@@ -61,10 +61,18 @@ public class Configuration implements Serializable {
         if (value == null)
             throw new IllegalArgumentException(String.format("No value found for \"%s\"", keyInMap));
         if (!type.isInstance(value))
-            throw new IllegalArgumentException(String.format("\"%s\" is not of type \"%s\"", keyInMap, type.getName()));
+            throw new ClassCastException(String.format("\"%s\" is not of type \"%s\". ", value, type.getName()));
         return type.cast(value);
     }
 
+    /**
+     * Gets a value from the key map
+     * @param group The group that the key is in
+     * @param key The name of the key
+     * @param typeInstance An instance of the type that the value for the key is
+     * @return The value for this key. Will throw exception if value is null
+     * @param <T> The type that the value for this key is
+     */
     @SuppressWarnings("unchecked")
     protected <T> T get(ConfigurationGroup group, String key, T typeInstance){
         Objects.requireNonNull(typeInstance);

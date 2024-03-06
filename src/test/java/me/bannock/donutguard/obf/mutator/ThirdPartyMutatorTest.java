@@ -23,7 +23,7 @@ public class ThirdPartyMutatorTest extends Mutator {
 
     @Override
     public void cleanup() {
-        NopSpamCfgGroup.NOP_SPAM_ENABLED.set(config, true);
+        NopSpamCfgGroup.NOP_SPAM_ENABLED.setBool(config, true);
     }
 
 }

@@ -24,15 +24,15 @@ class LineNumberStringLiteralMutatorTest {
         Injector injector = Guice.createInjector(new ObfuscatorModule());
 
         Configuration config = injector.getInstance(Configuration.class);
-        StringEncConfigGroup.STRING_ENC_ENABLED.set(config, true);
-        StringEncConfigGroup.STRING_ENC_TYPE.set(config,
+        StringEncConfigGroup.STRING_ENC_ENABLED.setBool(config, true);
+        StringEncConfigGroup.STRING_ENC_TYPE.setEnum(config,
                 StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
 //        DefaultConfigGroup.COMPUTE_FRAMES.set(config, true);
 
         File tempJar = File.createTempFile("Donutguard", "tmp.jar");
         tempJar.deleteOnExit();
         ResourceUtils.copyResourceToFile("test/testJars/Evaluator-1.0-SNAPSHOT.jar", tempJar);
-        DefaultConfigGroup.INPUT.set(config, tempJar);
+        DefaultConfigGroup.INPUT.setFile(config, tempJar);
 
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);

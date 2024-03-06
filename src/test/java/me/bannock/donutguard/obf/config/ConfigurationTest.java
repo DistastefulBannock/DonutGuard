@@ -20,9 +20,9 @@ class ConfigurationTest {
     void testDonutGuardConfigGroup(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration config = injector.getInstance(Configuration.class);
-        assertFalse(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
-        TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.set(config, true);
-        assertTrue(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        assertFalse(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
+        TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.setBool(config, true);
+        assertTrue(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
     }
 
     @Test
@@ -44,22 +44,22 @@ class ConfigurationTest {
         Configuration configuration1 = injector.getInstance(Configuration.class);
         Configuration configuration2 = SerializationUtils.clone(configuration1);
         assertNotSame(configuration1, configuration2);
-        assertNotSame(DefaultConfigGroup.INPUT.get(configuration1),
-                DefaultConfigGroup.INPUT.get(configuration2));
-        assertNotSame(DefaultConfigGroup.BLACKLIST.get(configuration1),
-                DefaultConfigGroup.BLACKLIST.get(configuration2));
+        assertNotSame(DefaultConfigGroup.INPUT.getFile(configuration1),
+                DefaultConfigGroup.INPUT.getFile(configuration2));
+        assertNotSame(DefaultConfigGroup.BLACKLIST.getObj(configuration1).getMappings(),
+                DefaultConfigGroup.BLACKLIST.getObj(configuration2).getMappings());
     }
 
     @Test
     void configurationSaveLoadTest(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration configuration1 = injector.getInstance(Configuration.class);
-        NopSpamCfgGroup.NOP_SPAM_ENABLED.set(configuration1, true);
+        NopSpamCfgGroup.NOP_SPAM_ENABLED.setBool(configuration1, true);
         byte[] bytes = ConfigurationUtils.getConfigBytes(configuration1);
         Configuration configuration2 = ConfigurationUtils.loadConfig(bytes);
         assertNotSame(configuration1, configuration2);
-        assertSame(NopSpamCfgGroup.NOP_SPAM_ENABLED.get(configuration1),
-                NopSpamCfgGroup.NOP_SPAM_ENABLED.get(configuration2));
+        assertSame(NopSpamCfgGroup.NOP_SPAM_ENABLED.getBool(configuration1),
+                NopSpamCfgGroup.NOP_SPAM_ENABLED.getBool(configuration2));
     }
 
 }

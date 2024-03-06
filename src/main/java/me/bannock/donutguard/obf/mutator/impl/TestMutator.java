@@ -17,7 +17,7 @@ public class TestMutator extends Mutator {
 
     @Inject
     public TestMutator(Configuration config, JarHandler jarHandler) {
-        super("Testing Mutator", TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.get(config));
+        super("Testing Mutator", TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
         this.config = config;
         this.jarHandler = jarHandler;
     }
@@ -27,8 +27,8 @@ public class TestMutator extends Mutator {
         // int version, int access, String name, String signature, String superName, String[] interfaces
         ClassNode newNode = new ClassNode();
         newNode.access = Opcodes.ACC_PUBLIC;
-        newNode.name = DefaultConfigGroup.PACKAGE_DICT.get(config).uniquePackage() + "/" +
-                DefaultConfigGroup.CLASS_DICT.get(config).uniqueClass();
+        newNode.name = DefaultConfigGroup.PACKAGE_DICT.getEnum(config).uniquePackage() + "/" +
+                DefaultConfigGroup.CLASS_DICT.getEnum(config).uniqueClass();
         newNode.version = 52;
         ClassEntry clazz = new ClassEntry(newNode.name + ".class", false, newNode);
         jarHandler.getFirstEntry().addNodeToEnd(clazz);

@@ -182,7 +182,7 @@ public class JarHandler {
             try{
                 firstEntry.addNodeToEnd(newEntry);
             }catch (IllegalArgumentException e){
-                if (!DefaultConfigGroup.SUPPRESS_DUPE_NODE_ERRORS.get(config)) // Setting name is close enough
+                if (!DefaultConfigGroup.SUPPRESS_DUPE_NODE_ERRORS.getBool(config)) // Setting name is close enough
                     logger.error("Something went wrong while adding new entry to linked list", e);
                 return;
             }

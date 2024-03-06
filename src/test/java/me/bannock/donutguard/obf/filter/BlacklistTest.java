@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +30,7 @@ public class BlacklistTest {
         ResourceUtils.copyResourceToFile("test/testJars/Evaluator-1.0-SNAPSHOT.jar", tempJar);
 
         Configuration config = injector.getInstance(Configuration.class);
-        DefaultConfigGroup.INPUT.set(config, tempJar);
+        DefaultConfigGroup.INPUT.setFile(config, tempJar);
 
         Obfuscator obfuscator = injector.getInstance(Obfuscator.class);
         ObfuscatorJobFactory jobFactory = injector.getInstance(ObfuscatorJobFactory.class);
@@ -41,7 +40,7 @@ public class BlacklistTest {
         );
 
         { // First test tests for single mutator blacklist
-            DefaultConfigGroup.BLACKLIST.add(config, BlacklistMutatorTest.class.getName(),
+            DefaultConfigGroup.BLACKLIST.getObj(config).add(BlacklistMutatorTest.class.getName(),
                     "dev/sim0n/evaluator/Main\\.class");
 
             ObfuscatorJob job = jobFactory.create(config, new BlacklistMutatorModuleTest());
@@ -55,12 +54,11 @@ public class BlacklistTest {
         }
 
         { // Second test tests for global blacklist alongside mutator whitelist
-            DefaultConfigGroup.BLACKLIST.clear(config, BlacklistMutatorModuleTest.class.getName());
-            DefaultConfigGroup.BLACKLIST.add(config, null,
-                    ".*");
-            DefaultConfigGroup.WHITELIST.add(config, BlacklistMutatorTest.class.getName(),
+            DefaultConfigGroup.BLACKLIST.getObj(config).clear(BlacklistMutatorModuleTest.class.getName());
+            DefaultConfigGroup.BLACKLIST.getObj(config).add(null, ".*");
+            DefaultConfigGroup.WHITELIST.getObj(config).add(BlacklistMutatorTest.class.getName(),
                     "dev/sim0n/evaluator/Main\\.class");
-            DefaultConfigGroup.WHITELIST.add(config, BlacklistMutatorTest.class.getName(),
+            DefaultConfigGroup.WHITELIST.getObj(config).add(BlacklistMutatorTest.class.getName(),
                     "dev/sim0n/evaluator/Main\\$1\\.class");
 
             ObfuscatorJob job = jobFactory.create(config, new BlacklistMutatorModuleTest());
@@ -74,11 +72,11 @@ public class BlacklistTest {
         }
 
         { // Third test tests for mutator blacklist alongside global whitelist
-            DefaultConfigGroup.BLACKLIST.set(config, new HashMap<>());
-            DefaultConfigGroup.WHITELIST.set(config, new HashMap<>());
-            DefaultConfigGroup.BLACKLIST.add(config, BlacklistMutatorTest.class.getName(),
+            DefaultConfigGroup.BLACKLIST.getObj(config).clearAll();
+            DefaultConfigGroup.WHITELIST.getObj(config).clearAll();
+            DefaultConfigGroup.BLACKLIST.getObj(config).add(BlacklistMutatorTest.class.getName(),
                     ".*");
-            DefaultConfigGroup.WHITELIST.add(config, null,
+            DefaultConfigGroup.WHITELIST.getObj(config).add(null,
                     "dev/sim0n/evaluator/Main\\.class");
 
             ObfuscatorJob job = jobFactory.create(config, new BlacklistMutatorModuleTest());

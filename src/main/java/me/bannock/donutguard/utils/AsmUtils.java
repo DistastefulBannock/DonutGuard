@@ -73,7 +73,7 @@ public class AsmUtils {
         // It's an array because java cries when you use lambdas with non-final local vars
         String[] name = new String[1];
         do{
-            name[0] = DefaultConfigGroup.METHOD_DICT.get(config).uniqueMethod();
+            name[0] = DefaultConfigGroup.METHOD_DICT.getEnum(config).uniqueMethod();
         }while (node.methods.stream()
                 .anyMatch(methodNode -> methodNode.name.equals(name[0])));
         return name[0];
@@ -99,7 +99,7 @@ public class AsmUtils {
         // It's an array because java cries when you use lambdas with non-final local vars
         String[] name = new String[1];
         do{
-            name[0] = DefaultConfigGroup.FIELD_DICT.get(config).uniqueField();
+            name[0] = DefaultConfigGroup.FIELD_DICT.getEnum(config).uniqueField();
         }while (node.fields.stream()
                 .anyMatch(fieldNode -> fieldNode.name.equals(name[0])));
         return name[0];
@@ -125,11 +125,11 @@ public class AsmUtils {
         String classPath = null;
         do{
             StringBuilder classPathBuilder = new StringBuilder();
-            for (int i = 0; i < DefaultConfigGroup.NESTED_PACKAGES.get(config); i++){
-                classPathBuilder.append(DefaultConfigGroup.PACKAGE_DICT.get(config).uniquePackage());
+            for (int i = 0; i < DefaultConfigGroup.NESTED_PACKAGES.getInt(config); i++){
+                classPathBuilder.append(DefaultConfigGroup.PACKAGE_DICT.getEnum(config).uniquePackage());
                 classPathBuilder.append("/");
             }
-            classPathBuilder.append(DefaultConfigGroup.CLASS_DICT.get(config).uniqueClass());
+            classPathBuilder.append(DefaultConfigGroup.CLASS_DICT.getEnum(config).uniqueClass());
             classPath = classPathBuilder.toString();
         }while (entry.containsPath(classPath + ".class")
                 && entry.containsPath(classPath + ".class/"));

@@ -32,7 +32,7 @@ public class ReplaceWithInDyMutator extends Mutator {
     @Inject
     public ReplaceWithInDyMutator(Configuration config) {
         super("ReplaceWithInDyMutator",
-                IndyConfigGroup.REPLACE_WITH_INDY_ENABLED.get(config));
+                IndyConfigGroup.REPLACE_WITH_INDY_ENABLED.getBool(config));
         this.config = config;
     }
 

@@ -64,8 +64,8 @@ public class LineNumberStringLiteralMutator extends Mutator {
     @Inject
     public LineNumberStringLiteralMutator(Configuration config) {
         super("String Literal Encryption",
-                StringEncConfigGroup.STRING_ENC_ENABLED.get(config)
-                        && StringEncConfigGroup.STRING_ENC_TYPE.get(config) ==
+                StringEncConfigGroup.STRING_ENC_ENABLED.getBool(config)
+                        && StringEncConfigGroup.STRING_ENC_TYPE.getEnum(config) ==
                         StringLiteralEncryptionType.IDENTIFIERS_VIA_LINE_NUMBERS_AND_INTS);
         this.config = config;
     }

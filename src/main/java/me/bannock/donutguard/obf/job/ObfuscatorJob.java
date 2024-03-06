@@ -92,8 +92,8 @@ public class ObfuscatorJob implements Runnable {
         logger.info("Creating mutators...");
         Set<Mutator> mutators = injector.getInstance(Key.get(new TypeLiteral<>() {}));
         logger.info("Created mutator...");
-        jarHandler.loadJarFile(DefaultConfigGroup.INPUT.get(configuration), false);
-        for (File file : DefaultConfigGroup.LIBRARIES.get(configuration)){
+        jarHandler.loadJarFile(DefaultConfigGroup.INPUT.getFile(configuration), false);
+        for (File file : DefaultConfigGroup.LIBRARIES.getObj(configuration)){
             try{
                 jarHandler.loadJarFile(file, true);
             }catch (Exception e){
@@ -184,10 +184,10 @@ public class ObfuscatorJob implements Runnable {
                     mutator.getName() + "\" mutator");
         }
 
-        jarHandler.writeJarFile(DefaultConfigGroup.OUTPUT.get(configuration),
-                DefaultConfigGroup.COMPUTE_FRAMES.get(configuration),
-                DefaultConfigGroup.COMPUTE_MAXES.get(configuration),
-                DefaultConfigGroup.INCLUDE_LIBS_IN_OUTPUT.get(configuration));
+        jarHandler.writeJarFile(DefaultConfigGroup.OUTPUT.getFile(configuration),
+                DefaultConfigGroup.COMPUTE_FRAMES.getBool(configuration),
+                DefaultConfigGroup.COMPUTE_MAXES.getBool(configuration),
+                DefaultConfigGroup.INCLUDE_LIBS_IN_OUTPUT.getBool(configuration));
 
         logger.info("Finished obfuscation job");
     }
@@ -202,10 +202,10 @@ public class ObfuscatorJob implements Runnable {
                                                  FileEntry<?> entry){
         String key = mutatorClass.getName();
         RegexMapFilter blacklist = new RegexMapFilter(
-                DefaultConfigGroup.BLACKLIST.get(configuration)
+                DefaultConfigGroup.BLACKLIST.getObj(configuration).getMappings()
         );
         RegexMapFilter whitelist = new RegexMapFilter(
-                DefaultConfigGroup.WHITELIST.get(configuration)
+                DefaultConfigGroup.WHITELIST.getObj(configuration).getMappings()
         );
         boolean isBlacklisted = blacklist.matches(key, entry.getPath())
                 || blacklist.matches(null /* global blacklist */, entry.getPath());
