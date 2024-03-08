@@ -1,5 +1,6 @@
 package me.bannock.donutguard.obf.config;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,8 +61,12 @@ public class Configuration implements Serializable {
         Object value = keys.get(keyInMap);
         if (value == null)
             throw new IllegalArgumentException(String.format("No value found for \"%s\"", keyInMap));
-        if (!type.isInstance(value))
-            throw new ClassCastException(String.format("\"%s\" is not of type \"%s\". ", value, type.getName()));
+        if (!type.isInstance(value)) {
+            if (String.class.isAssignableFrom(type))
+                value = new Gson().toJson(value);
+            else
+                throw new ClassCastException(String.format("\"%s\" is not of type \"%s\". ", value, type.getName()));
+        }
         return type.cast(value);
     }
 
@@ -89,6 +94,20 @@ public class Configuration implements Serializable {
     protected <T> void set(ConfigurationGroup group, String key, T value){
         String keyInMap = group.getClass().getName() + "." + key;
         keys.put(keyInMap, value);
+    }
+
+    /**
+     * Pulls all key/value pairs from another configuration
+     * and merges them into this one
+     * @param configuration The configuration to pull data
+     *                      from
+     */
+    public void merge(Configuration configuration){
+        this.keys.putAll(configuration.getKeys());
+    }
+
+    protected Map<String, Object> getKeys() {
+        return keys;
     }
 
 }
