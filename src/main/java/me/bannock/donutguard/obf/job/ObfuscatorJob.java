@@ -188,6 +188,7 @@ public class ObfuscatorJob implements Runnable {
                 DefaultConfigGroup.COMPUTE_FRAMES.getBool(configuration),
                 DefaultConfigGroup.COMPUTE_MAXES.getBool(configuration),
                 DefaultConfigGroup.INCLUDE_LIBS_IN_OUTPUT.getBool(configuration));
+        jarHandler = null;
 
         logger.info("Finished obfuscation job");
     }
