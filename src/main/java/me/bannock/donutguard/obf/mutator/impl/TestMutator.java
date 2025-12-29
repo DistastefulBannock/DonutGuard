@@ -12,6 +12,10 @@ import org.objectweb.asm.tree.ClassNode;
 
 public class TestMutator extends Mutator {
 
+    {
+        this.priority = 50;
+    }
+
     private final Configuration config;
     private final JarHandler jarHandler;
 

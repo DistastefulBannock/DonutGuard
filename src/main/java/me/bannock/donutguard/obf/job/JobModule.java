@@ -35,8 +35,7 @@ public class JobModule extends AbstractModule {
         mutatorMultibinder.addBinding().to(NopSpammerMutator.class);
         mutatorMultibinder.addBinding().to(LineNumberStringLiteralMutator.class);
         mutatorMultibinder.addBinding().to(ReplaceWithInDyMutator.class);
-
-        mutatorMultibinder.addBinding().to(TestMutator.class); // It's for testing so it's last
+        mutatorMultibinder.addBinding().to(TestMutator.class);
     }
 
     @Inject

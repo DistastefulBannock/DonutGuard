@@ -26,6 +26,10 @@ public abstract class Mutator {
 
     private final String name;
     private final boolean enabled;
+    /**
+     * Determines the order that each mutators is ran. Higher numbers are ran first.
+     */
+    protected int priority = 10;
 
     public Mutator(String name, boolean enabled){
         this.name = name;
@@ -84,6 +88,13 @@ public abstract class Mutator {
 
     public boolean isDisabled() {
         return !isEnabled();
+    }
+
+    /**
+     * Determines the order that each mutators is ran. Higher numbers are ran first.
+     */
+    public int getPriority() {
+        return priority;
     }
 
 }

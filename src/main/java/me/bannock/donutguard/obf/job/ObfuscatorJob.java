@@ -25,9 +25,11 @@ import org.apache.logging.log4j.ThreadContext;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * This class handles the code behind the obfuscation. It creates and uses the mutators.
@@ -89,9 +91,6 @@ public class ObfuscatorJob implements Runnable {
         logger.info("Successfully created job injector");
         logger.info("Creating and loading jar handler...");
         this.jarHandler = injector.getInstance(JarHandler.class);
-        logger.info("Creating mutators...");
-        Set<Mutator> mutators = injector.getInstance(Key.get(new TypeLiteral<>() {}));
-        logger.info("Created mutator...");
         jarHandler.loadJarFile(DefaultConfigGroup.INPUT.getFile(configuration), false);
         for (File file : DefaultConfigGroup.LIBRARIES.getObj(configuration)){
             try{
@@ -101,6 +100,13 @@ public class ObfuscatorJob implements Runnable {
             }
         }
         logger.info("Successfully created and loaded jar handler");
+
+        logger.info("Creating mutators...");
+        Set<Mutator> mutatorsSet = injector.getInstance(Key.get(new TypeLiteral<>() {}));
+        List<Mutator> mutators = mutatorsSet.stream().sorted(
+                Comparator.comparingInt(mutator -> -mutator.getPriority())
+        ).collect(Collectors.toList());
+        logger.info("Created mutator...");
 
         // We need to occasionally check for interrupts in case we need to cancel the job
         checkForInterrupt();
@@ -188,7 +194,7 @@ public class ObfuscatorJob implements Runnable {
                 DefaultConfigGroup.COMPUTE_FRAMES.getBool(configuration),
                 DefaultConfigGroup.COMPUTE_MAXES.getBool(configuration),
                 DefaultConfigGroup.INCLUDE_LIBS_IN_OUTPUT.getBool(configuration));
-        jarHandler = null;
+//        jarHandler = null; Black and whitelist tests have issues when the jar is cleaned up by default
 
         logger.info("Finished obfuscation job");
     }
