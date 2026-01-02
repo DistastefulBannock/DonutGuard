@@ -104,7 +104,11 @@ public class ObfuscatorJob implements Runnable {
         logger.info("Creating mutators...");
         Set<Mutator> mutatorsSet = injector.getInstance(Key.get(new TypeLiteral<>() {}));
         List<Mutator> mutators = mutatorsSet.stream().sorted(
-                Comparator.comparingInt(mutator -> -mutator.getPriority())
+                Comparator.comparingInt(mutator -> {
+                    if (mutator.getPriority() == Integer.MIN_VALUE) // Overflows back to min_value
+                        return Integer.MAX_VALUE;
+                    return -mutator.getPriority();
+                })
         ).collect(Collectors.toList());
         logger.info("Created mutator...");
 
