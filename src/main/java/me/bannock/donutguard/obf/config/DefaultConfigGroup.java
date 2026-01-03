@@ -29,6 +29,11 @@ public class DefaultConfigGroup extends ConfigurationGroup {
 
     public static final ConfigKeyObject<ArrayList<File>> LIBRARIES =
             new ConfigKeyObject<>("libraries", new ArrayList<>());
+    /**
+     * Classes from mutated libs are disposed of if not included in output
+     */
+    public static final ConfigKeyBoolean MUTATE_LIBS =
+            new ConfigKeyBoolean("Mutate libs", false);
     public static final ConfigKeyBoolean INCLUDE_LIBS_IN_OUTPUT =
             new ConfigKeyBoolean("Include libs in output", false);
 

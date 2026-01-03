@@ -51,9 +51,10 @@ public class JarHandler {
     public void loadJarFile(File file, boolean isLibrary) throws RuntimeException{
         logger.info("Loading jar file \"" + file.getAbsolutePath() + "\"...");
 
+        boolean shouldMutate = !isLibrary || DefaultConfigGroup.MUTATE_LIBS.getBool(config);
         try (JarFile jarFile = new JarFile(file)) {
             jarFile.entries().asIterator()
-                    .forEachRemaining(getEntryConsumer(jarFile, isLibrary));
+                    .forEachRemaining(getEntryConsumer(jarFile, isLibrary, shouldMutate));
             logger.info("Successfully loaded jar file \"" +
                     jarFile.getName() + "\"");
         } catch (IOException e) {
@@ -153,8 +154,7 @@ public class JarHandler {
         return new ClassWriterThatCanComputeFrames(flags, this);
     }
 
-    private Consumer<? super JarEntry> getEntryConsumer(JarFile jarFile,
-                                                        boolean isLibrary){
+    private Consumer<? super JarEntry> getEntryConsumer(JarFile jarFile, boolean isLibrary, boolean shouldMutate){
         return entry -> {
             if (entry == null || entry.isDirectory())
                 return;
@@ -175,9 +175,9 @@ public class JarHandler {
             // is of a jar file
             FileEntry<?> newEntry;
             if (name.toLowerCase().endsWith(".class")){
-                newEntry = new ClassEntry(name, !isLibrary, isLibrary, bytes);
+                newEntry = new ClassEntry(name, shouldMutate, isLibrary, bytes);
             }else{
-                newEntry = new ResourceEntry(name, !isLibrary, isLibrary, bytes);
+                newEntry = new ResourceEntry(name, shouldMutate, isLibrary, bytes);
             }
             try{
                 firstEntry.addNodeToEnd(newEntry);
