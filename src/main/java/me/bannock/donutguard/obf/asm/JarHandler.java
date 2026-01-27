@@ -116,7 +116,7 @@ public class JarHandler {
                 logger.error("Something went wrong while adding new entry to linked list", e);
             return;
         }
-        logger.info("Successfully loaded entry \"" + entry.getName() + "\"");
+        logger.debug("Successfully loaded entry \"" + entry.getName() + "\"");
     }
 
     /**
