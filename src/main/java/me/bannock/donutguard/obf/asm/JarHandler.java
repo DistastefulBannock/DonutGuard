@@ -8,21 +8,21 @@ import me.bannock.donutguard.obf.asm.entry.impl.DummyEntry;
 import me.bannock.donutguard.obf.asm.entry.impl.ResourceEntry;
 import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.config.DefaultConfigGroup;
-import me.bannock.donutguard.utils.IoUtils;
 import me.bannock.donutguard.utils.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Consumer;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
 public class JarHandler {
 
@@ -51,17 +51,72 @@ public class JarHandler {
     public void loadJarFile(File file, boolean isLibrary) throws RuntimeException{
         logger.info("Loading jar file \"" + file.getAbsolutePath() + "\"...");
 
-        boolean shouldMutate = !isLibrary || DefaultConfigGroup.MUTATE_LIBS.getBool(config);
-        try (JarFile jarFile = new JarFile(file)) {
-            jarFile.entries().asIterator()
-                    .forEachRemaining(getEntryConsumer(jarFile, isLibrary, shouldMutate));
-            logger.info("Successfully loaded jar file \"" +
-                    jarFile.getName() + "\"");
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            loadJarFile(fileInputStream, isLibrary);
+            logger.info("Successfully loaded jar file.");
         } catch (IOException e) {
             logger.error("Failed to read jar file", e);
             throw new RuntimeException("Failed to read jar file", e);
         }
 
+    }
+
+    /**
+     * Loads a jar file as well as its entries into this jar handler from an input stream
+     * Will not clear any existing entries.
+     * @param inputStream The input stream containing the jar file to load
+     * @param isLibrary Whether the handler should mark the entry as part of a library
+     * @throws RuntimeException If an error occurs while loading the jar file
+     */
+    public void loadJarFile(InputStream inputStream, boolean isLibrary) throws RuntimeException{
+        logger.info("Loading jar input stream...");
+
+        boolean shouldMutate = !isLibrary || DefaultConfigGroup.MUTATE_LIBS.getBool(config);
+        try (ZipInputStream jarInput = new ZipInputStream(inputStream)) {
+            ZipEntry entry;
+            while ((entry = jarInput.getNextEntry()) != null){
+                handleEntry(jarInput, entry, isLibrary, shouldMutate);
+                jarInput.closeEntry();
+            }
+        } catch (IOException e) {
+            logger.error("Failed to read jar file", e);
+            throw new RuntimeException("Failed to read jar file", e);
+        }
+
+    }
+
+    private void handleEntry(ZipInputStream jarInput, ZipEntry entry, boolean isLibrary, boolean shouldMutate){
+        if (entry == null || entry.isDirectory())
+            return;
+
+        logger.debug("Loading entry \"" + entry.getName() + "\"...");
+
+        String name = entry.getName();
+        byte[] bytes;
+        try{
+            bytes = jarInput.readAllBytes();
+        }catch (IOException e){
+            logger.error("Something went wrong while reading " +
+                    "the entry's input stream.", e);
+            return;
+        }
+
+        // The file entry class we use depends on whether the entry
+        // is of a jar file
+        FileEntry<?> newEntry;
+        if (name.toLowerCase().endsWith(".class")){
+            newEntry = new ClassEntry(name, shouldMutate, isLibrary, bytes);
+        }else{
+            newEntry = new ResourceEntry(name, shouldMutate, isLibrary, bytes);
+        }
+        try{
+            firstEntry.addNodeToEnd(newEntry);
+        }catch (IllegalArgumentException e){
+            if (!DefaultConfigGroup.SUPPRESS_DUPE_NODE_ERRORS.getBool(config)) // Setting name is close enough
+                logger.error("Something went wrong while adding new entry to linked list", e);
+            return;
+        }
+        logger.info("Successfully loaded entry \"" + entry.getName() + "\"");
     }
 
     /**
@@ -152,42 +207,6 @@ public class JarHandler {
         if (computeFrames)
             flags |= ClassWriter.COMPUTE_FRAMES;
         return new ClassWriterThatCanComputeFrames(flags, this);
-    }
-
-    private Consumer<? super JarEntry> getEntryConsumer(JarFile jarFile, boolean isLibrary, boolean shouldMutate){
-        return entry -> {
-            if (entry == null || entry.isDirectory())
-                return;
-
-            logger.debug("Loading entry \"" + entry.getName() + "\"...");
-
-            String name = entry.getName();
-            byte[] bytes;
-            try (InputStream in = jarFile.getInputStream(entry)){
-                bytes = IoUtils.readBytesFromInputStream(in);
-            }catch (IOException e){
-                logger.error("Something went wrong while reading " +
-                        "the entry's input stream.", e);
-                return;
-            }
-
-            // The file entry class we use depends on whether the entry
-            // is of a jar file
-            FileEntry<?> newEntry;
-            if (name.toLowerCase().endsWith(".class")){
-                newEntry = new ClassEntry(name, shouldMutate, isLibrary, bytes);
-            }else{
-                newEntry = new ResourceEntry(name, shouldMutate, isLibrary, bytes);
-            }
-            try{
-                firstEntry.addNodeToEnd(newEntry);
-            }catch (IllegalArgumentException e){
-                if (!DefaultConfigGroup.SUPPRESS_DUPE_NODE_ERRORS.getBool(config)) // Setting name is close enough
-                    logger.error("Something went wrong while adding new entry to linked list", e);
-                return;
-            }
-            logger.debug("Successfully loaded entry \"" + entry.getName() + "\"");
-        };
     }
 
     public FileEntry<?> getFirstEntry() {

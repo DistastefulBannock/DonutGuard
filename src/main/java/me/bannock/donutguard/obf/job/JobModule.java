@@ -7,10 +7,7 @@ import com.google.inject.multibindings.Multibinder;
 import me.bannock.donutguard.obf.asm.JarHandler;
 import me.bannock.donutguard.obf.config.Configuration;
 import me.bannock.donutguard.obf.mutator.Mutator;
-import me.bannock.donutguard.obf.mutator.impl.NopSpammerMutator;
 import me.bannock.donutguard.obf.mutator.impl.TestMutator;
-import me.bannock.donutguard.obf.mutator.impl.calls.ReplaceWithInDyMutator;
-import me.bannock.donutguard.obf.mutator.impl.string.LineNumberStringLiteralMutator;
 
 /**
  * This module is used internally by the ObfuscatorJob class to create and
@@ -32,9 +29,6 @@ public class JobModule extends AbstractModule {
 
     private void bindMutators(){
         Multibinder<Mutator> mutatorMultibinder = Multibinder.newSetBinder(binder(), Mutator.class);
-        mutatorMultibinder.addBinding().to(NopSpammerMutator.class);
-        mutatorMultibinder.addBinding().to(LineNumberStringLiteralMutator.class);
-        mutatorMultibinder.addBinding().to(ReplaceWithInDyMutator.class);
         mutatorMultibinder.addBinding().to(TestMutator.class);
     }
 

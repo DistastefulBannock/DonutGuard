@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -40,6 +41,7 @@ public class ObfuscatorJob implements Runnable {
     private String threadId = "Obfuscator Job " + System.currentTimeMillis() + "." + System.nanoTime(); // This will be replaced by the obfuscator
     private final Configuration configuration;
     private final Module[] jobModulePlugins;
+    private final InputStream jarInputStream;
 
     private boolean hasStarted = false, failed = false;
 
@@ -50,6 +52,18 @@ public class ObfuscatorJob implements Runnable {
                          @Assisted Module[] jobModulePlugins,
                          JarHandlerFactory jarHandlerFactory){
         this.configuration = SerializationUtils.clone(configuration);
+        this.jarInputStream = null;
+        this.jobModulePlugins = jobModulePlugins;
+        this.jarHandler = jarHandlerFactory.create(configuration);
+    }
+
+    @AssistedInject
+    public ObfuscatorJob(@Assisted Configuration configuration,
+                         @Assisted Module[] jobModulePlugins,
+                         @Assisted InputStream jarInputStream,
+                         JarHandlerFactory jarHandlerFactory){
+        this.configuration = SerializationUtils.clone(configuration);
+        this.jarInputStream = jarInputStream;
         this.jobModulePlugins = jobModulePlugins;
         this.jarHandler = jarHandlerFactory.create(configuration);
     }
@@ -91,7 +105,11 @@ public class ObfuscatorJob implements Runnable {
         logger.info("Successfully created job injector");
         logger.info("Creating and loading jar handler...");
         this.jarHandler = injector.getInstance(JarHandler.class);
-        jarHandler.loadJarFile(DefaultConfigGroup.INPUT.getFile(configuration), false);
+        if (jarInputStream == null){
+            jarHandler.loadJarFile(DefaultConfigGroup.INPUT.getFile(configuration), false);
+        }else{
+            jarHandler.loadJarFile(jarInputStream, false);
+        }
         for (File file : DefaultConfigGroup.LIBRARIES.getObj(configuration)){
             try{
                 jarHandler.loadJarFile(file, true);

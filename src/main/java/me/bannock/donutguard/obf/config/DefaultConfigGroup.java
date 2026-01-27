@@ -55,4 +55,7 @@ public class DefaultConfigGroup extends ConfigurationGroup {
     public static final ConfigKeyInteger NESTED_PACKAGES =
             new ConfigKeyInteger("Nested package count", 2);
 
+    public static final ConfigKeyBoolean DEV_TEST_MUTATOR_ENABLED
+            = new ConfigKeyBoolean("Dev test mutator enabled", false);
+
 }

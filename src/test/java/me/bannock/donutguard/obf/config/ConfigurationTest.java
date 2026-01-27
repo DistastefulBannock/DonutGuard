@@ -4,8 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import me.bannock.donutguard.obf.ObfuscatorModule;
-import me.bannock.donutguard.obf.mutator.cfg.NopSpamCfgGroup;
-import me.bannock.donutguard.obf.mutator.cfg.TestingCfgGroup;
 import me.bannock.donutguard.utils.ConfigurationUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.Test;
@@ -20,9 +18,9 @@ class ConfigurationTest {
     void testDonutGuardConfigGroup(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration config = injector.getInstance(Configuration.class);
-        assertFalse(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
-        TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.setBool(config, true);
-        assertTrue(TestingCfgGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
+        assertFalse(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
+        DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.setBool(config, true);
+        assertTrue(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.getBool(config));
     }
 
     @Test
@@ -54,12 +52,12 @@ class ConfigurationTest {
     void configurationSaveLoadTest(){
         Injector injector = Guice.createInjector(new ObfuscatorModule());
         Configuration configuration1 = injector.getInstance(Configuration.class);
-        NopSpamCfgGroup.NOP_SPAM_ENABLED.setBool(configuration1, true);
+        DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.setBool(configuration1, true);
         byte[] bytes = ConfigurationUtils.getConfigBytes(configuration1);
         Configuration configuration2 = ConfigurationUtils.loadConfig(bytes);
         assertNotSame(configuration1, configuration2);
-        assertSame(NopSpamCfgGroup.NOP_SPAM_ENABLED.getBool(configuration1),
-                NopSpamCfgGroup.NOP_SPAM_ENABLED.getBool(configuration2));
+        assertSame(DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.getBool(configuration1),
+                DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.getBool(configuration2));
     }
 
 }
