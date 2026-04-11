@@ -25,45 +25,40 @@ public class ClassWriterThatCanComputeFrames extends ClassWriter {
         type1 = type1.replace(".", "/");
         type2 = type2.replace(".", "/");
 
-        // We need to override this because the class writer class is garbage
-        try {
-            return super.getCommonSuperClass(type1, type2);
-        } catch (TypeNotPresentException e) {
-            // ASM is horrible and checks the current runing JVM for the classes
-            // rather than the classes loaded by the classreader.
+        // ASM is horrible and checks the current runing JVM for the classes
+        // rather than the classes loaded by the classreader.
 
-            // We first comb through all of our loaded classes for the two types being compared
-            ClassEntry match1, match2;
-            match1 = findClassEntryWithType(type1);
+        // We first comb through all of our loaded classes for the two types being compared
+        ClassEntry match1, match2;
+        match1 = findClassEntryWithType(type1);
 
-            // If we can't find the class then it likely isn't in our
-            // loaded classes. The user needs to add the correct library
-            // to our loaded classes as we lack the data to return the proper
-            // information. Running without compute frames/maxes usually resolves
-            // this issue and can be used as a quick fix
-            if (match1 == null){
-                logStupidError(new ClassNotFoundException(type1));
-                return "java/lang/Object";
-            }
-
-            match2 = findClassEntryWithType(type2);
-            if (match2 == null){ // Read comment above
-                logStupidError(new ClassNotFoundException(type2));
-                return "java/lang/Object";
-            }
-
-            // We loop through every superclass until we reach object,
-            // and then we do the same for the second class type but
-            // this time return when we hit a match
-            LinkedHashSet<String> supers1 = getAllSuperClassesForEntry(match1);
-            LinkedHashSet<String> supers2 = getAllSuperClassesForEntry(match2);
-            for (String superClass : supers2){
-                if (supers1.contains(superClass))
-                    return superClass;
-            }
-
+        // If we can't find the class then it likely isn't in our
+        // loaded classes. The user needs to add the correct library
+        // to our loaded classes as we lack the data to return the proper
+        // information. Running without compute frames/maxes usually resolves
+        // this issue and can be used as a quick fix
+        if (match1 == null){
+            logStupidError(new ClassNotFoundException(type1));
             return "java/lang/Object";
         }
+
+        match2 = findClassEntryWithType(type2);
+        if (match2 == null){ // Read comment above
+            logStupidError(new ClassNotFoundException(type2));
+            return "java/lang/Object";
+        }
+
+        // We loop through every superclass until we reach object,
+        // and then we do the same for the second class type but
+        // this time return when we hit a match
+        LinkedHashSet<String> supers1 = getAllSuperClassesForEntry(match1);
+        LinkedHashSet<String> supers2 = getAllSuperClassesForEntry(match2);
+        for (String superClass : supers2){
+            if (supers1.contains(superClass))
+                return superClass;
+        }
+
+        return "java/lang/Object";
     }
 
     /**
@@ -110,8 +105,8 @@ public class ClassWriterThatCanComputeFrames extends ClassWriter {
      * @return The found class entry, or null if it isn't present in the linked list
      */
     private ClassEntry findClassEntryWithType(String type){
-        if (type.toLowerCase().endsWith(".class"))
-            type = type.substring(0, type.length() - 6);
+        if (!type.toLowerCase().endsWith(".class"))
+            type += ".class";
         if (!parentHandler.getFirstEntry().containsPath(type))
             return null; // containsPath uses a HashSet and is O(1),
                          // so if we don't have the class then we won't waste resources searching
@@ -124,8 +119,8 @@ public class ClassWriterThatCanComputeFrames extends ClassWriter {
             ClassEntry entry = (ClassEntry) current;
 
             String path = entry.getPath();
-            if (path.toLowerCase().endsWith(".class"))
-                path = path.substring(0, path.length() - 6);
+            if (!path.toLowerCase().endsWith(".class"))
+                path += ".class";
             path = path.replace(".", "/");
 
             if (path.equals(type))

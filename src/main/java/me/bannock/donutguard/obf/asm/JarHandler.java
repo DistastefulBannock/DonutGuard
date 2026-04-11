@@ -46,13 +46,16 @@ public class JarHandler {
      * Will not clear any existing entries.
      * @param file The jar file to load
      * @param isLibrary Whether the handler should mark the entry as part of a library
+     * @param isJmodFile Whether the file being loaded is a jmod file
      * @throws RuntimeException If an error occurs while loading the jar file
      */
-    public void loadJarFile(File file, boolean isLibrary) throws RuntimeException{
+    public void loadJarFile(File file, boolean isLibrary, boolean isJmodFile) throws RuntimeException{
         logger.info("Loading jar file \"" + file.getAbsolutePath() + "\"...");
 
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            loadJarFile(fileInputStream, isLibrary);
+            if (file.getName().toLowerCase().endsWith(".jmod"))
+                fileInputStream.skip(4);
+            loadJarFile(fileInputStream, isLibrary, isJmodFile);
             logger.info("Successfully loaded jar file.");
         } catch (IOException e) {
             logger.error("Failed to read jar file", e);
@@ -68,14 +71,14 @@ public class JarHandler {
      * @param isLibrary Whether the handler should mark the entry as part of a library
      * @throws RuntimeException If an error occurs while loading the jar file
      */
-    public void loadJarFile(InputStream inputStream, boolean isLibrary) throws RuntimeException{
+    public void loadJarFile(InputStream inputStream, boolean isLibrary, boolean isJmodFile) throws RuntimeException{
         logger.info("Loading jar input stream...");
 
         boolean shouldMutate = !isLibrary || DefaultConfigGroup.MUTATE_LIBS.getBool(config);
         try (ZipInputStream jarInput = new ZipInputStream(inputStream)) {
             ZipEntry entry;
             while ((entry = jarInput.getNextEntry()) != null){
-                handleEntry(jarInput, entry, isLibrary, shouldMutate);
+                handleEntry(jarInput, entry, isLibrary, shouldMutate, isJmodFile);
                 jarInput.closeEntry();
             }
         } catch (IOException e) {
@@ -85,13 +88,15 @@ public class JarHandler {
 
     }
 
-    private void handleEntry(ZipInputStream jarInput, ZipEntry entry, boolean isLibrary, boolean shouldMutate){
+    private void handleEntry(ZipInputStream jarInput, ZipEntry entry, boolean isLibrary, boolean shouldMutate, boolean isJmodFile){
         if (entry == null || entry.isDirectory())
             return;
 
         logger.debug("Loading entry \"" + entry.getName() + "\"...");
 
         String name = entry.getName();
+        if (isJmodFile)
+            name = name.substring("classes/".length());
         byte[] bytes;
         try{
             bytes = jarInput.readAllBytes();

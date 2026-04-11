@@ -57,6 +57,8 @@ public class ObfuscatorTest {
         // multithreading capabilities.
         DefaultConfigGroup.DEV_TEST_MUTATOR_ENABLED.setBool(config, true);
         DefaultConfigGroup.OUTPUT.setFile(config, new File("output2.jar"));
+        DefaultConfigGroup.COMPUTE_FRAMES.setBool(config, true);
+        DefaultConfigGroup.LIBRARIES.getObj(config).add(new File("tools\\test\\"));
         ObfuscatorJob job2 = jobFactory.create(config);
 
         // We then tell the obfuscator to queue the jobs. They will soon be ran.

@@ -166,7 +166,7 @@ public abstract class FileEntry<T> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof FileEntry<?>)) return false;
         FileEntry<?> fileEntry = (FileEntry<?>) o;
         return Objects.equals(getPath(), fileEntry.getPath());
     }

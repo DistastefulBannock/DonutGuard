@@ -23,7 +23,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class handles the code behind the obfuscation. It creates and uses the mutators.
@@ -90,6 +94,12 @@ public class ObfuscatorJob implements Runnable {
         ThreadContext.remove("threadId");
     }
 
+    public static File[] getAllFiles(File directory) throws IOException {
+        try (Stream<Path> stream = Files.walk(directory.toPath())) {
+            return stream.filter(Files::isRegularFile).map(Path::toFile).toArray(File[]::new);
+        }
+    }
+
     /**
      * Runs the obfuscator
      * @throws Exception If an error occurs while running the obfuscator
@@ -106,13 +116,18 @@ public class ObfuscatorJob implements Runnable {
         logger.info("Creating and loading jar handler...");
         this.jarHandler = injector.getInstance(JarHandler.class);
         if (jarInputStream == null){
-            jarHandler.loadJarFile(DefaultConfigGroup.INPUT.getFile(configuration), false);
+            File input = DefaultConfigGroup.INPUT.getFile(configuration);
+            jarHandler.loadJarFile(input, false, input.getName().toLowerCase().endsWith(".jmod"));
         }else{
-            jarHandler.loadJarFile(jarInputStream, false);
+            jarHandler.loadJarFile(jarInputStream, false, false);
         }
         for (File file : DefaultConfigGroup.LIBRARIES.getObj(configuration)){
             try{
-                jarHandler.loadJarFile(file, true);
+                if (file.isDirectory()){
+                    Arrays.stream(getAllFiles(file)).forEach(jar -> jarHandler.loadJarFile(jar, true, jar.getName().toLowerCase().endsWith(".jmod")));
+                    continue;
+                }
+                jarHandler.loadJarFile(file, true, file.getName().toLowerCase().endsWith(".jmod"));
             }catch (Exception e){
                 logger.warn("Something went wrong while loading a library");
             }
