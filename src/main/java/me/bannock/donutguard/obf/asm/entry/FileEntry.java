@@ -85,7 +85,7 @@ public abstract class FileEntry<T> {
      * @param path The new path to use
      */
     public void setPath(String path) {
-        if (linkedListMetadata.getCurrentlyAddedNodes().contains(this)){
+        if (containsPath(path)){
             logger.error("Cannot set path to a path that is already in use");
             throw new IllegalArgumentException("Path is already in use");
         }
